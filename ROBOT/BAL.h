@@ -1,7 +1,6 @@
 #ifndef BAL_INCLUDED
 #define BAL_INCLUDED
 
-
 bool strEqual(char str1[],char str2[]);
 void strSet(char *str,const char in[]);
 
@@ -12,6 +11,5 @@ class BAL
   void actuate();
   void taken();
 };
-
 
 #endif

@@ -1,9 +1,8 @@
 #ifndef CONSTANT_INCLUDED
 #define CONSTANT_INCLUDED
 
-
 //-------------------------MODE DE FONCTIONNEMENT-------------------------
-//#define RECORD                    //Permet d'activer ou non le feedback
+//#define RECORD                  //Permet d'activer ou non le feedback
 //#define RC
 //#define FILTRE_SETUP_ANG
 //#define FILTRE_SETUP_LIN
@@ -12,7 +11,7 @@
 //#define THETA_TUNE
 //#define DELAY_TUNE
 //#define X_TUNE
-#define STATIQUE false  //Permet de faire des essais sans robot
+#define STATIQUE false            //Permet de faire des essais sans robot
 #define PIDL false
 #define PIDA true
 
@@ -43,11 +42,11 @@
 #define DROITE 1
 
 
-#define ACRT 0  //accurate
-#define STD 1   //standard
-#define RUSH 2  //You know what I mean
-#define DYDM 3 //Don't you dare move
-#define OFF 4 //Pas de PID
+#define ACRT 0    //accurate
+#define STD 1     //standard
+#define RUSH 2    //You know what I mean
+#define DYDM 3    //Don't you dare move
+#define OFF 4     //Pas de PID
 
 #define LIN 0
 #define ANG 1
@@ -65,9 +64,9 @@
 
 //-------------------------DEPLACEMENTS-------------------------
 
-#define RAYON_RECONVERGENCE 0.90             //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
+#define RAYON_RECONVERGENCE 0.90          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
 #define RAYON_TERMINE 0.05                //Distance en dessous duquel on considère que le robot est arrivé
-#define DELTA_THETA_TERMINE 0.08               //Delta theta en dessous duquel on considère le spin terminé 
+#define DELTA_THETA_TERMINE 0.08          //Delta theta en dessous duquel on considère le spin terminé 
 #define FREQUENCY 50.0
 #define DELAY 0.100
 //NERV ---> FIFO.CPP

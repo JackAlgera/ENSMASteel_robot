@@ -45,23 +45,26 @@ void Ghost::unlock()
   locked=false;
 }
 
-Ghost init_ghost(VectorE posEini)
+Ghost::Ghost(VectorE posEini)
 {
-  Ghost out;
-  out.fDelayX=newFiltre(posEini.vec.x,DELAY,3);
-  out.fDelayY=newFiltre(posEini.vec.y,DELAY,3);
-  out.fDelayTheta=newFiltre(posEini.theta,DELAY,3); //L'ordre 3 est un simple retard
-  out.wF=newFiltre(0.0,1.0,2);
-  out.t=0;
-  out.microsStart=micros();
-  out.posE=posEini;
-  out.posED=posEini;
-  out.v=0.0;
-  out.w=0.0;
-  out.X_P=Pconstant(posEini.vec.x);
-  out.Y_P=Pconstant(posEini.vec.y);
-  out.v_e_P2=Pconstant(0.0);
-  out.s.set(0.0,0.0,0.0,1.0,0.0,1.0,-1.0);
-  out.theta_S.set(posEini.theta,posEini.theta,0.0,1.0,0.0,1.0,-1.0);
-  return out;
+  fDelayX     = newFiltre(posEini.vec.x,DELAY,3);
+  fDelayY     = newFiltre(posEini.vec.y,DELAY,3);
+  fDelayTheta = newFiltre(posEini.theta,DELAY,3); //L'ordre 3 est un simple retard
+  
+  wF = newFiltre(0.0,1.0,2);
+  t = 0;
+  microsStart = micros();
+  posE  = posEini;
+  posED = posEini;
+  v   = 0.0;
+  w   = 0.0;
+  X_P = Pconstant(posEini.vec.x);
+  Y_P = Pconstant(posEini.vec.y);
+  v_e_P2 = Pconstant(0.0);
+  s.set(0.0,0.0,0.0,1.0,0.0,1.0,-1.0);
+  theta_S.set(posEini.theta,posEini.theta,0.0,1.0,0.0,1.0,-1.0);
+}
+
+Ghost::Ghost()
+{
 }

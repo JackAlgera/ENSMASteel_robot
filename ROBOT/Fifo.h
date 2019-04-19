@@ -10,9 +10,9 @@
 struct GoTo
 {
   uint8_t nerv;
-  float fleche;                 //La flèche est sans unité. Elle indique de combien le robot peut d'éloigner du trajet le plus court
-  Vector posAim;                //Position cibe
-  float thetaAim;    //Deceleration, angle cible, vitesse cible
+  float fleche;         //La flèche est sans unité. Elle indique de combien le robot peut d'éloigner du trajet le plus court
+  Vector posAim;        //Position cibe
+  float thetaAim;       //Deceleration, angle cible, vitesse cible
   bool arret;
 };
 
