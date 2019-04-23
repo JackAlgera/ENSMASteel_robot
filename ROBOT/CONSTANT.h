@@ -2,7 +2,7 @@
 #define CONSTANT_INCLUDED
 
 //-------------------------MODE DE FONCTIONNEMENT-------------------------
-//#define RECORD                  //Permet d'activer ou non le feedback
+#define RECORD                  //Permet d'activer ou non le feedback
 //#define RC
 //#define FILTRE_SETUP_ANG
 //#define FILTRE_SETUP_LIN
