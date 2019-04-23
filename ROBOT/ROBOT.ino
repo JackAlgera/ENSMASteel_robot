@@ -56,8 +56,9 @@ void Robot::set(float x0,float y0, float theta0)
   moteurGauche  = init_motor(PIN_MOTEUR_GAUCHE_PWR,PIN_MOTEUR_GAUCHE_SENS1,PIN_MOTEUR_GAUCHE_SENS2,0.96);
   codeuseGauche = init_codeuse(GAUCHE);
   codeuseDroite = init_codeuse(DROITE);
-  
-  Ghost ghost(init_vectorE(x0,y0,theta0));
+
+  VectorE initVect = init_vectorE(x0,y0,theta0);
+  ghost = *(new Ghost(initVect));
   posE.vec.x = x0;posE.vec.y=y0;posE.theta=theta0;
   vF = newFiltre(0.0,20.0,2);wF=newFiltre(0.0,20.0,2);   // ----------------------------------
   actions = init_FIFO();
