@@ -8,13 +8,6 @@ void Fifo::add(Order order)
   liste[indiceFin]=order;
 }
 
-void Fifo::addHead(Order order)
-{
-  indiceDebut=(indiceDebut-1)%TAILLEFIFO;
-  inBuffer++;
-  liste[indiceDebut]=order;
-}
-
 void Fifo::addGoto(uint8_t nerv,float fleche,float xAim,float yAim,float thetaAim,bool arret,uint8_t timeoutDs)
 {
   Order ord;

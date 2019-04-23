@@ -63,7 +63,6 @@ class Fifo
   Order liste[TAILLEFIFO];
   uint8_t indiceDebut=1,indiceFin=0;
   void add(Order order);
-  void addHead(Order order);
   public:
   uint8_t inBuffer=0;
   void addGoto(uint8_t nerv,float fleche,float xAim,float yAim,float thetaAim,bool arret,uint8_t timeoutDs);  //abs(thetaAim-thetaIni)<=PI
