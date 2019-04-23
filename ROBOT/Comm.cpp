@@ -1,4 +1,4 @@
-#include "BAL.h"
+#include "Comm.h"
 #include "Arduino.h"
 
 bool strEqual(char str1[],char str2[])
@@ -15,7 +15,7 @@ void strSet(char *str,const char in[])
 }
 
 
-void BAL::actuate()
+void COMM::actuate()
 {
   if (Serial.available()>0 && Serial.peek()!='!'){Serial.read();}
   if (Serial.available()>=5 && Serial.peek()=='!')
@@ -29,7 +29,7 @@ void BAL::actuate()
   Serial.print(Serial.available());Serial.print(lastMessage[0]);Serial.print(lastMessage[1]);Serial.print(lastMessage[2]);Serial.println(lastMessage[3]);
 }
 
-void BAL::taken()
+void COMM::taken()
 {
   strSet(lastMessage,"OBSL");
 }
