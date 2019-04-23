@@ -10,7 +10,7 @@ void Fifo::add(Order order)
 
 void Fifo::addHead(Order order)
 {
-  indiceDebut=(indiceDebut-1)%TAILLEFIFO;
+  indiceDebut=(indiceDebut-1+TAILLEFIFO)%TAILLEFIFO;
   inBuffer++;
   liste[indiceDebut]=order;
 }
