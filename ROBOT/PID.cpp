@@ -93,7 +93,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
         
         //On recalle le ghost sur le robot
         //if ( (not STATIQUE) and ((pointeurSurFifo->ptrFst()->type==GOTO_TYPE and pointeurSurFifo->ptrFst()->goTo.arret) or pointeurSurFifo->ptrFst()->type==SPIN_TYPE)   ) {IA=0.0;IL=0.0;pointeurSurGhost->recalle(posERobot,vRobot);}
-        IA=0.0;IL=0.0;pointeurSurGhost->recalle(posERobot,vRobot);
+        IA=0.0;IL=0.0;if (not STATIQUE) pointeurSurGhost->recalle(posERobot,vRobot);
         
         //On pop la liste
         pointeurSurFifo->pop();

@@ -15,7 +15,6 @@ class Order_new
   public:
   	OrderE type;
   	uint8_t timeOutDS;
-  
   	Order_new();
 };
 

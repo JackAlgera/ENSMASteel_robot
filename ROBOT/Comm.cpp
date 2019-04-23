@@ -26,7 +26,7 @@ void COMM::actuate()
     lastMessage[2]=Serial.read();
     lastMessage[3]=Serial.read();
   }
-  Serial.print(Serial.available());Serial.print(lastMessage[0]);Serial.print(lastMessage[1]);Serial.print(lastMessage[2]);Serial.println(lastMessage[3]);
+  //Serial.print(Serial.available());Serial.print(lastMessage[0]);Serial.print(lastMessage[1]);Serial.print(lastMessage[2]);Serial.println(lastMessage[3]);
 }
 
 void COMM::taken()

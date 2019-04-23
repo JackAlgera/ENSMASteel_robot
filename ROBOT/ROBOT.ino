@@ -136,9 +136,12 @@ void setup()
   //void addSpin( ACRT/STD/RUSH , thetaAim,timeoutDs);
 
 
-  //robot.actions.addSTBY(200);
-  robot.actions.addGoto(RUSH,0.1,2.0,1.0,0.0,true,50);
-  robot.actions.addSpin(RUSH,3.14,50);
+  #define NERV STD
+  #define TMOUT 20 
+  robot.actions.addGoto(NERV,0.4,2.329380764163373,0.9117259552042161,-0.927295218001615,false,TMOUT);
+  robot.actions.addGoto(NERV,0.4,2.2397891963109355,0.5928853754940712,-2.4468543773930906,false,TMOUT);
+  robot.actions.addGoto(NERV,0.30000000000000004,1.4677206851119895,0.932806324110672,2.397837069290934,true,TMOUT);
+
 }
 
 void loop()

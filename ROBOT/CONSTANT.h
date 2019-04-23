@@ -11,8 +11,8 @@
 //#define THETA_TUNE
 //#define DELAY_TUNE
 //#define X_TUNE
-#define STATIQUE false            //Permet de faire des essais sans robot
-#define PIDL false
+#define STATIQUE true            //Permet de faire des essais sans robot
+#define PIDL true
 #define PIDA true
 
 //-------------------------PINS-------------------------
