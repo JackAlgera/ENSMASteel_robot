@@ -8,7 +8,7 @@
 #include "Vector.h"
 #include "Arduino.h"
 #include "Filtre.h"
-#include "BAL.h"
+#include "Comm.h"
 #include "TimerOne.h"
 
 class Robot
@@ -22,7 +22,7 @@ class Robot
     Filtre vF,wF;
     Fifo actions;                                 //Une liste d'ordres a effectuer
     PID pid;
-    BAL bal;
+    COMM comm;
   
     void actuateODO(float dt);
     void set(float x0,float y0, float theta0);    //Remplie les champs de l'objet Robot
@@ -36,7 +36,7 @@ void Robot::actuate(float dt)
   actuateODO(dt);
   ghost.actuate(dt);
   pid.actuate(dt,posE,vF.out(),wF.out());
-  bal.actuate();
+  comm.actuate();
 }
 
 void Robot::actuateODO(float dt)

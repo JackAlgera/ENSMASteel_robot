@@ -22,7 +22,7 @@ void Filtre::in(float newRaw,float dt)
             lastValue=out;
             break;
           }
-        case 3:
+        case 3: //L'ordre 3 est un retard
         {
           lastValue=(newRaw - Wc*(newRaw - lastRaw - lastValue)/dt ) / (1 + Wc/dt);
           lastRaw=newRaw;
