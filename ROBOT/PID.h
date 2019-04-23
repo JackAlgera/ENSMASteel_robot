@@ -6,6 +6,7 @@
 #include "Fifo.h"
 #include "Moteur.h"
 #include "Ghost.h"
+#include "Comm.h"
 
 /*
 En mode RUSH:
@@ -27,6 +28,7 @@ class PID
   uint8_t PIDnervLIN=DYDM,PIDnervANG=DYDM;
   float IL=0.0,IA=0.0;
   public:
+  Comm* pointeurSurComm;                      //Pointeur sur la communication
   Ghost* pointeurSurGhost;                    //Pointeur sur le fantome
   Fifo* pointeurSurFifo;                      //Pointeur sur le Fifo
   Motor* pointeurSurMoteurGauche;             //Pointeur sur le moteur gauche
@@ -35,5 +37,5 @@ class PID
  
 };
 
-PID init_PID(Motor* in_pointeurSurMoteurGauche,Motor* in_pointeurSurMoteurDroite,Fifo* in_pointeurSurActions,Ghost* in_pointeurSurGhost);
+PID init_PID(Motor* in_pointeurSurMoteurGauche,Motor* in_pointeurSurMoteurDroite,Fifo* in_pointeurSurActions,Ghost* in_pointeurSurGhost,Comm* in_pointeurSurComm);
 #endif

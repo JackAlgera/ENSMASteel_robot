@@ -13,8 +13,8 @@ uint16_t K[5][2][3]=
   {//LINEAIRE               //ANGULAIRE  (PID)
   {{4100 , 0    , 1958} , {6700 , 50  , 450}},  //ACRT
   {{4100 , 0    , 1958} , {6700 , 50  , 450}},  //STD
-  {{4100 , 0    , 1958} , {6700 , 50  , 450}},    //RUSH
-  {{5000 , 500  , 6000} , {5000 , 600  , 1200}}, //DYDM
+  {{4100 , 0    , 1958} , {1000 , 0  , 400}},    //RUSH
+  {{4000 , 100  , 4000} , {5000 , 600  , 1200}}, //DYDM
   {{0,0,0} ,{0,0,0}} //OFF
   };
 
@@ -70,24 +70,21 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
       #endif  
       
 }
+      
+      bool linOK        = longueur( minusFAST(&posERobot.vec,&pointeurSurGhost->posED.vec) )<=RAYON_TERMINE or (not PIDL) or STATIQUE;
+      bool angOK        = (normalize(pointeurSurGhost->posED.theta-posERobot.theta)<=DELTA_THETA_TERMINE) or (not PIDA) or STATIQUE;
+      bool vitesseOK    = abs(vRobot)<0.005 or STATIQUE or (pointeurSurFifo->ptrFst()->type==GOTO_TYPE and pointeurSurFifo->ptrFst()->goTo.arret==false);
+      bool ghostArrive  = pointeurSurGhost->t_e>0.95;
+      bool ghostFree    = not pointeurSurGhost->locked;
+      bool orderNext    = pointeurSurFifo->inBuffer>=2;
+      bool timeout      = (micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeoutDs/10.0;
+      bool messageNext  = pointeurSurFifo->ptrFst()->type==STBY_TYPE and strEqual(pointeurSurComm->lastMessage,pointeurSurFifo->ptrFst()->stby.unlockMessage);
+      
       //On regarde si l'action est terminée
-      if  (  
-            (
-            (
-              (
-                (longueur( minusFAST(&posERobot.vec,&pointeurSurGhost->posED.vec) )<=RAYON_TERMINE or (not PIDL)) 
-                and ((normalize(pointeurSurGhost->posED.theta-posERobot.theta)<=DELTA_THETA_TERMINE) or (not PIDA))
-              ) 
-              or STATIQUE
-            ) //geometrique
-            and (abs(vRobot)<0.005 or STATIQUE or (pointeurSurFifo->ptrFst()->type==GOTO_TYPE and pointeurSurFifo->ptrFst()->goTo.arret==false)) //vitesse
-            and pointeurSurGhost->t_e>0.95 //Le ghost a fini
-            and (not pointeurSurGhost->locked)
-            and  pointeurSurFifo->inBuffer>=2 //Il y a un suivant
-            )
-            or ((micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeoutDs/10.0 and  pointeurSurFifo->inBuffer>=2) //Il y a un suivant
-          )
+      if  ( (linOK and angOK and vitesseOK and ghostArrive and ghostFree and orderNext) or (timeout and orderNext) or (messageNext and orderNext))
       {
+        if (messageNext)pointeurSurComm->taken();
+        
         //On libere dans le cas d'un timeout
         pointeurSurGhost->locked=false;
         
@@ -186,12 +183,13 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
       }
 }
 
-PID init_PID(Motor* in_pointeurSurMoteurGauche,Motor* in_pointeurSurMoteurDroite,Fifo* in_pointeurSurFifo,Ghost* in_pointeurSurGhost)
+PID init_PID(Motor* in_pointeurSurMoteurGauche,Motor* in_pointeurSurMoteurDroite,Fifo* in_pointeurSurFifo,Ghost* in_pointeurSurGhost,Comm* in_pointeurSurComm)
 {
   PID out;
   out.pointeurSurMoteurGauche=in_pointeurSurMoteurGauche;
   out.pointeurSurMoteurDroite=in_pointeurSurMoteurDroite;
   out.pointeurSurFifo=in_pointeurSurFifo;
   out.pointeurSurGhost=in_pointeurSurGhost;
+  out.pointeurSurComm=in_pointeurSurComm;
   return out;
 }

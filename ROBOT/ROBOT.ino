@@ -22,7 +22,7 @@ class Robot
     Filtre vF,wF;
     Fifo actions;                                 //Une liste d'ordres a effectuer
     PID pid;
-    COMM comm;
+    Comm comm;
   
     void actuateODO(float dt);
     void set(float x0,float y0, float theta0);    //Remplie les champs de l'objet Robot
@@ -63,7 +63,7 @@ void Robot::set(float x0,float y0, float theta0)
   vF = newFiltre(0.0,20.0,2);wF=newFiltre(0.0,20.0,2);   // ----------------------------------
   actions = init_FIFO();
   actions.addSTBY(DYDM,"Tirt",5);
-  pid = init_PID(&moteurGauche,&moteurDroite,&actions,&ghost);
+  pid = init_PID(&moteurGauche,&moteurDroite,&actions,&ghost,&comm);
 }
 
 //Au cas ou....
@@ -138,10 +138,9 @@ void setup()
 
   #define NERV STD
   #define TMOUT 20 
-  robot.actions.addGoto(NERV,0.4,2.329380764163373,0.9117259552042161,-0.927295218001615,false,TMOUT);
-  robot.actions.addGoto(NERV,0.4,2.2397891963109355,0.5928853754940712,-2.4468543773930906,false,TMOUT);
-  robot.actions.addGoto(NERV,0.30000000000000004,1.4677206851119895,0.932806324110672,2.397837069290934,true,TMOUT);
-
+  //robot.actions.addGoto(NERV,0.4,2.0,1,0,true,TMOUT);
+  robot.actions.addSpin(RUSH,1,TMOUT);
+  
 }
 
 void loop()

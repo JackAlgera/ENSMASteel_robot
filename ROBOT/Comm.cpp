@@ -1,7 +1,7 @@
 #include "Comm.h"
 #include "Arduino.h"
 
-bool strEqual(char str1[],char str2[])
+bool strEqual(char* str1,char* str2)
 {
   return (str1[0]==str2[0] && str1[1]==str2[1] && str1[2]==str2[2] && str1[3]==str2[3]);
 }
@@ -15,7 +15,7 @@ void strSet(char *str,const char in[])
 }
 
 
-void COMM::actuate()
+void Comm::actuate()
 {
   if (Serial.available()>0 && Serial.peek()!='!'){Serial.read();}
   if (Serial.available()>=5 && Serial.peek()=='!')
@@ -29,7 +29,7 @@ void COMM::actuate()
   //Serial.print(Serial.available());Serial.print(lastMessage[0]);Serial.print(lastMessage[1]);Serial.print(lastMessage[2]);Serial.println(lastMessage[3]);
 }
 
-void COMM::taken()
+void Comm::taken()
 {
   strSet(lastMessage,"OBSL");
 }
