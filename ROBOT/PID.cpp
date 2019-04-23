@@ -85,7 +85,10 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
             and (not pointeurSurGhost->locked)
             and  pointeurSurFifo->inBuffer>=2 //Il y a un suivant
             )
-            or ((micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeoutDs/10.0 and  pointeurSurFifo->inBuffer>=2) //Il y a un suivant
+            or 
+            (
+              ((micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeoutDs/10.0 and  pointeurSurFifo->inBuffer>=2)
+            ) //Il y a un suivant
           )
       {
         //On libere dans le cas d'un timeout

@@ -1,12 +1,12 @@
 #include "Comm.h"
 #include "Arduino.h"
 
-bool strEqual(char str1[],char str2[])
+bool ptrEqualStr(char * str1,char str2[])
 {
   return (str1[0]==str2[0] && str1[1]==str2[1] && str1[2]==str2[2] && str1[3]==str2[3]);
 }
 
-void strSet(char *str,const char in[])
+void ptrSetStr(char *str,const char in[])
 {
   str[0]=in[0];
   str[1]=in[1];
@@ -31,5 +31,5 @@ void COMM::actuate()
 
 void COMM::taken()
 {
-  strSet(lastMessage,"OBSL");
+  ptrSetStr(lastMessage,"OBSL");
 }
