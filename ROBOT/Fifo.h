@@ -10,15 +10,15 @@
 
 class Fifo
 {
-  Order liste[TAILLEFIFO];
-  uint8_t indiceDebut=1,indiceFin=0;
-  
   public:
+    Order liste[TAILLEFIFO];
+    uint8_t indiceDebut = 1,indiceFin = 0, inBuffer = 0;
+   
 	  Fifo();
 	  ~Fifo();
+    
 	  void add(Order order);
 	  void addHead(Order order);
-	  uint8_t inBuffer=0;
 	  Order* ptrFst();          //Renvoie le pointeur vers l'action le plus ancienne (celle a effectuer normalement)
 	  void pop();               //Fait sauter l'action la plus ancienne
 	  void clean();				//Vide le buffer et ajoute un STBY

@@ -26,9 +26,6 @@ public:
 	void addMonteRampe();
 	void addPoseRampe();
 	void addDescendRampe();
-
-private:
-
 };
 
 #endif

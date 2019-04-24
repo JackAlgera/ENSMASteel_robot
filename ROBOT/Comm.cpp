@@ -27,8 +27,8 @@ void Comm::specialBehavior()
   if (strEqual(special1,lastMessage))
   {
     taken();
-	ordresRobot->addHead(STBY(OFF, "DUMY", 50));	// Fifo::createSTBY(OFF, "DUMY", 50));
-	ordresRobot->addHead(EMSTOP(5));				// Fifo::createEmStop(5));
+  	ordresRobot->addHead(STBY(OFF, "DUMY", 50));	// Fifo::createSTBY(OFF, "DUMY", 50));
+  	ordresRobot->addHead(EMSTOP(5));				      // Fifo::createEmStop(5));
     ptrPid->reload();
   }
 }
