@@ -1,7 +1,7 @@
 #ifndef CODEUSE_INCLUDED
 #define CODEUSE_INCLUDED
 
-#include "CONSTANT.h"
+#include "1_CONSTANT.h"
 #include "Arduino.h"
 
 class Codeuse

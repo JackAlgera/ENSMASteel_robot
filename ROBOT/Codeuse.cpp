@@ -1,5 +1,5 @@
 #include "Codeuse.h"
-#include "CONSTANT.h"
+#include "1_CONSTANT.h"
 
 volatile int bufferTicksGauche=0;  //Permet de stocker les ticks reçu lors des interruptions
 volatile int bufferTicksDroite=0;  //idem

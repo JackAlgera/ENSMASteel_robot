@@ -62,6 +62,20 @@
 #define STBY_TYPE 4             //Le Standy est un mode statique qui se débloque a la fin d'un timer ou lorsque quelquechose passe la variable locked a false
 #define SEND_TYPE 5
 
+// On aura Chaos = 0, Distribx6 = 1 etc..
+// ActionE::Chaos pour y acceder -> exemple : if(!DONE[ActionE::Chaos]) {...}
+enum ActionE
+{
+  Chaos, Distribx6, Distribx3, depart,
+  RecupBlueAcc, PoseAcc, RecupeGoldAcc, Balance, PoseSol,
+  MonteRampe, PoseRampe, DescendRamp
+};   
+
+enum OrderE
+{
+  GoTo_E, Spin_E, FWD_E, BWD_E, STBY_E, SEND_E 
+};
+
 //-------------------------DEPLACEMENTS-------------------------
 
 #define RAYON_RECONVERGENCE 0.90          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost

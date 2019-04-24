@@ -1,6 +1,6 @@
 #include "Action.h"
 
-Action::Action(Actions type, int nbrOrders)
+Action::Action(ActionE type, int nbrOrders)
 {
 	this->type = type;
 	this->nbrOrders = nbrOrders;
@@ -43,7 +43,7 @@ inline void Action::addBWD(float acc, float v, uint8_t timeoutDs)
 	}
 }
 
-void Action::addSTBY(uint8_t nerv, char * unlockMessage, uint8_t timeout)
+void Action::addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeout)
 {
 	if (currentOrder < nbrOrders)
 	{

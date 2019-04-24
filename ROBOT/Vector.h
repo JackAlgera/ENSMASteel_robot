@@ -1,7 +1,7 @@
 #ifndef VECTOR_INCLUDED
 #define VECTOR_INCLUDED
 
-#include "CONSTANT.h"
+#include "1_CONSTANT.h"
 
 struct Vector                       //Une classe Vecteur toute simple
 {

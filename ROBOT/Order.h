@@ -1,14 +1,9 @@
 #ifndef ORDER_INCLUDED
 #define ORDER_INCLUDED
 
-#include "CONSTANT.h"
+#include "1_CONSTANT.h"
 #include "Vector.h"
 #include "Arduino.h"
-
-enum OrderE
-{
-  GoTo_E, Spin_E, FWD_E, BWD_E, STBY_E, SEND_E 
-};
 
 class Order_new
 {
@@ -91,15 +86,18 @@ class STBY_new : public Order_new
 {
   public:
   	uint8_t nerv;
-  	char *unlockMessage;
+  	char unlockMessage[4];
   
-  	STBY_new(uint8_t nerv, char * unlockMessage, uint8_t timeoutDS)
+  	STBY_new(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDS)
     {
       this->type          = OrderE::STBY_E;
       this->timeOutDS     = timeoutDS;
     
       this->nerv          = nerv;
-      this->unlockMessage = unlockMessage;
+	  this->unlockMessage[0] = unlockMessage[0];
+	  this->unlockMessage[1] = unlockMessage[1];
+	  this->unlockMessage[2] = unlockMessage[2];
+	  this->unlockMessage[3] = unlockMessage[3];
     }
 };
 

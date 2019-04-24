@@ -1,7 +1,7 @@
 #ifndef GHOST_INCLUDED
 #define GHOST_INCLUDED
 
-#include "CONSTANT.h"
+#include "1_CONSTANT.h"
 #include "Polynome.h"
 #include "FIFO.h"
 #include "Vector.h"

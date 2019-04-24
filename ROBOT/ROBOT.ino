@@ -1,4 +1,4 @@
-#include "CONSTANT.h"
+#include "1_CONSTANT.h"
 #include "Moteur.h"
 #include "Codeuse.h"
 #include "Fifo.h"
@@ -87,7 +87,7 @@ void print7(float f1,float f2,float f3,float f4,float f5,float f6,float f7)
   Serial.print(f7);Serial.print("!");
 }
 
-void printRobotState(Robot* robot)
+void printRobotState() //Robot* robot)
 {
     #ifdef RECORD
       print7( micros()/1000.0 , robot->posE.vec.x*10000 , robot->posE.vec.y*10000 , robot->posE.theta*10000 , robot->ghost.posED.vec.x*10000 , robot->ghost.posED.vec.y*10000 , robot->ghost.posED.theta*10000);
@@ -151,7 +151,7 @@ void loop()
   microsStart=m;
 
   robot.actuate(dtLoop);
-  printRobotState(&robot);
+  printRobotState(); //&robot);
  
   while((micros()-microsStart)/1000000.0<1.0/FREQUENCY) {;}
 }

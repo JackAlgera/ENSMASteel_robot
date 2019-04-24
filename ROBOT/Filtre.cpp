@@ -1,7 +1,7 @@
 #include "Filtre.h"
 #include "Arduino.h"
 
-#include "CONSTANT.h"
+#include "1_CONSTANT.h"
 void Filtre::in(float newRaw,float dt)
 {
   //ON stock la valeur brute au cas ou

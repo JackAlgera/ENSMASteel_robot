@@ -1,7 +1,7 @@
 #ifndef POLYNOME_INCLUDED
 #define POLYNOME_INCLUDED
 
-#include "CONSTANT.h"
+#include "1_CONSTANT.h"
 
 class Polynome
 {
