@@ -37,10 +37,10 @@ void PID::reload()
         //On prepare le robot pour la prochaine action
         switch (pointeurSurFifo->ptrFst()->type)
         {
-          case GOTO_TYPE:
+		case OrderE::GOTO_E:
           
           {
-           GoTo g=pointeurSurFifo->ptrFst()->goTo;
+          GOTO_S g=pointeurSurFifo->ptrFst()->goTo;
           PIDnervLIN=g.nerv;
           PIDnervANG=(g.nerv==RUSH)?(DYDM):(g.nerv);
           //Ici on trouve les points a renseigner pour faire la trajectoire
@@ -88,9 +88,9 @@ void PID::reload()
           if (L>0) pointeurSurGhost->t_e=0; else pointeurSurGhost->t_e=1;}
           break;
           
-          case SPIN_TYPE:
+		case OrderE::SPIN_E:
           {
-          Spin s=pointeurSurFifo->ptrFst()->spin;
+          SPIN_S s=pointeurSurFifo->ptrFst()->spin;
           PIDnervANG=s.nerv;
           PIDnervLIN=DYDM;
           pointeurSurGhost->X_P.set(pointeurSurGhost->posE.vec.x,0.0,0.0,0.0,0.0,0.0,0.0);
@@ -100,11 +100,11 @@ void PID::reload()
           pointeurSurGhost->theta_S.set(pointeurSurGhost->posE.theta,thetaAimPropre,0.0,nervTP[s.nerv],0.0,nervTPP[s.nerv],-nervTPP[s.nerv]);
           pointeurSurGhost->t_e=0;}
           break;
-          case FWD_TYPE:
+		case OrderE::FWD_E:
           break;
-          case BWD_TYPE:
+		case OrderE::BWD_E:
           break;
-          case STBY_TYPE:
+		case OrderE::STBY_E:
           {
           PIDnervANG=pointeurSurFifo->ptrFst()->stby.nerv;
           PIDnervLIN=pointeurSurFifo->ptrFst()->stby.nerv;
@@ -114,7 +114,9 @@ void PID::reload()
           pointeurSurGhost->theta_S.set(pointeurSurGhost->posE.theta,pointeurSurGhost->posE.theta,0.0,1.0,0.0,1.0,1.0);
           pointeurSurGhost->t_e=0;}
           break;
-          case EMSTOP_TYPE:
+		case OrderE::POST_E:
+		  break;
+		case OrderE::EMSTOP_E:
           pointeurSurMoteurGauche->bypass=true;
           pointeurSurMoteurGauche->masterOrder=0;
           pointeurSurMoteurDroite->bypass=true;
@@ -181,13 +183,13 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
       
       bool linOK        = longueur( minusFAST(&posERobot.vec,&pointeurSurGhost->posED.vec) )<=RAYON_TERMINE or (not PIDL) or STATIQUE;
       bool angOK        = (normalize(pointeurSurGhost->posED.theta-posERobot.theta)<=DELTA_THETA_TERMINE) or (not PIDA) or STATIQUE;
-      bool vitesseOK    = (abs(vRobot)<0.005 and abs(wRobot)<0.005) or STATIQUE or (pointeurSurFifo->ptrFst()->type==GOTO_TYPE and pointeurSurFifo->ptrFst()->goTo.arret==false);
+      bool vitesseOK    = (abs(vRobot)<0.005 and abs(wRobot)<0.005) or STATIQUE or (pointeurSurFifo->ptrFst()->type == OrderE::GOTO_E and pointeurSurFifo->ptrFst()->goTo.arret==false);
       bool ghostArrive  = pointeurSurGhost->t_e>0.95;
       bool ghostFree    = not pointeurSurGhost->locked;
       bool orderNext    = pointeurSurFifo->inBuffer>=2;
       bool timeout      = (micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeoutDs/10.0;
-      bool messageITSTBY  = pointeurSurFifo->ptrFst()->type==STBY_TYPE and strEqual(pointeurSurComm->lastMessage,pointeurSurFifo->ptrFst()->stby.unlockMessage);
-      bool completeEMStop = pointeurSurFifo->ptrFst()->type==EMSTOP_TYPE and abs(vRobot)<0.005 and abs(wRobot)<0.005;
+      bool messageITSTBY  = pointeurSurFifo->ptrFst()->type == OrderE::STBY_E and strEqual(pointeurSurComm->lastMessage,pointeurSurFifo->ptrFst()->stby.unlockMessage);
+      bool completeEMStop = pointeurSurFifo->ptrFst()->type == OrderE::EMSTOP_E and abs(vRobot)<0.005 and abs(wRobot)<0.005;
 
 
       //On regarde si l'action est terminée

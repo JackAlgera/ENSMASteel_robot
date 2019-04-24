@@ -8,8 +8,8 @@
 class Cerveau
 {
 public:
-	Action actionList[12];
-	bool DONE[12];
+	Action actionList[12];		// Array qui contient l'ensemble des actions -> qui contiennent des ordres 
+	bool DONE[12];				    // Array qui nous dit si un action est fini ou non
 
 	Cerveau();
 	~Cerveau();
@@ -22,7 +22,7 @@ public:
 	void addPoseAcc();
 	void addRecupGoldAcc();
 	void addBalance();
-	void PoseSol();
+	void addPoseSol();
 	void addMonteRampe();
 	void addPoseRampe();
 	void addDescendRampe();

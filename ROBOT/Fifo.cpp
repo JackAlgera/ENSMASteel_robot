@@ -2,6 +2,14 @@
 #include "Vector.h"
 #include "Comm.h"
 
+Fifo::Fifo()
+{
+}
+
+Fifo::~Fifo()
+{
+}
+
 void Fifo::add(Order order)
 {
   indiceFin = (indiceFin+1)%TAILLEFIFO;
@@ -16,6 +24,26 @@ void Fifo::addHead(Order order)
   liste[indiceDebut] = order;
 }
 
+void Fifo::pop() 
+{ 
+	indiceDebut = (indiceDebut + 1) % TAILLEFIFO; 
+	inBuffer--; 
+}
+
+Order* Fifo::ptrFst() 
+{ 
+	return &(liste[(indiceDebut) % TAILLEFIFO]); 
+}
+
+void Fifo::clean()
+{
+	indiceDebut = 1;
+	indiceFin = 0;
+	inBuffer = 0;
+	add(STBY(DYDM, "DUMY", 255));
+}
+
+/*
 Order Fifo::createGoto(uint8_t nerv,float fleche,float xAim,float yAim,float thetaAim,bool arret,uint8_t timeoutDs)
 {
   Order ord;
@@ -91,20 +119,4 @@ Order Fifo::createEmStop(uint8_t timeoutDs)
 void Fifo::addEmStop(uint8_t timeoutDs)
 {add(createEmStop(timeoutDs));}
 
-void Fifo::clean()
-{
-  indiceDebut=1;
-  indiceFin=0;
-  inBuffer=0;
-  add(STBY(DYDM, "DUMY", 255));
-}
-
-void Fifo::pop(){indiceDebut=(indiceDebut+1)%TAILLEFIFO;inBuffer--;}
-
-Order* Fifo::ptrFst() {return &(liste[(indiceDebut)%TAILLEFIFO]);}
-
-Fifo init_FIFO()
-{
-  Fifo out;
-  return out;
-}
+*/

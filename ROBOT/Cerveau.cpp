@@ -1,34 +1,12 @@
 #include "Cerveau.h"
 
-Cerveau::Cerveau()
-{
-  for(int i=0; i<12; i++)
-    DONE[i] = false;
-  
-	addChaos();
-	addDistribx6();
-	addDepart();
-	addDistribx3();
-	addRecupBleuAcc();
-	addPoseAcc();
-	addRecupGoldAcc();
-	addBalance();
-	PoseSol();
-	addMonteRampe();
-	addDescendRampe();
-	addPoseRampe();
-}
-
-Cerveau::~Cerveau()
-{
-}
-
+// Remplissage des actions avec les Order
 void Cerveau::addChaos()
 {
 	Action newAction(ActionE::Chaos, 3);	// Test creation de l'action Chaos avec 3 ordres
-	newAction.addSpin(STD, 1, 20);
+	newAction.addSPIN(STD, 1, 20);
 	newAction.addSTBY(DYDM, "Tirt", 255);
-	newAction.addSpin(STD, 1, 20);
+	newAction.addSPIN(STD, 1, 20);
 
 	actionList[ActionE::Chaos] = newAction;
 }
@@ -82,7 +60,7 @@ void Cerveau::addBalance()
 	actionList[ActionE::Balance] = newAction;
 }
 
-void Cerveau::PoseSol()
+void Cerveau::addPoseSol()
 {
 	Action newAction(ActionE::PoseSol, 3);
 
@@ -108,4 +86,29 @@ void Cerveau::addDescendRampe()
 	Action newAction(ActionE::DescendRamp, 3);
 
 	actionList[ActionE::DescendRamp] = newAction;
+}
+
+Cerveau::Cerveau()
+{
+	for (int i = 0; i < 12; i++)
+	{
+		DONE[i] = false;
+	}
+
+	addChaos();
+	addDistribx6();
+	addDepart();
+	addDistribx3();
+	addRecupBleuAcc();
+	addPoseAcc();
+	addRecupGoldAcc();
+	addBalance();
+	addPoseSol();
+	addMonteRampe();
+	addDescendRampe();
+	addPoseRampe();
+}
+
+Cerveau::~Cerveau()
+{
 }

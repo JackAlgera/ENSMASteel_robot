@@ -5,63 +5,63 @@
 #include "Vector.h"
 #include "Arduino.h"
 
+struct GOTO_S
+{
+  uint8_t nerv;
+  float fleche;         //La flèche est sans unité. Elle indique de combien le robot peut d'éloigner du trajet le plus court
+  Vector posAim;        //Position cibe
+  float thetaAim;       //Deceleration, angle cible, vitesse cible
+  bool arret;
+};
+
+struct SPIN_S
+{
+  uint8_t nerv;
+  float thetaAim;       //angle cible, acceleration et deceleration angulaire (theta point point)
+};
+
+struct FWD_S
+{
+  float acc, v;          //Acceleration, vitesse max, temps maximum passé sur cette instruction
+};
+
+struct BWD_S
+{
+  float acc, v;
+};
+
+struct STBY_S
+{
+  uint8_t nerv;
+  char unlockMessage[4];
+};
+
+struct POST_S
+{
+  char message[4];
+};
+
+struct EMSTOP_S
+{
+};
+
 class Order
 {
   public:
   	OrderE type;
   	uint8_t timeoutDs;
-	union                         //Une union permet de dire que uniquement l'un de ces champs à un intéret
-	{
-		GOTO_S goTo;
-		SPIN_S spin;
-		FWD_S fwd;
-		BWD_S bwd;
-		STBY_S stby;
-		POST_S post;
-		EMStop_S emStop;
-	};
+  	union                         //Une union permet de dire que uniquement l'un de ces champs à un intéret
+  	{
+  		GOTO_S goTo;
+  		SPIN_S spin;
+  		FWD_S fwd;
+  		BWD_S bwd;
+  		STBY_S stby;
+  		POST_S post;
+  		EMSTOP_S emStop;
+  	};
 
   	Order();
-};
-
-struct GOTO_S
-{
-	uint8_t nerv;
-	float fleche;         //La flèche est sans unité. Elle indique de combien le robot peut d'éloigner du trajet le plus court
-	Vector posAim;        //Position cibe
-	float thetaAim;       //Deceleration, angle cible, vitesse cible
-	bool arret;
-};
-
-struct SPIN_S
-{
-	uint8_t nerv;
-	float thetaAim;       //angle cible, acceleration et deceleration angulaire (theta point point)
-};
-
-struct FWD_S
-{
-	float acc, v;          //Acceleration, vitesse max, temps maximum passé sur cette instruction
-};
-
-struct BWD_S
-{
-	float acc, v;
-};
-
-struct STBY_S
-{
-	uint8_t nerv;
-	char unlockMessage[4];
-};
-
-struct POST_S
-{
-	char message[4];
-};
-
-struct EMStop_S
-{
 };
 
 class GOTO : public Order
@@ -131,10 +131,10 @@ class STBY : public Order
     }
 };
 
-class POST_E : public Order
+class POST : public Order
 {
 public:
-	POST_E(const char message[], uint8_t timeoutDs)
+	POST(const char message[], uint8_t timeoutDs)
 	{
 		this->type = OrderE::POST_E;
 		this->timeoutDs = timeoutDs;
@@ -146,10 +146,10 @@ public:
 	}
 };
 
-class EMSTOP_E : public Order
+class EMSTOP : public Order
 {
 public:
-	EMSTOP_E(uint8_t timeoutDs)
+	EMSTOP(uint8_t timeoutDs)
 	{
 		this->type = OrderE::STBY_E;
 		this->timeoutDs = timeoutDs;

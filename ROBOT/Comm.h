@@ -9,13 +9,13 @@ void strSet(char *str,const char in[]);
 class Comm
 {
   public:
-  Fifo* actionsRobot;
-  PID* ptrPid;
-  char lastMessage[4]="OBS";
-  void actuate();
-  void taken();
-  void set(Fifo* in_actionsRobot,PID* in_ptrPid);
+    Fifo* ordresRobot;
+    PID* ptrPid;
+    char lastMessage[4]="OBS";
+    void actuate();
+    void taken();
+    void set(Fifo* in_ordresRobot,PID* in_ptrPid);
   private:
-  void specialBehavior();
+    void specialBehavior();
 };
 #endif

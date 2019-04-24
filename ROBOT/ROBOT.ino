@@ -21,7 +21,7 @@ class Robot
     Ghost ghost;
     VectorE posE;                                 //Position du robot
     Filtre vF,wF;
-    Fifo orderFifo;                                 //Une liste d'ordres a effectuer
+    Fifo ordresFifo;                                 //Une liste d'ordres a effectuer
     PID pid;
     Comm comm;
   
@@ -62,16 +62,15 @@ void Robot::set(float x0,float y0, float theta0)
   ghost = *(new Ghost(initVect));
   posE.vec.x = x0;posE.vec.y=y0;posE.theta=theta0;
   vF = newFiltre(0.0,20.0,2);wF=newFiltre(0.0,20.0,2);   // ----------------------------------
-  orderFifo = init_FIFO();
-  orderFifo.add((STYB(DYDM,"Tirt",5));
-  pid = init_PID(&moteurGauche,&moteurDroite,&orderFifo,&ghost,&comm);
-  comm.set(&actions,&pid);
+  ordresFifo.add(STBY(DYDM,"Tirt",5));
+  pid = init_PID(&moteurGauche,&moteurDroite,&ordresFifo,&ghost,&comm);
+  comm.set(&ordresFifo,&pid);
 }
 
 //Au cas ou....
 void emergencyStop(Robot* r)
 {
-  r->orderFifo.clean();
+  r->ordresFifo.clean();
   r->moteurGauche.order=0;
   r->moteurDroite.order=0;
   r->moteurGauche.actuate();
@@ -141,9 +140,9 @@ void setup()
 
   #define NERV STD
   #define TMOUT 20 
-  robot.orderFifo.add(STBY(DYDM,"Tirt",255));
-  //robot.orderFifo.addGoto(NERV,0.4,2.0,1,0,true,TMOUT);
-  robot.orderFifo.add(Spin(STD,1,TMOUT));
+  robot.ordresFifo.add(STBY(DYDM,"Tirt",255));
+  robot.ordresFifo.add(GOTO(NERV,0.4,2.0,1,0,true,TMOUT));
+  robot.ordresFifo.add(SPIN(STD,1,TMOUT));
   
 }
 

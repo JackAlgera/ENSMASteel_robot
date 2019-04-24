@@ -65,20 +65,19 @@
 #define EMSTOP_TYPE 6
 */
 
+enum OrderE
+{
+  GOTO_E, SPIN_E, FWD_E, BWD_E, STBY_E, POST_E, EMSTOP_E
+};
+
 // On aura Chaos = 0, Distribx6 = 1 etc..
 // ActionE::Chaos pour y acceder -> exemple : if(!DONE[ActionE::Chaos]) {...}
-
 enum ActionE
 {
   Chaos, Distribx6, Distribx3, depart,
   RecupBlueAcc, PoseAcc, RecupeGoldAcc, Balance, PoseSol,
   MonteRampe, PoseRampe, DescendRamp
 };   
-
-enum OrderE
-{
-	GOTO_E, SPIN_E, FWD_E, BWD_E, STBY_E, POST_E, EMSTOP_E
-};
 
 //-------------------------DEPLACEMENTS-------------------------
 

@@ -15,10 +15,10 @@ void strSet(char *str,const char in[])
   str[3]=in[3];
 }
 
-void Comm::set(Fifo* in_actionsRobot,PID* in_ptrPid)
+void Comm::set(Fifo* in_ordresRobot,PID* in_ptrPid)
 {
-  actionsRobot=in_actionsRobot;
-  ptrPid=in_ptrPid;
+  ordresRobot = in_ordresRobot;
+  ptrPid = in_ptrPid;
 }
 
 void Comm::specialBehavior()
@@ -27,8 +27,8 @@ void Comm::specialBehavior()
   if (strEqual(special1,lastMessage))
   {
     taken();
-    actionsRobot->addHead(Fifo::createSTBY(OFF,"DUMY",50));
-    actionsRobot->addHead(Fifo::createEmStop(5));
+	ordresRobot->addHead(STBY(OFF, "DUMY", 50));	// Fifo::createSTBY(OFF, "DUMY", 50));
+	ordresRobot->addHead(EMSTOP(5));				// Fifo::createEmStop(5));
     ptrPid->reload();
   }
 }
