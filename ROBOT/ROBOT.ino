@@ -138,8 +138,9 @@ void setup()
 
   #define NERV STD
   #define TMOUT 20 
+  robot.actions.addSTBY(DYDM,"Tirt",255);
   //robot.actions.addGoto(NERV,0.4,2.0,1,0,true,TMOUT);
-  robot.actions.addSpin(RUSH,1,TMOUT);
+  robot.actions.addSpin(STD,1,TMOUT);
   
 }
 

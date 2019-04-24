@@ -1,5 +1,6 @@
 #include "Fifo.h"
 #include "Vector.h"
+#include "Comm.h"
 
 void Fifo::add(Order order)
 {
@@ -64,6 +65,7 @@ void Fifo::addSTBY(uint8_t nerv,const char unlockMessage[],uint8_t timeoutDs)
   Order ord;
   ord.type=STBY_TYPE;
   ord.stby.nerv=nerv;
+  strSet(ord.stby.unlockMessage,unlockMessage);
   ord.timeoutDs=timeoutDs;
   add(ord);
 }

@@ -79,7 +79,9 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
       bool orderNext    = pointeurSurFifo->inBuffer>=2;
       bool timeout      = (micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeoutDs/10.0;
       bool messageNext  = pointeurSurFifo->ptrFst()->type==STBY_TYPE and strEqual(pointeurSurComm->lastMessage,pointeurSurFifo->ptrFst()->stby.unlockMessage);
-      
+
+
+      Serial.print("message ok ");Serial.println(messageNext);
       //On regarde si l'action est terminée
       if  ( (linOK and angOK and vitesseOK and ghostArrive and ghostFree and orderNext) or (timeout and orderNext) or (messageNext and orderNext))
       {
