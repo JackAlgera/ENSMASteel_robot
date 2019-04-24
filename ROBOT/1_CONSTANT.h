@@ -59,8 +59,9 @@
 #define SPIN_TYPE 1             //Le spin fait tourner le robot sur place depuis l'angle qu'il a au moment où il execute l'action
 #define FWD_TYPE 2              //Le FWD fait avancer le robot jusqu'a la modification d'une variable boolean
 #define BWD_TYPE 3              //Le FWD fait avancer le robot en marche arrière jusqu'a la modification d'une variable boolean
-#define STBY_TYPE 4             //Le Standy est un mode statique qui se débloque a la fin d'un timer ou lorsque quelquechose passe la variable locked a false
+#define STBY_TYPE 4             //Le Standby est un mode statique qui se débloque a la fin d'un timer ou lorsque quelquechose passe la variable locked a false
 #define SEND_TYPE 5
+#define EMSTOP_TYPE 6
 
 // On aura Chaos = 0, Distribx6 = 1 etc..
 // ActionE::Chaos pour y acceder -> exemple : if(!DONE[ActionE::Chaos]) {...}

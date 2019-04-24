@@ -16,6 +16,10 @@ struct GoTo
   bool arret;
 };
 
+struct EMStop
+{
+};
+
 struct Spin
 {
   uint8_t nerv;
@@ -49,6 +53,7 @@ struct Order
   uint8_t timeoutDs;            //Dixième de secondes
   union                         //Une union permet de dire que uniquement l'un de ces champs à un intéret
   {
+    EMStop emStop;
     GoTo goTo;
     Spin spin;
     FWD fwd;
@@ -62,15 +67,23 @@ class Fifo
 {
   Order liste[TAILLEFIFO];
   uint8_t indiceDebut=1,indiceFin=0;
+  
+  public:
   void add(Order order);
   void addHead(Order order);
-  public:
   uint8_t inBuffer=0;
   void addGoto(uint8_t nerv,float fleche,float xAim,float yAim,float thetaAim,bool arret,uint8_t timeoutDs);  //abs(thetaAim-thetaIni)<=PI
   void addSpin(uint8_t nerv,float thetaAim,uint8_t timeoutDs);
   void addFWD(float acc,float v,uint8_t timeoutDs);
   void addBWD(float acc,float v,uint8_t timeoutDs);
   void addSTBY(uint8_t nerv,const char unlockMessage[],uint8_t timeout);
+  void addEmStop(uint8_t timeout);
+  static Order createGoto(uint8_t nerv,float fleche,float xAim,float yAim,float thetaAim,bool arret,uint8_t timeoutDs);  //abs(thetaAim-thetaIni)<=PI
+  static Order createSpin(uint8_t nerv,float thetaAim,uint8_t timeoutDs);
+  static Order createFWD(float acc,float v,uint8_t timeoutDs);
+  static Order createBWD(float acc,float v,uint8_t timeoutDs);
+  static Order createSTBY(uint8_t nerv,const char unlockMessage[],uint8_t timeout);
+  static Order createEmStop(uint8_t timeout);
   Order* ptrFst();                     //Renvoie le pointeur vers l'action le plus ancienne (celle a effectuer normalement)
   void pop();                          //Fait sauter l'action la plus ancienne
   void clean();       //Vide le buffer et ajoute un STBY

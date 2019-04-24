@@ -2,7 +2,7 @@
 #include "PID.h"
 #include "Fifo.h"
 #include "1_CONSTANT.h"
-
+#include "Comm.h"
 
 float nervA[3]=   { 0.1   , 0.8   , 1.5   };
 float nervV[3]=   { 0.05  , 0.5   , 1.5   };
@@ -18,84 +18,21 @@ uint16_t K[5][2][3]=
   {{0,0,0} ,{0,0,0}} //OFF
   };
 
-void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
-{
-      
-{
-      //Calcul de l'erreur linéaire avec retard
-      float errorL=cross( minus(pointeurSurGhost->posED.vec,posERobot.vec) , directeur(posERobot.theta));
-      if (errorL<0) {errorL=-1*sqrt(-1*errorL);} else {errorL=sqrt(errorL);}
-      
-      //Calcul de l'erreur angulaire avec retard
-      float errorA;
-      // Si le robot est proche du ghost, le robot imite la direction du ghost
-      if (abs(errorL)<RAYON_RECONVERGENCE or STATIQUE or (not PIDL)) errorA=normalize(pointeurSurGhost->posED.theta-posERobot.theta);
-      // Sinon, le robot converge vers le ghost
-      else 
-      {
-        if (errorL>=0) 
-          errorA=normalize( angle(minus(pointeurSurGhost->posED.vec,posERobot.vec)) -  posERobot.theta); 
-        else
-          errorA=normalize( angle(minus(pointeurSurGhost->posED.vec,posERobot.vec)) -  posERobot.theta+PI); 
-      }
-
-      IL+=errorL*dt;IA+=errorA*dt;
-
-      //PD
-      float ordreA= (K[PIDnervANG][ANG][KP]*errorA + K[PIDnervANG][ANG][KI]*IA + K[PIDnervANG][ANG][KD]*(pointeurSurGhost->w - 0.8*0*wRobot))/1000.0;
-      if (not PIDA) ordreA=0.0; else ordreA=constrain(ordreA*MAXPWM,-MAXPWM , MAXPWM);
-      
-      float ordreL= (K[PIDnervLIN][LIN][KP]*errorL + K[PIDnervLIN][LIN][KI]*IL   + K[PIDnervLIN][LIN][KD]*(pointeurSurGhost->v - 0.95*vRobot))/1000.0;
-      if (not PIDL) ordreL=0.0; else ordreL=constrain(ordreL*MAXPWM,-MAXPWM+abs(ordreA),MAXPWM-abs(ordreA));
-      
-      //On donne les ordres
-      pointeurSurMoteurGauche->order= (int)(ordreL - ordreA);
-      pointeurSurMoteurDroite->order= (int)(ordreL + ordreA);
-
-      //On actualise
-      pointeurSurMoteurGauche->actuate();
-      pointeurSurMoteurDroite->actuate();
-      
-      #ifdef PIDSETUP
-        Serial.print(ordreA); //BLEU
-        Serial.print(";");
-        Serial.print(ordreL); //ORANGE
-        Serial.print(";");
-        Serial.print(1); //VERT
-        Serial.print(";");
-        Serial.print(1); //ROUGE
-        Serial.print(";");
-        Serial.print(1); //VIOLET
-        Serial.print("!");
-      #endif  
-      
-}
-      
-      bool linOK        = longueur( minusFAST(&posERobot.vec,&pointeurSurGhost->posED.vec) )<=RAYON_TERMINE or (not PIDL) or STATIQUE;
-      bool angOK        = (normalize(pointeurSurGhost->posED.theta-posERobot.theta)<=DELTA_THETA_TERMINE) or (not PIDA) or STATIQUE;
-      bool vitesseOK    = abs(vRobot)<0.005 or STATIQUE or (pointeurSurFifo->ptrFst()->type==GOTO_TYPE and pointeurSurFifo->ptrFst()->goTo.arret==false);
-      bool ghostArrive  = pointeurSurGhost->t_e>0.95;
-      bool ghostFree    = not pointeurSurGhost->locked;
-      bool orderNext    = pointeurSurFifo->inBuffer>=2;
-      bool timeout      = (micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeoutDs/10.0;
-      bool messageNext  = pointeurSurFifo->ptrFst()->type==STBY_TYPE and strEqual(pointeurSurComm->lastMessage,pointeurSurFifo->ptrFst()->stby.unlockMessage);
-
-
-      Serial.print("message ok ");Serial.println(messageNext);
-      //On regarde si l'action est terminée
-      if  ( (linOK and angOK and vitesseOK and ghostArrive and ghostFree and orderNext) or (timeout and orderNext) or (messageNext and orderNext))
-      {
-        if (messageNext)pointeurSurComm->taken();
-        
+void PID::reload()
+{       
+        float dt=lastDt;
+        VectorE posERobot=lastPosERobot;
+        float vRobot=lastVRobot;
         //On libere dans le cas d'un timeout
         pointeurSurGhost->locked=false;
+
+        //On debypass
+        pointeurSurMoteurGauche->bypass=false;
+        pointeurSurMoteurDroite->bypass=false;
         
         //On recalle le ghost sur le robot
         //if ( (not STATIQUE) and ((pointeurSurFifo->ptrFst()->type==GOTO_TYPE and pointeurSurFifo->ptrFst()->goTo.arret) or pointeurSurFifo->ptrFst()->type==SPIN_TYPE)   ) {IA=0.0;IL=0.0;pointeurSurGhost->recalle(posERobot,vRobot);}
         IA=0.0;IL=0.0;if (not STATIQUE) pointeurSurGhost->recalle(posERobot,vRobot);
-        
-        //On pop la liste
-        pointeurSurFifo->pop();
 
         //On prepare le robot pour la prochaine action
         switch (pointeurSurFifo->ptrFst()->type)
@@ -177,11 +114,98 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
           pointeurSurGhost->theta_S.set(pointeurSurGhost->posE.theta,pointeurSurGhost->posE.theta,0.0,1.0,0.0,1.0,1.0);
           pointeurSurGhost->t_e=0;}
           break;
+          case EMSTOP_TYPE:
+          pointeurSurMoteurGauche->bypass=true;
+          pointeurSurMoteurGauche->masterOrder=0;
+          pointeurSurMoteurDroite->bypass=true;
+          pointeurSurMoteurDroite->masterOrder=0;
+          break;
         }
         pointeurSurGhost->microsStart=micros();
         pointeurSurGhost->t=0;
         pointeurSurGhost->actuate(dt);
-        
+}
+
+void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
+{
+      lastDt=dt;lastPosERobot=posERobot;lastVRobot=vRobot;
+{
+      //Calcul de l'erreur linéaire avec retard
+      float errorL=cross( minus(pointeurSurGhost->posED.vec,posERobot.vec) , directeur(posERobot.theta));
+      if (errorL<0) {errorL=-1*sqrt(-1*errorL);} else {errorL=sqrt(errorL);}
+      
+      //Calcul de l'erreur angulaire avec retard
+      float errorA;
+      // Si le robot est proche du ghost, le robot imite la direction du ghost
+      if (abs(errorL)<RAYON_RECONVERGENCE or STATIQUE or (not PIDL)) errorA=normalize(pointeurSurGhost->posED.theta-posERobot.theta);
+      // Sinon, le robot converge vers le ghost
+      else 
+      {
+        if (errorL>=0) 
+          errorA=normalize( angle(minus(pointeurSurGhost->posED.vec,posERobot.vec)) -  posERobot.theta); 
+        else
+          errorA=normalize( angle(minus(pointeurSurGhost->posED.vec,posERobot.vec)) -  posERobot.theta+PI); 
+      }
+
+      IL+=errorL*dt;IA+=errorA*dt;
+
+      //PD
+      float ordreA= (K[PIDnervANG][ANG][KP]*errorA + K[PIDnervANG][ANG][KI]*IA + K[PIDnervANG][ANG][KD]*(pointeurSurGhost->w - 0.8*0*wRobot))/1000.0;
+      if (not PIDA) ordreA=0.0; else ordreA=constrain(ordreA*MAXPWM,-MAXPWM , MAXPWM);
+      
+      float ordreL= (K[PIDnervLIN][LIN][KP]*errorL + K[PIDnervLIN][LIN][KI]*IL   + K[PIDnervLIN][LIN][KD]*(pointeurSurGhost->v - 0.95*vRobot))/1000.0;
+      if (not PIDL) ordreL=0.0; else ordreL=constrain(ordreL*MAXPWM,-MAXPWM+abs(ordreA),MAXPWM-abs(ordreA));
+      
+      //On donne les ordres
+      pointeurSurMoteurGauche->order= (int)(ordreL - ordreA);
+      pointeurSurMoteurDroite->order= (int)(ordreL + ordreA);
+
+      //On actualise
+      pointeurSurMoteurGauche->actuate();
+      pointeurSurMoteurDroite->actuate();
+      
+      #ifdef PIDSETUP
+        Serial.print(ordreA); //BLEU
+        Serial.print(";");
+        Serial.print(ordreL); //ORANGE
+        Serial.print(";");
+        Serial.print(1); //VERT
+        Serial.print(";");
+        Serial.print(1); //ROUGE
+        Serial.print(";");
+        Serial.print(1); //VIOLET
+        Serial.print("!");
+      #endif  
+      
+}
+      
+      bool linOK        = longueur( minusFAST(&posERobot.vec,&pointeurSurGhost->posED.vec) )<=RAYON_TERMINE or (not PIDL) or STATIQUE;
+      bool angOK        = (normalize(pointeurSurGhost->posED.theta-posERobot.theta)<=DELTA_THETA_TERMINE) or (not PIDA) or STATIQUE;
+      bool vitesseOK    = (abs(vRobot)<0.005 and abs(wRobot)<0.005) or STATIQUE or (pointeurSurFifo->ptrFst()->type==GOTO_TYPE and pointeurSurFifo->ptrFst()->goTo.arret==false);
+      bool ghostArrive  = pointeurSurGhost->t_e>0.95;
+      bool ghostFree    = not pointeurSurGhost->locked;
+      bool orderNext    = pointeurSurFifo->inBuffer>=2;
+      bool timeout      = (micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeoutDs/10.0;
+      bool messageITSTBY  = pointeurSurFifo->ptrFst()->type==STBY_TYPE and strEqual(pointeurSurComm->lastMessage,pointeurSurFifo->ptrFst()->stby.unlockMessage);
+      bool completeEMStop = pointeurSurFifo->ptrFst()->type==EMSTOP_TYPE and abs(vRobot)<0.005 and abs(wRobot)<0.005;
+
+
+      //On regarde si l'action est terminée
+      if  ( 
+              (linOK and angOK and vitesseOK and ghostArrive and ghostFree and orderNext)   //cas standard
+              or (timeout and orderNext)                                                    //cas timeout
+              or (messageITSTBY and orderNext)                                              //cas message
+              or (completeEMStop and orderNext)                                             //cas EMSTOP
+          )
+      {
+        //On pop la liste
+        pointeurSurFifo->pop();
+
+        //On vide la boite au lettre si on est sorti du stby grace a un message
+        if (messageITSTBY)pointeurSurComm->taken();
+
+        //On met le robot a jour
+        reload();
       }
 }
 

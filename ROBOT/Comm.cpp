@@ -1,5 +1,6 @@
 #include "Comm.h"
 #include "Arduino.h"
+#include "Fifo.h"
 
 bool strEqual(char* str1,char* str2)
 {
@@ -14,6 +15,23 @@ void strSet(char *str,const char in[])
   str[3]=in[3];
 }
 
+void Comm::set(Fifo* in_actionsRobot,PID* in_ptrPid)
+{
+  actionsRobot=in_actionsRobot;
+  ptrPid=in_ptrPid;
+}
+
+void Comm::specialBehavior()
+{
+  char special1[]="ESTP"; //Emergency SToP
+  if (strEqual(special1,lastMessage))
+  {
+    taken();
+    actionsRobot->addHead(Fifo::createSTBY(OFF,"DUMY",50));
+    actionsRobot->addHead(Fifo::createEmStop(5));
+    ptrPid->reload();
+  }
+}
 
 void Comm::actuate()
 {
@@ -27,6 +45,7 @@ void Comm::actuate()
     lastMessage[3]=Serial.read();
   }
   Serial.print(Serial.available());Serial.print(lastMessage[0]);Serial.print(lastMessage[1]);Serial.print(lastMessage[2]);Serial.println(lastMessage[3]);
+  specialBehavior();
 }
 
 void Comm::taken()

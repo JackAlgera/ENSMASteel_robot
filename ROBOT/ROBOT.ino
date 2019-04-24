@@ -64,6 +64,7 @@ void Robot::set(float x0,float y0, float theta0)
   actions = init_FIFO();
   actions.addSTBY(DYDM,"Tirt",5);
   pid = init_PID(&moteurGauche,&moteurDroite,&actions,&ghost,&comm);
+  comm.set(&actions,&pid);
 }
 
 //Au cas ou....
