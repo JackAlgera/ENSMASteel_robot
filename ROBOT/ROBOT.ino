@@ -10,6 +10,7 @@
 #include "Filtre.h"
 #include "Comm.h"
 #include "TimerOne.h"
+#include "Cerveau.h"
 
 class Robot
 {
@@ -20,7 +21,7 @@ class Robot
     Ghost ghost;
     VectorE posE;                                 //Position du robot
     Filtre vF,wF;
-    Fifo actions;                                 //Une liste d'ordres a effectuer
+    Fifo orderFifo;                                 //Une liste d'ordres a effectuer
     PID pid;
     Comm comm;
   
@@ -61,15 +62,15 @@ void Robot::set(float x0,float y0, float theta0)
   ghost = *(new Ghost(initVect));
   posE.vec.x = x0;posE.vec.y=y0;posE.theta=theta0;
   vF = newFiltre(0.0,20.0,2);wF=newFiltre(0.0,20.0,2);   // ----------------------------------
-  actions = init_FIFO();
-  actions.addSTBY(DYDM,"Tirt",5);
-  pid = init_PID(&moteurGauche,&moteurDroite,&actions,&ghost,&comm);
+  orderFifo = init_FIFO();
+  orderFifo.add((STYB(DYDM,"Tirt",5));
+  pid = init_PID(&moteurGauche,&moteurDroite,&orderFifo,&ghost,&comm);
 }
 
 //Au cas ou....
 void emergencyStop(Robot* r)
 {
-  r->actions.clean();
+  r->orderFifo.clean();
   r->moteurGauche.order=0;
   r->moteurDroite.order=0;
   r->moteurGauche.actuate();
@@ -122,6 +123,7 @@ void printRobotState() //Robot* robot)
 uint32_t m, microsStart, mLoop;
 float dtLoop;
 Robot robot;
+//Cerveau master;
 
 void setup()
 {   
@@ -138,9 +140,9 @@ void setup()
 
   #define NERV STD
   #define TMOUT 20 
-  robot.actions.addSTBY(DYDM,"Tirt",255);
-  //robot.actions.addGoto(NERV,0.4,2.0,1,0,true,TMOUT);
-  robot.actions.addSpin(STD,1,TMOUT);
+  robot.orderFifo.add(STBY(DYDM,"Tirt",255));
+  //robot.orderFifo.addGoto(NERV,0.4,2.0,1,0,true,TMOUT);
+  robot.orderFifo.add(Spin(STD,1,TMOUT));
   
 }
 

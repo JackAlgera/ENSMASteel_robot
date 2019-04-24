@@ -16,6 +16,7 @@ void Fifo::addHead(Order order)
   liste[indiceDebut]=order;
 }
 
+/*
 void Fifo::addGoto(uint8_t nerv,float fleche,float xAim,float yAim,float thetaAim,bool arret,uint8_t timeoutDs)
 {
   Order ord;
@@ -69,13 +70,14 @@ void Fifo::addSTBY(uint8_t nerv,const char unlockMessage[],uint8_t timeoutDs)
   ord.timeoutDs=timeoutDs;
   add(ord);
 }
+*/
 
 void Fifo::clean()
 {
   indiceDebut=1;
   indiceFin=0;
   inBuffer=0;
-  addSTBY(DYDM,"DUMY",255);
+  add(STBY(DYDM, "DUMY", 255));
 }
 
 void Fifo::pop(){indiceDebut=(indiceDebut+1)%TAILLEFIFO;inBuffer--;}

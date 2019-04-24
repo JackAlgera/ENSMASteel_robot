@@ -8,7 +8,8 @@
 class Cerveau
 {
 public:
-	Action *actionList[12];
+	Action actionList[12];
+	bool DONE[12];
 
 	Cerveau();
 	~Cerveau();

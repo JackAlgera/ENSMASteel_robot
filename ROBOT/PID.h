@@ -27,13 +27,14 @@ class PID
 {
   uint8_t PIDnervLIN=DYDM,PIDnervANG=DYDM;
   float IL=0.0,IA=0.0;
+  
   public:
-  Comm* pointeurSurComm;                      //Pointeur sur la communication
-  Ghost* pointeurSurGhost;                    //Pointeur sur le fantome
-  Fifo* pointeurSurFifo;                      //Pointeur sur le Fifo
-  Motor* pointeurSurMoteurGauche;             //Pointeur sur le moteur gauche
-  Motor* pointeurSurMoteurDroite;             //Pointeur sur le moteur droite
-  void actuate(float dt,VectorE posERobot,float vRobot,float wRobot);              //Actualise les PID (compare la position du ghost et du robot, et donne les ordres au moteur en fonction
+    Comm* pointeurSurComm;                      //Pointeur sur la communication
+    Ghost* pointeurSurGhost;                    //Pointeur sur le fantome
+    Fifo* pointeurSurFifo;                      //Pointeur sur le Fifo
+    Motor* pointeurSurMoteurGauche;             //Pointeur sur le moteur gauche
+    Motor* pointeurSurMoteurDroite;             //Pointeur sur le moteur droite
+    void actuate(float dt,VectorE posERobot,float vRobot,float wRobot);              //Actualise les PID (compare la position du ghost et du robot, et donne les ordres au moteur en fonction
  
 };
 

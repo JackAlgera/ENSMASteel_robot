@@ -73,12 +73,12 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
       
       bool linOK        = longueur( minusFAST(&posERobot.vec,&pointeurSurGhost->posED.vec) )<=RAYON_TERMINE or (not PIDL) or STATIQUE;
       bool angOK        = (normalize(pointeurSurGhost->posED.theta-posERobot.theta)<=DELTA_THETA_TERMINE) or (not PIDA) or STATIQUE;
-      bool vitesseOK    = abs(vRobot)<0.005 or STATIQUE or (pointeurSurFifo->ptrFst()->type==GOTO_TYPE and pointeurSurFifo->ptrFst()->goTo.arret==false);
+      bool vitesseOK    = abs(vRobot)<0.005 or STATIQUE or (pointeurSurFifo->ptrFst()->type==OrderE::GoTo_E and pointeurSurFifo->ptrFst()->arret==false);
       bool ghostArrive  = pointeurSurGhost->t_e>0.95;
       bool ghostFree    = not pointeurSurGhost->locked;
       bool orderNext    = pointeurSurFifo->inBuffer>=2;
-      bool timeout      = (micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeoutDs/10.0;
-      bool messageNext  = pointeurSurFifo->ptrFst()->type==STBY_TYPE and strEqual(pointeurSurComm->lastMessage,pointeurSurFifo->ptrFst()->stby.unlockMessage);
+      bool timeout      = (micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeOutDS/10.0;
+      bool messageNext  = pointeurSurFifo->ptrFst()->type==OrderE::STBY_E and strEqual(pointeurSurComm->lastMessage,pointeurSurFifo->ptrFst()->unlockMessage);
 
 
       Serial.print("message ok ");Serial.println(messageNext);
@@ -100,10 +100,9 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
         //On prepare le robot pour la prochaine action
         switch (pointeurSurFifo->ptrFst()->type)
         {
-          case GOTO_TYPE:
-          
+		case OrderE::GoTo_E:          
           {
-           GoTo g=pointeurSurFifo->ptrFst()->goTo;
+          GoTo g=pointeurSurFifo->ptrFst();
           PIDnervLIN=g.nerv;
           PIDnervANG=(g.nerv==RUSH)?(DYDM):(g.nerv);
           //Ici on trouve les points a renseigner pour faire la trajectoire
@@ -151,7 +150,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
           if (L>0) pointeurSurGhost->t_e=0; else pointeurSurGhost->t_e=1;}
           break;
           
-          case SPIN_TYPE:
+		case OrderE::Spin_E:
           {
           Spin s=pointeurSurFifo->ptrFst()->spin;
           PIDnervANG=s.nerv;
@@ -163,11 +162,11 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
           pointeurSurGhost->theta_S.set(pointeurSurGhost->posE.theta,thetaAimPropre,0.0,nervTP[s.nerv],0.0,nervTPP[s.nerv],-nervTPP[s.nerv]);
           pointeurSurGhost->t_e=0;}
           break;
-          case FWD_TYPE:
+		case OrderE::FWD_E:
           break;
-          case BWD_TYPE:
+		case OrderE::BWD_E:
           break;
-          case STBY_TYPE:
+		case OrderE::STBY_E:
           {
           PIDnervANG=pointeurSurFifo->ptrFst()->stby.nerv;
           PIDnervLIN=pointeurSurFifo->ptrFst()->stby.nerv;

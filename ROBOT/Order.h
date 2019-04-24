@@ -5,15 +5,15 @@
 #include "Vector.h"
 #include "Arduino.h"
 
-class Order_new
+class Order
 {
   public:
   	OrderE type;
   	uint8_t timeOutDS;
-  	Order_new();
+  	Order();
 };
 
-class GoTo : public Order_new
+class GoTo : public Order
 {
   public:
   	uint8_t nerv;
@@ -36,7 +36,7 @@ class GoTo : public Order_new
     }
 };
 
-class Spin : public Order_new
+class Spin : public Order
 {
   public:
   	uint8_t nerv;
@@ -52,7 +52,7 @@ class Spin : public Order_new
     }
 };
 
-class FWD : public Order_new
+class FWD : public Order
 {
   public:
   	float acc, v;          //Acceleration, vitesse max, temps maximum pass� sur cette instruction
@@ -67,7 +67,7 @@ class FWD : public Order_new
     }
 };
 
-class BWD : public Order_new
+class BWD : public Order
 {
   public:
   	float acc, v;
@@ -82,13 +82,13 @@ class BWD : public Order_new
     }
 };
 
-class STBY_new : public Order_new
+class STBY : public Order
 {
   public:
   	uint8_t nerv;
   	char unlockMessage[4];
   
-  	STBY_new(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDS)
+  	STBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDS)
     {
       this->type          = OrderE::STBY_E;
       this->timeOutDS     = timeoutDS;
