@@ -9,76 +9,106 @@ class Order
 {
   public:
   	OrderE type;
-  	uint8_t timeOutDS;
+  	uint8_t timeoutDs;
+	union                         //Une union permet de dire que uniquement l'un de ces champs à un intéret
+	{
+		GOTO_S goTo;
+		SPIN_S spin;
+		FWD_S fwd;
+		BWD_S bwd;
+		STBY_S stby;
+		POST_S post;
+		EMStop_S emStop;
+	};
+
   	Order();
 };
 
-class GoTo : public Order
+struct GOTO_S
 {
-  public:
-  	uint8_t nerv;
-  	float fleche;         //La fl�che est sans unit�. Elle indique de combien le robot peut d'�loigner du trajet le plus court
-  	Vector posAim;        //Position cibe
-  	float thetaAim;       //Deceleration, angle cible, vitesse cible
-  	bool arret;
-  
-  	GoTo(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDS) //abs(thetaAim-thetaIni)<=PI
+	uint8_t nerv;
+	float fleche;         //La flèche est sans unité. Elle indique de combien le robot peut d'éloigner du trajet le plus court
+	Vector posAim;        //Position cibe
+	float thetaAim;       //Deceleration, angle cible, vitesse cible
+	bool arret;
+};
+
+struct SPIN_S
+{
+	uint8_t nerv;
+	float thetaAim;       //angle cible, acceleration et deceleration angulaire (theta point point)
+};
+
+struct FWD_S
+{
+	float acc, v;          //Acceleration, vitesse max, temps maximum passé sur cette instruction
+};
+
+struct BWD_S
+{
+	float acc, v;
+};
+
+struct STBY_S
+{
+	uint8_t nerv;
+	char unlockMessage[4];
+};
+
+struct POST_S
+{
+	char message[4];
+};
+
+struct EMStop_S
+{
+};
+
+class GOTO : public Order
+{
+  public:  
+	GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs) //abs(thetaAim-thetaIni)<=PI
     {
-      this->type      = OrderE::GoTo_E;
-      this->timeOutDS = timeoutDS;
+      this->type = OrderE::GOTO_E;
+      this->timeoutDs = timeoutDs;
     
-      this->nerv      = nerv;
-      this->fleche    = fleche;
-      this->posAim.x  = xAim;
-      this->posAim.y  = yAim;
-      this->thetaAim  = thetaAim;
-      this->arret     = arret;
+	  this->goTo = { nerv , fleche, xAim, yAim, thetaAim, arret };
     }
 };
 
-class Spin : public Order
+class SPIN : public Order
 {
   public:
-  	uint8_t nerv;
-  	float thetaAim;       //angle cible, acceleration et deceleration angulaire (theta point point)
-  
-  	Spin(uint8_t nerv, float thetaAim, uint8_t timeoutDS)
+	SPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs)
     {
-      this->type      = OrderE::Spin_E;
-      this->timeOutDS = timeoutDS;
+      this->type      = OrderE::SPIN_E;
+      this->timeoutDs = timeoutDs;
     
-      this->nerv      = nerv;
-      this->thetaAim  = thetaAim;
+	  this->spin = { nerv, thetaAim };
     }
 };
 
 class FWD : public Order
 {
   public:
-  	float acc, v;          //Acceleration, vitesse max, temps maximum pass� sur cette instruction
-  
-  	FWD(float acc, float v, uint8_t timeoutDS)
+  	FWD(float acc, float v, uint8_t timeoutDs)
     {
       this->type      = OrderE::FWD_E;
-      this->timeOutDS = timeoutDS;
+      this->timeoutDs = timeoutDs;
     
-      this->acc       = acc;
-      this->v         = v;
+	  this->fwd = { acc, v };
     }
 };
 
 class BWD : public Order
 {
   public:
-  	float acc, v;
-  
-  	BWD(float acc, float v, uint8_t timeoutDS)
+  	BWD(float acc, float v, uint8_t timeoutDs)
     {
       this->type      = OrderE::BWD_E;
-      this->timeOutDS = timeoutDS;
+      this->timeoutDs = timeoutDs;
     
-      this->acc       = acc;
-      this->v         = v;
+	  this->bwd = { acc, v };
     }
 };
 
@@ -88,17 +118,42 @@ class STBY : public Order
   	uint8_t nerv;
   	char unlockMessage[4];
   
-  	STBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDS)
+  	STBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs)
     {
-      this->type          = OrderE::STBY_E;
-      this->timeOutDS     = timeoutDS;
-    
-      this->nerv          = nerv;
-	  this->unlockMessage[0] = unlockMessage[0];
-	  this->unlockMessage[1] = unlockMessage[1];
-	  this->unlockMessage[2] = unlockMessage[2];
-	  this->unlockMessage[3] = unlockMessage[3];
+      this->type = OrderE::STBY_E;
+      this->timeoutDs = timeoutDs;
+
+	  this->stby.nerv = nerv;
+      this->stby.unlockMessage[0] = unlockMessage[0];
+	  this->stby.unlockMessage[1] = unlockMessage[1];
+	  this->stby.unlockMessage[2] = unlockMessage[2];
+	  this->stby.unlockMessage[3] = unlockMessage[3];
     }
+};
+
+class POST_E : public Order
+{
+public:
+	POST_E(const char message[], uint8_t timeoutDs)
+	{
+		this->type = OrderE::POST_E;
+		this->timeoutDs = timeoutDs;
+
+		this->post.message[0] = message[0];
+		this->post.message[1] = message[1];
+		this->post.message[2] = message[2];
+		this->post.message[3] = message[3];
+	}
+};
+
+class EMSTOP_E : public Order
+{
+public:
+	EMSTOP_E(uint8_t timeoutDs)
+	{
+		this->type = OrderE::STBY_E;
+		this->timeoutDs = timeoutDs;
+	}
 };
 
 #endif

@@ -2,7 +2,7 @@
 #include "PID.h"
 #include "Fifo.h"
 #include "1_CONSTANT.h"
-
+#include "Comm.h"
 
 float nervA[3]=   { 0.1   , 0.8   , 1.5   };
 float nervV[3]=   { 0.05  , 0.5   , 1.5   };
@@ -18,9 +18,117 @@ uint16_t K[5][2][3]=
   {{0,0,0} ,{0,0,0}} //OFF
   };
 
+void PID::reload()
+{       
+        float dt=lastDt;
+        VectorE posERobot=lastPosERobot;
+        float vRobot=lastVRobot;
+        //On libere dans le cas d'un timeout
+        pointeurSurGhost->locked=false;
+
+        //On debypass
+        pointeurSurMoteurGauche->bypass=false;
+        pointeurSurMoteurDroite->bypass=false;
+        
+        //On recalle le ghost sur le robot
+        //if ( (not STATIQUE) and ((pointeurSurFifo->ptrFst()->type==GOTO_TYPE and pointeurSurFifo->ptrFst()->goTo.arret) or pointeurSurFifo->ptrFst()->type==SPIN_TYPE)   ) {IA=0.0;IL=0.0;pointeurSurGhost->recalle(posERobot,vRobot);}
+        IA=0.0;IL=0.0;if (not STATIQUE) pointeurSurGhost->recalle(posERobot,vRobot);
+
+        //On prepare le robot pour la prochaine action
+        switch (pointeurSurFifo->ptrFst()->type)
+        {
+          case GOTO_TYPE:
+          
+          {
+           GoTo g=pointeurSurFifo->ptrFst()->goTo;
+          PIDnervLIN=g.nerv;
+          PIDnervANG=(g.nerv==RUSH)?(DYDM):(g.nerv);
+          //Ici on trouve les points a renseigner pour faire la trajectoire
+          float L=longueur(minus(g.posAim,pointeurSurGhost->posE.vec));
+        { //BLOC GEOMETRIE BEZIER
+          float x0=pointeurSurGhost->posE.vec.x;float y0=pointeurSurGhost->posE.vec.y;float thetaIni=pointeurSurGhost->posE.theta;
+          float x3=g.posAim.x;float y3=g.posAim.y;float thetaAim=g.thetaAim;
+          float delta;
+          if (sin(thetaAim-thetaIni)!=0.0){
+            Vector I=intersection(x0,y0,thetaIni,x3,y3,thetaAim);
+            delta=max(  longueur(minusFAST(&g.posAim,&I))  , longueur(minusFAST(&pointeurSurGhost->posE.vec,&I))   );}
+          else 
+            delta=9.9;//infini sur une table de 2x3
+          
+          float x1=x0+cos(thetaIni)*min(g.fleche*L,delta);float y1=y0+sin(thetaIni)*min(g.fleche*L,delta);
+          float x2=x3-cos(thetaAim)*min(g.fleche*L,delta);float y2=y3-sin(thetaAim)*min(g.fleche*L,delta);
+
+          //On actualise les polynomes
+          pointeurSurGhost->X_P.set(x0 , -3*(x0-x1) , 3*(x0-2*x1+x2) , -1*(x0-3*x1+3*x2-x3),0.0,0.0,0.0);
+          pointeurSurGhost->Y_P.set(y0 , -3*(y0-y1) , 3*(y0-2*y1+y2) , -1*(y0-3*y1+3*y2-y3),0.0,0.0,0.0);
+       }  //BLOC GEOMETRIE BEZIER
+       {  //BLOC POLYNOMES
+          Polynome DX=deriveeFAST(&pointeurSurGhost->X_P);
+          Polynome DDX=deriveeFAST(&DX);
+          Polynome DY=deriveeFAST(&pointeurSurGhost->Y_P);
+          Polynome DDY=deriveeFAST(&DY);
+          pointeurSurGhost->v_e_P2=somme(  carreFAST(&DX)  , carreFAST(&DY) );
+          pointeurSurGhost->DDX_P=DDX;
+          pointeurSurGhost->DDY_P=DDY;
+
+       }  //BLOC POLYNOMES
+          pointeurSurGhost->spinning=false; pointeurSurGhost->reversed=false;
+          float D=0.0,t_e_integral=0.0,v=0.0;
+          float lastV=sqrt(pointeurSurGhost->v_e_P2.f(t_e_integral));
+          float pas=0.01;
+          t_e_integral=t_e_integral+pas;
+          while (t_e_integral<=1.0)
+          {
+            v=sqrt(pointeurSurGhost->v_e_P2.f(t_e_integral));
+            D=D+(v+lastV)/2*pas;
+            lastV=v;
+            t_e_integral=t_e_integral+pas;
+          }
+          pointeurSurGhost->s.set(0.0,D,pointeurSurGhost->v,nervV[g.nerv], (g.arret)?(0.0):(nervV[g.nerv]) ,nervA[g.nerv],-1.5*nervA[g.nerv]);
+          if (L>0) pointeurSurGhost->t_e=0; else pointeurSurGhost->t_e=1;}
+          break;
+          
+          case SPIN_TYPE:
+          {
+          Spin s=pointeurSurFifo->ptrFst()->spin;
+          PIDnervANG=s.nerv;
+          PIDnervLIN=DYDM;
+          pointeurSurGhost->X_P.set(pointeurSurGhost->posE.vec.x,0.0,0.0,0.0,0.0,0.0,0.0);
+          pointeurSurGhost->Y_P.set(pointeurSurGhost->posE.vec.y,0.0,0.0,0.0,0.0,0.0,0.0);
+          pointeurSurGhost->spinning=true; pointeurSurGhost->reversed=false;
+          float thetaAimPropre=pointeurSurGhost->posE.theta+normalize(s.thetaAim-pointeurSurGhost->posE.theta);
+          pointeurSurGhost->theta_S.set(pointeurSurGhost->posE.theta,thetaAimPropre,0.0,nervTP[s.nerv],0.0,nervTPP[s.nerv],-nervTPP[s.nerv]);
+          pointeurSurGhost->t_e=0;}
+          break;
+          case FWD_TYPE:
+          break;
+          case BWD_TYPE:
+          break;
+          case STBY_TYPE:
+          {
+          PIDnervANG=pointeurSurFifo->ptrFst()->stby.nerv;
+          PIDnervLIN=pointeurSurFifo->ptrFst()->stby.nerv;
+          pointeurSurGhost->X_P.set(pointeurSurGhost->posE.vec.x,0.0,0.0,0.0,0.0,0.0,0.0);
+          pointeurSurGhost->Y_P.set(pointeurSurGhost->posE.vec.y,0.0,0.0,0.0,0.0,0.0,0.0);
+          pointeurSurGhost->spinning=true; pointeurSurGhost->reversed=false,pointeurSurGhost->locked=true;
+          pointeurSurGhost->theta_S.set(pointeurSurGhost->posE.theta,pointeurSurGhost->posE.theta,0.0,1.0,0.0,1.0,1.0);
+          pointeurSurGhost->t_e=0;}
+          break;
+          case EMSTOP_TYPE:
+          pointeurSurMoteurGauche->bypass=true;
+          pointeurSurMoteurGauche->masterOrder=0;
+          pointeurSurMoteurDroite->bypass=true;
+          pointeurSurMoteurDroite->masterOrder=0;
+          break;
+        }
+        pointeurSurGhost->microsStart=micros();
+        pointeurSurGhost->t=0;
+        pointeurSurGhost->actuate(dt);
+}
+
 void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
 {
-      
+      lastDt=dt;lastPosERobot=posERobot;lastVRobot=vRobot;
 {
       //Calcul de l'erreur linéaire avec retard
       float errorL=cross( minus(pointeurSurGhost->posED.vec,posERobot.vec) , directeur(posERobot.theta));
@@ -73,114 +181,31 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
       
       bool linOK        = longueur( minusFAST(&posERobot.vec,&pointeurSurGhost->posED.vec) )<=RAYON_TERMINE or (not PIDL) or STATIQUE;
       bool angOK        = (normalize(pointeurSurGhost->posED.theta-posERobot.theta)<=DELTA_THETA_TERMINE) or (not PIDA) or STATIQUE;
-      bool vitesseOK    = abs(vRobot)<0.005 or STATIQUE or (pointeurSurFifo->ptrFst()->type==OrderE::GoTo_E and pointeurSurFifo->ptrFst()->arret==false);
+      bool vitesseOK    = (abs(vRobot)<0.005 and abs(wRobot)<0.005) or STATIQUE or (pointeurSurFifo->ptrFst()->type==GOTO_TYPE and pointeurSurFifo->ptrFst()->goTo.arret==false);
       bool ghostArrive  = pointeurSurGhost->t_e>0.95;
       bool ghostFree    = not pointeurSurGhost->locked;
       bool orderNext    = pointeurSurFifo->inBuffer>=2;
-      bool timeout      = (micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeOutDS/10.0;
-      bool messageNext  = pointeurSurFifo->ptrFst()->type==OrderE::STBY_E and strEqual(pointeurSurComm->lastMessage,pointeurSurFifo->ptrFst()->unlockMessage);
+      bool timeout      = (micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeoutDs/10.0;
+      bool messageITSTBY  = pointeurSurFifo->ptrFst()->type==STBY_TYPE and strEqual(pointeurSurComm->lastMessage,pointeurSurFifo->ptrFst()->stby.unlockMessage);
+      bool completeEMStop = pointeurSurFifo->ptrFst()->type==EMSTOP_TYPE and abs(vRobot)<0.005 and abs(wRobot)<0.005;
 
 
-      Serial.print("message ok ");Serial.println(messageNext);
       //On regarde si l'action est terminée
-      if  ( (linOK and angOK and vitesseOK and ghostArrive and ghostFree and orderNext) or (timeout and orderNext) or (messageNext and orderNext))
+      if  ( 
+              (linOK and angOK and vitesseOK and ghostArrive and ghostFree and orderNext)   //cas standard
+              or (timeout and orderNext)                                                    //cas timeout
+              or (messageITSTBY and orderNext)                                              //cas message
+              or (completeEMStop and orderNext)                                             //cas EMSTOP
+          )
       {
-        if (messageNext)pointeurSurComm->taken();
-        
-        //On libere dans le cas d'un timeout
-        pointeurSurGhost->locked=false;
-        
-        //On recalle le ghost sur le robot
-        //if ( (not STATIQUE) and ((pointeurSurFifo->ptrFst()->type==GOTO_TYPE and pointeurSurFifo->ptrFst()->goTo.arret) or pointeurSurFifo->ptrFst()->type==SPIN_TYPE)   ) {IA=0.0;IL=0.0;pointeurSurGhost->recalle(posERobot,vRobot);}
-        IA=0.0;IL=0.0;if (not STATIQUE) pointeurSurGhost->recalle(posERobot,vRobot);
-        
         //On pop la liste
         pointeurSurFifo->pop();
 
-        //On prepare le robot pour la prochaine action
-        switch (pointeurSurFifo->ptrFst()->type)
-        {
-		case OrderE::GoTo_E:          
-          {
-          GoTo g=pointeurSurFifo->ptrFst();
-          PIDnervLIN=g.nerv;
-          PIDnervANG=(g.nerv==RUSH)?(DYDM):(g.nerv);
-          //Ici on trouve les points a renseigner pour faire la trajectoire
-          float L=longueur(minus(g.posAim,pointeurSurGhost->posE.vec));
-        { //BLOC GEOMETRIE BEZIER
-          float x0=pointeurSurGhost->posE.vec.x;float y0=pointeurSurGhost->posE.vec.y;float thetaIni=pointeurSurGhost->posE.theta;
-          float x3=g.posAim.x;float y3=g.posAim.y;float thetaAim=g.thetaAim;
-          float delta;
-          if (sin(thetaAim-thetaIni)!=0.0){
-            Vector I=intersection(x0,y0,thetaIni,x3,y3,thetaAim);
-            delta=max(  longueur(minusFAST(&g.posAim,&I))  , longueur(minusFAST(&pointeurSurGhost->posE.vec,&I))   );}
-          else 
-            delta=9.9;//infini sur une table de 2x3
-          
-          float x1=x0+cos(thetaIni)*min(g.fleche*L,delta);float y1=y0+sin(thetaIni)*min(g.fleche*L,delta);
-          float x2=x3-cos(thetaAim)*min(g.fleche*L,delta);float y2=y3-sin(thetaAim)*min(g.fleche*L,delta);
+        //On vide la boite au lettre si on est sorti du stby grace a un message
+        if (messageITSTBY)pointeurSurComm->taken();
 
-          //On actualise les polynomes
-          pointeurSurGhost->X_P.set(x0 , -3*(x0-x1) , 3*(x0-2*x1+x2) , -1*(x0-3*x1+3*x2-x3),0.0,0.0,0.0);
-          pointeurSurGhost->Y_P.set(y0 , -3*(y0-y1) , 3*(y0-2*y1+y2) , -1*(y0-3*y1+3*y2-y3),0.0,0.0,0.0);
-       }  //BLOC GEOMETRIE BEZIER
-       {  //BLOC POLYNOMES
-          Polynome DX=deriveeFAST(&pointeurSurGhost->X_P);
-          Polynome DDX=deriveeFAST(&DX);
-          Polynome DY=deriveeFAST(&pointeurSurGhost->Y_P);
-          Polynome DDY=deriveeFAST(&DY);
-          pointeurSurGhost->v_e_P2=somme(  carreFAST(&DX)  , carreFAST(&DY) );
-          pointeurSurGhost->DDX_P=DDX;
-          pointeurSurGhost->DDY_P=DDY;
-
-       }  //BLOC POLYNOMES
-          pointeurSurGhost->spinning=false; pointeurSurGhost->reversed=false;
-          float D=0.0,t_e_integral=0.0,v=0.0;
-          float lastV=sqrt(pointeurSurGhost->v_e_P2.f(t_e_integral));
-          float pas=0.01;
-          t_e_integral=t_e_integral+pas;
-          while (t_e_integral<=1.0)
-          {
-            v=sqrt(pointeurSurGhost->v_e_P2.f(t_e_integral));
-            D=D+(v+lastV)/2*pas;
-            lastV=v;
-            t_e_integral=t_e_integral+pas;
-          }
-          pointeurSurGhost->s.set(0.0,D,pointeurSurGhost->v,nervV[g.nerv], (g.arret)?(0.0):(nervV[g.nerv]) ,nervA[g.nerv],-1.5*nervA[g.nerv]);
-          if (L>0) pointeurSurGhost->t_e=0; else pointeurSurGhost->t_e=1;}
-          break;
-          
-		case OrderE::Spin_E:
-          {
-          Spin s=pointeurSurFifo->ptrFst()->spin;
-          PIDnervANG=s.nerv;
-          PIDnervLIN=DYDM;
-          pointeurSurGhost->X_P.set(pointeurSurGhost->posE.vec.x,0.0,0.0,0.0,0.0,0.0,0.0);
-          pointeurSurGhost->Y_P.set(pointeurSurGhost->posE.vec.y,0.0,0.0,0.0,0.0,0.0,0.0);
-          pointeurSurGhost->spinning=true; pointeurSurGhost->reversed=false;
-          float thetaAimPropre=pointeurSurGhost->posE.theta+normalize(s.thetaAim-pointeurSurGhost->posE.theta);
-          pointeurSurGhost->theta_S.set(pointeurSurGhost->posE.theta,thetaAimPropre,0.0,nervTP[s.nerv],0.0,nervTPP[s.nerv],-nervTPP[s.nerv]);
-          pointeurSurGhost->t_e=0;}
-          break;
-		case OrderE::FWD_E:
-          break;
-		case OrderE::BWD_E:
-          break;
-		case OrderE::STBY_E:
-          {
-          PIDnervANG=pointeurSurFifo->ptrFst()->stby.nerv;
-          PIDnervLIN=pointeurSurFifo->ptrFst()->stby.nerv;
-          pointeurSurGhost->X_P.set(pointeurSurGhost->posE.vec.x,0.0,0.0,0.0,0.0,0.0,0.0);
-          pointeurSurGhost->Y_P.set(pointeurSurGhost->posE.vec.y,0.0,0.0,0.0,0.0,0.0,0.0);
-          pointeurSurGhost->spinning=true; pointeurSurGhost->reversed=false,pointeurSurGhost->locked=true;
-          pointeurSurGhost->theta_S.set(pointeurSurGhost->posE.theta,pointeurSurGhost->posE.theta,0.0,1.0,0.0,1.0,1.0);
-          pointeurSurGhost->t_e=0;}
-          break;
-        }
-        pointeurSurGhost->microsStart=micros();
-        pointeurSurGhost->t=0;
-        pointeurSurGhost->actuate(dt);
-        
+        //On met le robot a jour
+        reload();
       }
 }
 

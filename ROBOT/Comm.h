@@ -1,5 +1,7 @@
 #ifndef COMM_INCLUDED
 #define COMM_INCLUDED
+#include "Fifo.h"
+#include "PID.h"
 
 bool strEqual(char *str1,char *str2);
 void strSet(char *str,const char in[]);
@@ -7,9 +9,13 @@ void strSet(char *str,const char in[]);
 class Comm
 {
   public:
+  Fifo* actionsRobot;
+  PID* ptrPid;
   char lastMessage[4]="OBS";
   void actuate();
   void taken();
+  void set(Fifo* in_actionsRobot,PID* in_ptrPid);
+  private:
+  void specialBehavior();
 };
-
 #endif

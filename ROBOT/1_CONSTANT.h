@@ -55,15 +55,19 @@
 #define KI 1
 #define KD 2
 
+/*
 #define GOTO_TYPE 0             //Le goto deplace le robot a l'endroit selectionné depuis l'endroit où il est au moment où il execute l'action
 #define SPIN_TYPE 1             //Le spin fait tourner le robot sur place depuis l'angle qu'il a au moment où il execute l'action
 #define FWD_TYPE 2              //Le FWD fait avancer le robot jusqu'a la modification d'une variable boolean
 #define BWD_TYPE 3              //Le FWD fait avancer le robot en marche arrière jusqu'a la modification d'une variable boolean
-#define STBY_TYPE 4             //Le Standy est un mode statique qui se débloque a la fin d'un timer ou lorsque quelquechose passe la variable locked a false
+#define STBY_TYPE 4             //Le Standby est un mode statique qui se débloque a la fin d'un timer ou lorsque quelquechose passe la variable locked a false
 #define SEND_TYPE 5
+#define EMSTOP_TYPE 6
+*/
 
 // On aura Chaos = 0, Distribx6 = 1 etc..
 // ActionE::Chaos pour y acceder -> exemple : if(!DONE[ActionE::Chaos]) {...}
+
 enum ActionE
 {
   Chaos, Distribx6, Distribx3, depart,
@@ -73,7 +77,7 @@ enum ActionE
 
 enum OrderE
 {
-  GoTo_E, Spin_E, FWD_E, BWD_E, STBY_E, SEND_E 
+	GOTO_E, SPIN_E, FWD_E, BWD_E, STBY_E, POST_E, EMSTOP_E
 };
 
 //-------------------------DEPLACEMENTS-------------------------

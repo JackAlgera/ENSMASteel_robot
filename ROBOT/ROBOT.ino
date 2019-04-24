@@ -65,6 +65,7 @@ void Robot::set(float x0,float y0, float theta0)
   orderFifo = init_FIFO();
   orderFifo.add((STYB(DYDM,"Tirt",5));
   pid = init_PID(&moteurGauche,&moteurDroite,&orderFifo,&ghost,&comm);
+  comm.set(&actions,&pid);
 }
 
 //Au cas ou....
