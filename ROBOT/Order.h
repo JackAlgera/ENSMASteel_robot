@@ -151,7 +151,7 @@ class EMSTOP : public Order
 public:
 	EMSTOP(uint8_t timeoutDs)
 	{
-		this->type = OrderE::STBY_E;
+		this->type = OrderE::EMSTOP_E;
 		this->timeoutDs = timeoutDs;
 	}
 };

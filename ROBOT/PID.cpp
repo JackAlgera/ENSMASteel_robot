@@ -13,8 +13,8 @@ uint16_t K[5][2][3]=
   {//LINEAIRE               //ANGULAIRE  (PID)
   {{4100 , 0    , 1958} , {6700 , 50  , 450}},  //ACRT
   {{4100 , 0    , 1958} , {6700 , 50  , 450}},  //STD
-  {{4100 , 0    , 1958} , {1000 , 0  , 400}},    //RUSH
-  {{4000 , 100  , 4000} , {5000 , 600  , 1200}}, //DYDM
+  {{4100 , 0    , 1958} , {6700 , 50  , 450}},    //RUSH
+  {{2500 , 200  , 9000} , {7000 , 200  , 1800}}, //DYDM
   {{0,0,0} ,{0,0,0}} //OFF
   };
 
@@ -152,7 +152,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
       IL+=errorL*dt;IA+=errorA*dt;
 
       //PD
-      float ordreA= (K[PIDnervANG][ANG][KP]*errorA + K[PIDnervANG][ANG][KI]*IA + K[PIDnervANG][ANG][KD]*(pointeurSurGhost->w - 0.8*0*wRobot))/1000.0;
+      float ordreA= (K[PIDnervANG][ANG][KP]*errorA + K[PIDnervANG][ANG][KI]*IA + K[PIDnervANG][ANG][KD]*(pointeurSurGhost->w - 0.8*wRobot))/1000.0;
       if (not PIDA) ordreA=0.0; else ordreA=constrain(ordreA*MAXPWM,-MAXPWM , MAXPWM);
       
       float ordreL= (K[PIDnervLIN][LIN][KP]*errorL + K[PIDnervLIN][LIN][KI]*IL   + K[PIDnervLIN][LIN][KD]*(pointeurSurGhost->v - 0.95*vRobot))/1000.0;

@@ -51,7 +51,7 @@ Ghost::Ghost(VectorE posEini)
   fDelayY     = newFiltre(posEini.vec.y,DELAY,3);
   fDelayTheta = newFiltre(posEini.theta,DELAY,3); //L'ordre 3 est un simple retard
   
-  wF = newFiltre(0.0,1.0,2);
+  wF = newFiltre(0.0,20.0,2);
   t = 0;
   microsStart = micros();
   posE  = posEini;

@@ -24,11 +24,19 @@ void Comm::set(Fifo* in_ordresRobot,PID* in_ptrPid)
 void Comm::specialBehavior()
 {
   char special1[]="ESTP"; //Emergency SToP
+  char special2[]="BACK";
   if (strEqual(special1,lastMessage))
   {
     taken();
-  	ordresRobot->addHead(STBY(OFF, "DUMY", 50));	// Fifo::createSTBY(OFF, "DUMY", 50));
-  	ordresRobot->addHead(EMSTOP(5));				      // Fifo::createEmStop(5));
+  	ordresRobot->addHead(STBY(OFF, "DUMY", 100));	// Fifo::createSTBY(OFF, "DUMY", 50));
+  	ordresRobot->addHead(EMSTOP(10));				      // Fifo::createEmStop(5));
+    ptrPid->reload();
+  }
+  if (strEqual(special2,lastMessage))
+  {
+    taken();
+    ordresRobot->add(SPIN(RUSH,3.14,50)); // Fifo::createSTBY(OFF, "DUMY", 50));
+    ordresRobot->add(GOTO(RUSH,0.1,1.5,1.0,3.14,true,50));             // Fifo::createEmStop(5));
     ptrPid->reload();
   }
 }
@@ -44,7 +52,7 @@ void Comm::actuate()
     lastMessage[2]=Serial.read();
     lastMessage[3]=Serial.read();
   }
-  Serial.print(Serial.available());Serial.print(lastMessage[0]);Serial.print(lastMessage[1]);Serial.print(lastMessage[2]);Serial.println(lastMessage[3]);
+  //Serial.print(Serial.available());Serial.print(lastMessage[0]);Serial.print(lastMessage[1]);Serial.print(lastMessage[2]);Serial.println(lastMessage[3]);
   specialBehavior();
 }
 

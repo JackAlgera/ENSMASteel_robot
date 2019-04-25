@@ -61,7 +61,7 @@ void Robot::set(float x0,float y0, float theta0)
   VectorE initVect = init_vectorE(x0,y0,theta0);
   ghost = *(new Ghost(initVect));
   posE.vec.x = x0;posE.vec.y=y0;posE.theta=theta0;
-  vF = newFiltre(0.0,20.0,2);wF=newFiltre(0.0,20.0,2);   // ----------------------------------
+  vF = newFiltre(0.0,60.0,2);wF=newFiltre(0.0,60.0,2);   // ----------------------------------
   ordresFifo.add(STBY(DYDM,"Tirt",5));
   pid = init_PID(&moteurGauche,&moteurDroite,&ordresFifo,&ghost,&comm);
   comm.set(&ordresFifo,&pid);
@@ -88,7 +88,7 @@ void print7(float f1,float f2,float f3,float f4,float f5,float f6,float f7)
   Serial.print(f7);Serial.print("!");
 }
 
-void printRobotState() //Robot* robot)
+void printRobotState(Robot* robot)
 {
     #ifdef RECORD
       print7( micros()/1000.0 , robot->posE.vec.x*10000 , robot->posE.vec.y*10000 , robot->posE.theta*10000 , robot->ghost.posED.vec.x*10000 , robot->ghost.posED.vec.y*10000 , robot->ghost.posED.theta*10000);
@@ -138,12 +138,14 @@ void setup()
   //void addSpin( ACRT/STD/RUSH , thetaAim,timeoutDs);
 
 
-  #define NERV STD
+  #define NERV RUSH
   #define TMOUT 20 
   robot.ordresFifo.add(STBY(DYDM,"Tirt",255));
-  robot.ordresFifo.add(GOTO(NERV,0.4,2.0,1,0,true,TMOUT));
-  robot.ordresFifo.add(SPIN(STD,1,TMOUT));
-  
+  //robot.ordresFifo.add(GOTO(NERV,0.4,2.0,1,0,true,TMOUT));
+  robot.ordresFifo.add(SPIN(RUSH,3.14,TMOUT));
+  robot.ordresFifo.add(SPIN(RUSH,0,TMOUT));
+  robot.ordresFifo.add(SPIN(RUSH,-3.14,TMOUT));
+  robot.ordresFifo.add(SPIN(RUSH,0,TMOUT));
 }
 
 void loop()
@@ -153,7 +155,7 @@ void loop()
   microsStart=m;
 
   robot.actuate(dtLoop);
-  printRobotState(); //&robot);
+  printRobotState(&robot);
  
   while((micros()-microsStart)/1000000.0<1.0/FREQUENCY) {;}
 }

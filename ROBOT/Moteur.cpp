@@ -4,7 +4,7 @@
 
 void Motor::actuate()
 {
-  if (bypass) order=masterOrder;
+  if (bypass) {order=masterOrder;}
   int orderComp=constrain((int)(order/health),-MAXPWM,MAXPWM);
   if (orderComp>0) {digitalWrite(pinSens1,HIGH); digitalWrite(pinSens2,LOW);Timer1.setPwmDuty(pinPWR,orderComp);}
   else if (orderComp<-0) {digitalWrite(pinSens1,LOW); digitalWrite(pinSens2,HIGH);Timer1.setPwmDuty(pinPWR,abs(orderComp));}
