@@ -20,6 +20,12 @@ struct SPIN_S
   float thetaAim;       //angle cible, acceleration et deceleration angulaire (theta point point)
 };
 
+struct SPINGOTO_S
+{
+  uint8_t nerv;
+  Vector posAim;
+};
+
 struct FWD_S
 {
   float acc, v;          //Acceleration, vitesse max, temps maximum passé sur cette instruction
@@ -54,6 +60,7 @@ class Order
   	{
   		GOTO_S goTo;
   		SPIN_S spin;
+      SPINGOTO_S spinGoTo;
   		FWD_S fwd;
   		BWD_S bwd;
   		STBY_S stby;
@@ -85,6 +92,19 @@ class SPIN : public Order
       this->timeoutDs = timeoutDs;
     
 	    this->spin = { nerv, thetaAim };
+    }
+};
+
+class SPINGOTO : public Order
+{
+  public:
+    SPINGOTO(uint8_t nerv, float xAim, float yAim, uint8_t timeoutDs)
+    {
+      this->type = OrderE::SPINGOTO_E;
+      this->timeoutDs = timeoutDs;
+      
+      this->spinGoTo.nerv=nerv;
+      this->spinGoTo.posAim=init_vector(xAim,yAim);
     }
 };
 

@@ -19,9 +19,11 @@ class Fifo
     
 	  void add(Order order);
 	  void addHead(Order order);
+    void replaceHead(Order order);
 	  Order* ptrFst();          //Renvoie le pointeur vers l'action le plus ancienne (celle a effectuer normalement)
 	  void pop();               //Fait sauter l'action la plus ancienne
 	  void clean();				//Vide le buffer et ajoute un STBY
+    void printAll();
 
 };
 

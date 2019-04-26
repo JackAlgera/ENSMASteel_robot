@@ -28,16 +28,14 @@ void Comm::specialBehavior()
   if (strEqual(special1,lastMessage))
   {
     taken();
-  	ordresRobot->addHead(STBY(OFF, "DUMY", 100));	// Fifo::createSTBY(OFF, "DUMY", 50));
-  	ordresRobot->addHead(EMSTOP(10));				      // Fifo::createEmStop(5));
+  	ordresRobot->addHead(STBY(OFF, "DUMY", 100));	
+  	ordresRobot->addHead(EMSTOP(10));
     ptrPid->reload();
   }
   if (strEqual(special2,lastMessage))
   {
     taken();
-    ordresRobot->add(SPIN(RUSH,3.14,50)); // Fifo::createSTBY(OFF, "DUMY", 50));
-    ordresRobot->add(GOTO(RUSH,0.1,1.5,1.0,3.14,true,50));             // Fifo::createEmStop(5));
-    ptrPid->reload();
+    ordresRobot->add(SPINGOTO(RUSH,0,0,50));
   }
 }
 
@@ -51,8 +49,11 @@ void Comm::actuate()
     lastMessage[1]=Serial.read();
     lastMessage[2]=Serial.read();
     lastMessage[3]=Serial.read();
+    #ifdef STATE
+          Serial.print(lastMessage[0]);Serial.print(lastMessage[1]);Serial.print(lastMessage[2]);Serial.println(lastMessage[3]);
+    #endif
   }
-  //Serial.print(Serial.available());Serial.print(lastMessage[0]);Serial.print(lastMessage[1]);Serial.print(lastMessage[2]);Serial.println(lastMessage[3]);
+  
   specialBehavior();
 }
 

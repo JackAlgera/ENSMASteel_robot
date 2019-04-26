@@ -3,7 +3,6 @@
 
 #include "1_CONSTANT.h"
 #include "Polynome.h"
-#include "FIFO.h"
 #include "Vector.h"
 #include "stdint.h"
 #include "Filtre.h"

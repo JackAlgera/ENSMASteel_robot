@@ -2,7 +2,8 @@
 #define CONSTANT_INCLUDED
 
 //-------------------------MODE DE FONCTIONNEMENT-------------------------
-#define RECORD                  //Permet d'activer ou non le feedback
+//#define RECORD  //Permet d'activer ou non le feedback
+#define STATE
 //#define RC
 //#define FILTRE_SETUP_ANG
 //#define FILTRE_SETUP_LIN
@@ -55,19 +56,9 @@
 #define KI 1
 #define KD 2
 
-/*
-#define GOTO_TYPE 0             //Le goto deplace le robot a l'endroit selectionné depuis l'endroit où il est au moment où il execute l'action
-#define SPIN_TYPE 1             //Le spin fait tourner le robot sur place depuis l'angle qu'il a au moment où il execute l'action
-#define FWD_TYPE 2              //Le FWD fait avancer le robot jusqu'a la modification d'une variable boolean
-#define BWD_TYPE 3              //Le FWD fait avancer le robot en marche arrière jusqu'a la modification d'une variable boolean
-#define STBY_TYPE 4             //Le Standby est un mode statique qui se débloque a la fin d'un timer ou lorsque quelquechose passe la variable locked a false
-#define SEND_TYPE 5
-#define EMSTOP_TYPE 6
-*/
-
 enum OrderE
 {
-  GOTO_E, SPIN_E, FWD_E, BWD_E, STBY_E, POST_E, EMSTOP_E
+  GOTO_E, SPIN_E, SPINGOTO_E, FWD_E, BWD_E, STBY_E, POST_E, EMSTOP_E
 };
 
 // On aura Chaos = 0, Distribx6 = 1 etc..
@@ -90,7 +81,7 @@ enum ActionE
 
 
 //-------------------------MISCENCELLOUS-------------------------
-#define TAILLEFIFO 8           //Taille du buffer circulaire
+#define TAILLEFIFO 5           //Taille du buffer circulaire
 #define DEGRE_MAX 6
 
 #endif

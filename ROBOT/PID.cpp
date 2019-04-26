@@ -40,6 +40,9 @@ void PID::reload()
 		case OrderE::GOTO_E:
           
           {
+          #ifdef STATE
+          Serial.println("Je prepare un GOTO");
+          #endif
           GOTO_S g=pointeurSurFifo->ptrFst()->goTo;
           PIDnervLIN=g.nerv;
           PIDnervANG=(g.nerv==RUSH)?(DYDM):(g.nerv);
@@ -90,6 +93,9 @@ void PID::reload()
           
 		case OrderE::SPIN_E:
           {
+          #ifdef STATE
+          Serial.println("Je prepare un SPIN");
+          #endif
           SPIN_S s=pointeurSurFifo->ptrFst()->spin;
           PIDnervANG=s.nerv;
           PIDnervLIN=DYDM;
@@ -100,12 +106,31 @@ void PID::reload()
           pointeurSurGhost->theta_S.set(pointeurSurGhost->posE.theta,thetaAimPropre,0.0,nervTP[s.nerv],0.0,nervTPP[s.nerv],-nervTPP[s.nerv]);
           pointeurSurGhost->t_e=0;}
           break;
+    case OrderE::SPINGOTO_E:
+          {
+            #ifdef STATE
+            Serial.println("Je prepare un SPINGOTO");
+            #endif
+            SPINGOTO_S sg=pointeurSurFifo->ptrFst()->spinGoTo;
+            Vector delta=minus(sg.posAim,posERobot.vec);
+            Vector aim=sg.posAim;
+            float nerv=sg.nerv;
+            float timeout=pointeurSurFifo->ptrFst()->timeoutDs;
+            Serial.print("angle ");Serial.println(angle(delta));
+            pointeurSurFifo->replaceHead(GOTO(nerv,0.1,aim.x, aim.y, angle(delta), true, timeout));
+            pointeurSurFifo->addHead(SPIN(nerv,angle(delta),timeout));
+            reload();
+          }
+          break;
 		case OrderE::FWD_E:
           break;
 		case OrderE::BWD_E:
           break;
 		case OrderE::STBY_E:
           {
+          #ifdef STATE
+          Serial.println("Je prepare un STBY");
+          #endif
           PIDnervANG=pointeurSurFifo->ptrFst()->stby.nerv;
           PIDnervLIN=pointeurSurFifo->ptrFst()->stby.nerv;
           pointeurSurGhost->X_P.set(pointeurSurGhost->posE.vec.x,0.0,0.0,0.0,0.0,0.0,0.0);
@@ -117,6 +142,9 @@ void PID::reload()
 		case OrderE::POST_E:
 		  break;
 		case OrderE::EMSTOP_E:
+          #ifdef STATE
+          Serial.println("Je prepare un EMSTOP");
+          #endif
           pointeurSurMoteurGauche->bypass=true;
           pointeurSurMoteurGauche->masterOrder=0;
           pointeurSurMoteurDroite->bypass=true;

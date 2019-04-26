@@ -17,6 +17,7 @@ class Action				            // Classe qui contiendra l'ensemble des actions pred
   	Action(ActionE type, int nbrOrders);
 	  Action();
   	void addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs);  //abs(thetaAim-thetaIni)<=PI
+    void addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs);
   	void addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs);
   	void addFWD(float acc, float v, uint8_t timeoutDs);
   	void addBWD(float acc, float v, uint8_t timeoutDs);

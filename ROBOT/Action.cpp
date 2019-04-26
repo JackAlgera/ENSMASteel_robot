@@ -32,6 +32,15 @@ void Action::addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs)
 	}
 }
 
+void Action::addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs)
+{
+  if (currentOrderAdd < nbrOrders)
+  {
+    ordersList[currentOrderAdd] = SPINGOTO(nerv,xAim,yAim,timeoutDs);
+    currentOrderAdd++;
+  }
+}
+
 void Action::addFWD(float acc, float v, uint8_t timeoutDs)
 {
 	if (currentOrderAdd < nbrOrders)
