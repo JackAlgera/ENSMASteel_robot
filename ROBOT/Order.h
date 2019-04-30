@@ -42,7 +42,7 @@ struct STBY_S
   char unlockMessage[4];
 };
 
-struct POST_S
+struct SEND_S
 {
   char message[4];
 };
@@ -64,7 +64,7 @@ class Order
   		FWD_S fwd;
   		BWD_S bwd;
   		STBY_S stby;
-  		POST_S post;
+  		SEND_S send;
   		EMSTOP_S emStop;
   	};
 
@@ -151,18 +151,18 @@ class STBY : public Order
     }
 };
 
-class POST : public Order
+class SEND : public Order
 {
 public:
-	POST(const char message[], uint8_t timeoutDs)
+	SEND(const char message[], uint8_t timeoutDs)
 	{
-		this->type = OrderE::POST_E;
+		this->type = OrderE::SEND_E;
 		this->timeoutDs = timeoutDs;
 
-		this->post.message[0] = message[0];
-		this->post.message[1] = message[1];
-		this->post.message[2] = message[2];
-		this->post.message[3] = message[3];
+		this->send.message[0] = message[0];
+		this->send.message[1] = message[1];
+		this->send.message[2] = message[2];
+		this->send.message[3] = message[3];
 	}
 };
 

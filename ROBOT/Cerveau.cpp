@@ -9,107 +9,116 @@
 //		Jack.CrySomeMore(100);  // en secondes
 // }
 
-// Liste des actions a prioritiser pour chaque action, 
+// Liste des actions a prioriser pour chaque action, 
 ActionE ChaosL[3] = { ActionE::Distribx6, ActionE::RecupBlueAcc };
 ActionE Distribx6L[1] = { ActionE::Distribx3 };
-ActionE Distribx3L[1] = { ActionE::depart };
-ActionE departL[1] = { ActionE::RecupBlueAcc };
+ActionE Distribx3L[1] = { ActionE::CoupDeCul };
+ActionE CoupDeCulL[1] = { ActionE::RecupBlueAcc };
 ActionE RecupBlueAccL[1] = { ActionE::PoseAcc };
-ActionE PoseAccL[1] = { ActionE::RecupeGoldAcc };
+ActionE PoseAccL[1] = { ActionE::RecupGoldAcc };
 ActionE RecupeGoldAccL[1] = { ActionE::Balance };
 ActionE BalanceL[1] = { ActionE::PoseSol };
 ActionE PoseSolL[1] = { ActionE::MonteRampe };
 ActionE MonteRampeL[1] = { ActionE::PoseRampe };
-ActionE PoseRampeL[1] = { ActionE::DescendRamp };
+ActionE PoseRampeL[1] = { ActionE::DescendRampe };
 ActionE DescendRampL[1] = { ActionE::Chaos };
 
 // Remplissage des actions avec les Order
-void Cerveau::addChaos()
+Action newChaos()
 {
-	Action newAction(ActionE::Chaos, 3);	// Test creation de l'action Chaos avec 3 ordres
-
+	Action newAction(ActionE::Chaos, 4);	// Test creation de l'action Chaos avec 3 ordres
+  newAction.addSEND("CHAO",10);
 	newAction.addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT);
 	newAction.addSPIN(STD, 1, 20);
-	newAction.addSPINGOTO(NERV, 1.5, 1, 50);
+	//newAction.addSPINGOTO(NERV, 1.5, 1, 50);
 	
-	actionList[ActionE::Chaos] = newAction;
+	return newAction;
 }
 
-void Cerveau::addDistribx6()
+Action newDistribx6()
 {
-	Action newAction(ActionE::Distribx6, 3);	
+	Action newAction(ActionE::Distribx6, 1);
+  newAction.addSEND("DIx6",10);	
 
-	actionList[ActionE::Distribx6] = newAction;
+	return newAction;
 }
 
-void Cerveau::addDepart()
+Action newCoupDeCul()
 {
-	Action newAction(ActionE::depart, 3);
+	Action newAction(ActionE::CoupDeCul, 1);
+  newAction.addSEND("CDCU",10);  
 
-	actionList[ActionE::depart] = newAction;
+	return newAction;
 }
 
-void Cerveau::addDistribx3()
+Action newDistribx3()
 {
-	Action newAction(ActionE::Distribx3, 3);
+	Action newAction(ActionE::Distribx3, 1);
+  newAction.addSEND("DIx3",10);  
 
-	actionList[ActionE::Distribx3] = newAction;
+	return newAction;
 }
 
-void Cerveau::addRecupBleuAcc()
+Action newRecupBlueAcc()
 {
-	Action newAction(ActionE::RecupBlueAcc, 3);
+	Action newAction(ActionE::RecupBlueAcc, 1);
+  newAction.addSEND("RBLU",10); 
 
-	actionList[ActionE::RecupBlueAcc] = newAction;
+	return newAction;
 }
 
-void Cerveau::addPoseAcc()
+Action newPoseAcc()
 {
-	Action newAction(ActionE::PoseAcc, 3);
+	Action newAction(ActionE::PoseAcc, 1);
+  newAction.addSEND("PACC",10);  
+	return newAction;
+}
+Action newRecupGoldAcc()
+{
+	Action newAction(ActionE::RecupGoldAcc, 1);
+  newAction.addSEND("RGOL",10); 
 
-	actionList[ActionE::PoseAcc] = newAction;
+	return newAction;
 }
 
-void Cerveau::addRecupGoldAcc()
+Action newBalance()
 {
-	Action newAction(ActionE::RecupeGoldAcc, 3);
+	Action newAction(ActionE::Balance, 1);
+  newAction.addSEND("BALA",10);  
 
-	actionList[ActionE::RecupeGoldAcc] = newAction;
+	return newAction;
 }
 
-void Cerveau::addBalance()
+Action newPoseSol()
 {
-	Action newAction(ActionE::Balance, 3);
+	Action newAction(ActionE::PoseSol, 1);
+  newAction.addSEND("PSOL",10);  
 
-	actionList[ActionE::Balance] = newAction;
+	return newAction;
 }
 
-void Cerveau::addPoseSol()
+Action newMonteRampe()
 {
-	Action newAction(ActionE::PoseSol, 3);
+	Action newAction(ActionE::MonteRampe, 1);
+ newAction.addSEND("MRMP",10); 
 
-	actionList[ActionE::PoseSol] = newAction;
+	return newAction;
 }
 
-void Cerveau::addMonteRampe()
+Action newPoseRampe()
 {
-	Action newAction(ActionE::MonteRampe, 3);
+	Action newAction(ActionE::PoseRampe, 1);
+  newAction.addSEND("PRMP",10);  
 
-	actionList[ActionE::MonteRampe] = newAction;
+	return newAction;
 }
 
-void Cerveau::addPoseRampe()
+Action newDescendRampe()
 {
-	Action newAction(ActionE::PoseRampe, 3);
+	Action newAction(ActionE::DescendRampe, 1);
+  newAction.addSEND("DRMP",10); 
 
-	actionList[ActionE::PoseRampe] = newAction;
-}
-
-void Cerveau::addDescendRampe()
-{
-	Action newAction(ActionE::DescendRamp, 3);
-
-	actionList[ActionE::DescendRamp] = newAction;
+	return newAction;
 }
 
 void Cerveau::choisirAction()
@@ -127,8 +136,8 @@ void Cerveau::choisirAction()
 	case Distribx3:
 		nextBestAction(Distribx3L, 1);
 		break;
-	case depart:
-		nextBestAction(departL, 1);
+	case CoupDeCul:
+		nextBestAction(CoupDeCulL, 1);
 		break;
 	case RecupBlueAcc:
 		nextBestAction(RecupBlueAccL, 1);
@@ -136,7 +145,7 @@ void Cerveau::choisirAction()
 	case PoseAcc:
 		nextBestAction(PoseAccL, 1);
 		break;
-	case RecupeGoldAcc:
+	case RecupGoldAcc:
 		nextBestAction(RecupeGoldAccL, 1);
 		break;
 	case Balance:
@@ -151,7 +160,7 @@ void Cerveau::choisirAction()
 	case PoseRampe:
 		nextBestAction(PoseRampeL, 1);
 		break;
-	case DescendRamp:
+	case DescendRampe:
 		nextBestAction(DescendRampL, 1);
 		break;
 	default:
@@ -180,7 +189,7 @@ ActionE Cerveau::nextBestAction(ActionE *list, int size)
 			return (ActionE)i;
 		i++;
 	}
-	return ActionE::depart;
+	return ActionE::Chaos; // Ici il faudrait faire une action "casse les couilles de l'adversaire"
 }
 
 void Cerveau::finirAction()
@@ -247,18 +256,18 @@ Cerveau::Cerveau(Fifo * ordresFifo)
 		DONE[i] = false;
 	}
 
-	addChaos();
-	addDistribx6();
-	addDepart();
-	addDistribx3();
-	addRecupBleuAcc();
-	addPoseAcc();
-	addRecupGoldAcc();
-	addBalance();
-	addPoseSol();
-	addMonteRampe();
-	addDescendRampe();
-	addPoseRampe();
+	actionList[ActionE::Chaos]=newChaos();
+	actionList[ActionE::Distribx6]=newDistribx6();
+	actionList[ActionE::CoupDeCul]=newCoupDeCul();
+	actionList[ActionE::Distribx3]=newDistribx3();
+	actionList[ActionE::RecupBlueAcc]=newRecupBlueAcc();
+	actionList[ActionE::PoseAcc]=newPoseAcc();
+	actionList[ActionE::RecupGoldAcc]=newRecupGoldAcc();
+	actionList[ActionE::Balance]=newBalance();
+	actionList[ActionE::PoseSol]=newPoseSol();
+	actionList[ActionE::MonteRampe]=newMonteRampe();
+	actionList[ActionE::DescendRampe]=newDescendRampe();
+	actionList[ActionE::PoseRampe]=newPoseRampe();
 
 	currentAction = ActionE::Chaos;		// On commence avec le Chaos et on ajoute les ordres au buffer
 	addActionOrders();

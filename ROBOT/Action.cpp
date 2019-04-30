@@ -69,11 +69,11 @@ void Action::addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeout)
 	}
 }
 
-void Action::addPOST(const char message[], uint8_t timeoutDs)
+void Action::addSEND(const char message[], uint8_t timeoutDs)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = POST(message, timeoutDs);
+		ordersList[currentOrderAdd] = SEND(message, timeoutDs);
 		currentOrderAdd++;
 	}
 }

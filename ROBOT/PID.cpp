@@ -139,7 +139,12 @@ void PID::reload()
           pointeurSurGhost->theta_S.set(pointeurSurGhost->posE.theta,pointeurSurGhost->posE.theta,0.0,1.0,0.0,1.0,1.0);
           pointeurSurGhost->t_e=0;}
           break;
-		case OrderE::POST_E:
+		case OrderE::SEND_E:
+          #ifdef STATE
+          Serial.println("Je prepare un SEND");
+          #endif
+          pointeurSurComm->send(pointeurSurFifo->ptrFst()->send.message);
+          pointeurCerveau->finirOrdre();
 		  break;
 		case OrderE::EMSTOP_E:
           #ifdef STATE

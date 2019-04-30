@@ -25,20 +25,6 @@ public:
 
 	//void addNextOrder();		// Ajouter l'ordre suivant au buffer
 
-	// Fonctions pour initialiser l'ensemble des actions 
-	void addChaos();
-	void addDistribx6();
-	void addDepart();
-	void addDistribx3();
-	void addRecupBleuAcc();
-	void addPoseAcc();
-	void addRecupGoldAcc();
-	void addBalance();
-	void addPoseSol();
-	void addMonteRampe();
-	void addPoseRampe();
-	void addDescendRampe();
-
 	Cerveau();
 	Cerveau(Fifo * ordresFifo);
 	~Cerveau();

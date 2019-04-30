@@ -61,3 +61,8 @@ void Comm::taken()
 {
   strSet(lastMessage,"OBSL");
 }
+
+void Comm::send(const char message[])
+{
+  Serial.println(message);
+}

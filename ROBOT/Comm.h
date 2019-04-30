@@ -15,6 +15,7 @@ class Comm
     void actuate();
     void taken();
     void set(Fifo* in_ordresRobot,PID* in_ptrPid);
+    void send(const char message[]);
   private:
     void specialBehavior();
 };

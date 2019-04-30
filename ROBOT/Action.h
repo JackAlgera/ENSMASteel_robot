@@ -24,7 +24,7 @@ class Action				            // Classe qui contiendra l'ensemble des actions pred
   	void addFWD(float acc, float v, uint8_t timeoutDs);
   	void addBWD(float acc, float v, uint8_t timeoutDs);
   	void addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeout);
-	  void addPOST(const char message[], uint8_t timeoutDs);
+	  void addSEND(const char message[], uint8_t timeoutDs);
 	  void addEMSTOP(uint8_t timeoutDs);
   	Order * getCurrentOrder();
 	  bool finirOrder();

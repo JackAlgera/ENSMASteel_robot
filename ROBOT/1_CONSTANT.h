@@ -61,7 +61,7 @@
 
 enum OrderE
 {
-  GOTO_E, SPIN_E, SPINGOTO_E, FWD_E, BWD_E, STBY_E, POST_E, EMSTOP_E
+  GOTO_E, SPIN_E, SPINGOTO_E, FWD_E, BWD_E, STBY_E, SEND_E, EMSTOP_E
 };
 
 // On aura Chaos = 0, Distribx6 = 1 etc..
@@ -69,9 +69,9 @@ enum OrderE
 #define NBR_ACTIONS 12
 enum ActionE
 {
-  Chaos, Distribx6, Distribx3, depart,
-  RecupBlueAcc, PoseAcc, RecupeGoldAcc, Balance, PoseSol,
-  MonteRampe, PoseRampe, DescendRamp
+  Chaos, Distribx6, Distribx3, CoupDeCul,
+  RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol,
+  MonteRampe, PoseRampe, DescendRampe
 };   
 
 enum ErreurE
@@ -90,7 +90,7 @@ enum ErreurE
 
 
 //-------------------------MISCENCELLOUS-------------------------
-#define TAILLEFIFO 5           //Taille du buffer circulaire
+#define TAILLEFIFO 40           //Taille du buffer circulaire
 #define DEGRE_MAX 6
 
 #endif
