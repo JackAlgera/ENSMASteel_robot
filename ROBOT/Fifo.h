@@ -13,7 +13,6 @@ class Fifo
   public:
     Order liste[TAILLEFIFO];
     uint8_t indiceDebut = 1,indiceFin = 0, inBuffer = 0;
-   
 	  Fifo();
 	  ~Fifo();
     

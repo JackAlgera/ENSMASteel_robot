@@ -1,5 +1,28 @@
 #include "Cerveau.h"
 
+
+// bool thisIsVeryUgly = true;
+// if(thisIsVeryUgly)
+// { 
+//		Jack.Cry();
+//		Jack.RollOnGround(appartment.floor);
+//		Jack.CrySomeMore(100);  // en secondes
+// }
+
+// Liste des actions a prioritiser pour chaque action, 
+ActionE ChaosL[3] = { ActionE::Distribx6, ActionE::RecupBlueAcc };
+ActionE Distribx6L[1] = { ActionE::Distribx3 };
+ActionE Distribx3L[1] = { ActionE::depart };
+ActionE departL[1] = { ActionE::RecupBlueAcc };
+ActionE RecupBlueAccL[1] = { ActionE::PoseAcc };
+ActionE PoseAccL[1] = { ActionE::RecupeGoldAcc };
+ActionE RecupeGoldAccL[1] = { ActionE::Balance };
+ActionE BalanceL[1] = { ActionE::PoseSol };
+ActionE PoseSolL[1] = { ActionE::MonteRampe };
+ActionE MonteRampeL[1] = { ActionE::PoseRampe };
+ActionE PoseRampeL[1] = { ActionE::DescendRamp };
+ActionE DescendRampL[1] = { ActionE::Chaos };
+
 // Remplissage des actions avec les Order
 void Cerveau::addChaos()
 {
@@ -96,38 +119,68 @@ void Cerveau::choisirAction()
 	switch (currentAction)
 	{
 	case Chaos:
-		// Prioriser distribx6
+		nextBestAction(ChaosL, 3);
 		break;
 	case Distribx6:
-		// Prioriser distribx3
+		nextBestAction(Distribx6L, 1);
 		break;
 	case Distribx3:
+		nextBestAction(Distribx3L, 1);
 		break;
 	case depart:
+		nextBestAction(departL, 1);
 		break;
 	case RecupBlueAcc:
+		nextBestAction(RecupBlueAccL, 1);
 		break;
 	case PoseAcc:
+		nextBestAction(PoseAccL, 1);
 		break;
 	case RecupeGoldAcc:
+		nextBestAction(RecupeGoldAccL, 1);
 		break;
 	case Balance:
+		nextBestAction(BalanceL, 1);
 		break;
 	case PoseSol:
+		nextBestAction(PoseSolL, 1);
 		break;
 	case MonteRampe:
+		nextBestAction(MonteRampeL, 1);
 		break;
 	case PoseRampe:
+		nextBestAction(PoseRampeL, 1);
 		break;
 	case DescendRamp:
+		nextBestAction(DescendRampL, 1);
 		break;
-	default:		// Sinon on choisit l'action suivant de la façon suivante, pas obligé de faire un test pour chaque cas
-		
-
+	default:
 		break;
 	}
 
 	currentAction = newAction;
+}
+
+ActionE Cerveau::nextBestAction(ActionE *list, int size)
+{
+	// On prend la premiere action disponible en prioritisant les actions dans l'ordre de la liste 
+	int i = 0;
+	while (i < size)
+	{
+		if (!DONE[list[i]])
+			return list[i];
+
+		i++;
+	}
+	// Sinon on prend la premiere action non complete
+	i = 0;
+	while (i < NBR_ACTIONS)
+	{
+		if (!DONE[i])
+			return (ActionE)i;
+		i++;
+	}
+	return ActionE::depart;
 }
 
 void Cerveau::finirAction()
@@ -152,13 +205,13 @@ void Cerveau::finirOrdre()
 	}
 
 	// Si on n'ajoute pas l'ensemble des ordres au buffer lors d'un changement d'acion, donc en ajoutant l'ordre par ordre
-	// J'ai commencé à le faire, je le garde au cas ou 
+	// J'ai commencï¿½ ï¿½ le faire, je le garde au cas ou 
 	/*
 	if (!actionList[currentAction].finirOrder()) // On finit l'ordre et si l'action n'est pas encore fini
 	{
 		addNextOrder();							
 	}
-	else											// Sinon l'action est terminé
+	else											// Sinon l'action est terminï¿½
 	{
 		DONE[currentAction] = true;
 		choisirAction();							// On choisit l'action suivant

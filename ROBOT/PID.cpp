@@ -187,8 +187,8 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
       if (not PIDL) ordreL=0.0; else ordreL=constrain(ordreL*MAXPWM,-MAXPWM+abs(ordreA),MAXPWM-abs(ordreA));
       
       //On donne les ordres
-      pointeurSurMoteurGauche->order= (int)(ordreL - ordreA);
-      pointeurSurMoteurDroite->order= (int)(ordreL + ordreA);
+      pointeurSurMoteurGauche->order= (int32_t)(ordreL - ordreA);
+      pointeurSurMoteurDroite->order= (int32_t)(ordreL + ordreA);
 
       //On actualise
       pointeurSurMoteurGauche->actuate();

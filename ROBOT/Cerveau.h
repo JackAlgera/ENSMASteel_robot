@@ -17,6 +17,7 @@ public:
 	
 	void supprimerAction(ActionE action);
 	void choisirAction();		// TODO : a remplir
+	ActionE nextBestAction(ActionE *list, int size);
 
 	void finirAction();
 	void addActionOrders();

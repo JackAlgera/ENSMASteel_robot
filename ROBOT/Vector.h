@@ -21,6 +21,8 @@ struct VectorE                      //E pour étendu, contient un angle
   float theta;
 };
 
+
+
 Vector const vecNull={0.0,0.0};     //Vecteur nul
 Vector init_vector(float x,float y);     //Nouveau vecteur
 VectorE init_vectorE(float x,float y,float theta);

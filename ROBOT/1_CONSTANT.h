@@ -36,7 +36,7 @@
 #define ELOIGNEMENT_CODEUSES 0.4008
 #define DIAMETRE_ROUE_CODEUSE 0.09
 #define TICKS_PER_ROUND 1200.0
-#define MAXPWM 1023
+#define MAXPWM 65535
 
 //-------------------------VOCABULAIRE-------------------------
 #define GAUCHE 0
@@ -65,6 +65,7 @@ enum OrderE
 
 // On aura Chaos = 0, Distribx6 = 1 etc..
 // ActionE::Chaos pour y acceder -> exemple : if(!DONE[ActionE::Chaos]) {...}
+#define NBR_ACTIONS 12
 enum ActionE
 {
   Chaos, Distribx6, Distribx3, depart,

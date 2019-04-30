@@ -9,8 +9,8 @@
 #include "Arduino.h"
 #include "Filtre.h"
 #include "Comm.h"
-#include "TimerOne.h"
 #include "Cerveau.h"
+#include "Encoder.h"
 
 class Robot
 {
@@ -50,13 +50,15 @@ void Robot::actuateODO(float dt)
   posE.vec.y += avance*sin(posE.theta);  
 }
 
+Encoder EncG(0,1), EncD(0,1);     
+
 void Robot::set(float x0,float y0, float theta0, Cerveau * master)
 {
   delay(1000);
   moteurDroite  = init_motor(PIN_MOTEUR_DROITE_PWR,PIN_MOTEUR_DROITE_SENS1,PIN_MOTEUR_DROITE_SENS2,1.0);
   moteurGauche  = init_motor(PIN_MOTEUR_GAUCHE_PWR,PIN_MOTEUR_GAUCHE_SENS1,PIN_MOTEUR_GAUCHE_SENS2,0.96);
-  codeuseGauche = init_codeuse(GAUCHE);
-  codeuseDroite = init_codeuse(DROITE);
+  codeuseGauche = Codeuse(GAUCHE, &EncG);
+  codeuseDroite = Codeuse(DROITE, &EncD);
 
   VectorE initVect = init_vectorE(x0,y0,theta0);
   ghost = *(new Ghost(initVect));
@@ -128,7 +130,6 @@ Cerveau master;
 
 void setup()
 {   
-  Timer1.initialize((uint32_t)(0.5/FREQUENCY*1000000.0));
   Serial.begin(115200);
   master = Cerveau(&robot.ordresFifo);
   robot.set(1.5,1.0,0.0, &master);				// Malheureusement je set le master ici aussi pour l'instant

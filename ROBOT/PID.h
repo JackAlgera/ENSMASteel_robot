@@ -27,8 +27,8 @@ class Cerveau;
 class PID
 {
   uint8_t PIDnervLIN=DYDM,PIDnervANG=DYDM;
-  VectorE lastPosERobot;
-  float lastVRobot,lastDt;
+  VectorE lastPosERobot={{0,0},0};
+  float lastVRobot=0,lastDt=1/FREQUENCY;
   float IL=0.0,IA=0.0;
   
   public:
