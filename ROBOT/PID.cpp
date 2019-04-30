@@ -229,7 +229,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
           )
       {
         //On pop la liste
-        pointeurSurFifo->pop();
+		pointeurCerveau->finirOrdre();
 
         //On vide la boite au lettre si on est sorti du stby grace a un message
         if (messageITSTBY)pointeurSurComm->taken();
@@ -239,7 +239,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
       }
 }
 
-PID init_PID(Motor* in_pointeurSurMoteurGauche,Motor* in_pointeurSurMoteurDroite,Fifo* in_pointeurSurFifo,Ghost* in_pointeurSurGhost,Comm* in_pointeurSurComm)
+PID init_PID(Motor* in_pointeurSurMoteurGauche,Motor* in_pointeurSurMoteurDroite,Fifo* in_pointeurSurFifo,Ghost* in_pointeurSurGhost,Comm* in_pointeurSurComm, Cerveau * in_pointeurCerveau)
 {
   PID out;
   out.pointeurSurMoteurGauche=in_pointeurSurMoteurGauche;
@@ -247,5 +247,24 @@ PID init_PID(Motor* in_pointeurSurMoteurGauche,Motor* in_pointeurSurMoteurDroite
   out.pointeurSurFifo=in_pointeurSurFifo;
   out.pointeurSurGhost=in_pointeurSurGhost;
   out.pointeurSurComm=in_pointeurSurComm;
+  out.pointeurCerveau = in_pointeurCerveau;
   return out;
+}
+
+PID::PID()
+{
+}
+
+PID::PID(Motor* in_pointeurSurMoteurGauche, Motor* in_pointeurSurMoteurDroite, Fifo* in_pointeurSurFifo, Ghost* in_pointeurSurGhost, Comm* in_pointeurSurComm, Cerveau * in_pointeurCerveau)
+{
+	this->pointeurSurMoteurGauche = in_pointeurSurMoteurGauche;
+	this->pointeurSurMoteurDroite = in_pointeurSurMoteurDroite;
+	this->pointeurSurFifo = in_pointeurSurFifo;
+	this->pointeurSurGhost = in_pointeurSurGhost;
+	this->pointeurSurComm = in_pointeurSurComm;
+	this->pointeurCerveau = in_pointeurCerveau;
+}
+
+PID::~PID()
+{
 }

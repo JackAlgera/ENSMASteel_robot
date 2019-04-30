@@ -4,10 +4,11 @@
 void Cerveau::addChaos()
 {
 	Action newAction(ActionE::Chaos, 3);	// Test creation de l'action Chaos avec 3 ordres
-	newAction.addSPIN(STD, 1, 20);
-	newAction.addSTBY(DYDM, "Tirt", 255);
-	newAction.addSPIN(STD, 1, 20);
 
+	newAction.addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT);
+	newAction.addSPIN(STD, 1, 20);
+	newAction.addSPINGOTO(NERV, 0, 0, 50);
+	
 	actionList[ActionE::Chaos] = newAction;
 }
 
@@ -88,8 +89,106 @@ void Cerveau::addDescendRampe()
 	actionList[ActionE::DescendRamp] = newAction;
 }
 
+void Cerveau::choisirAction()
+{
+	ActionE newAction = ActionE::Chaos;
+
+	switch (currentAction)
+	{
+	case Chaos:
+		// Prioriser distribx6
+		break;
+	case Distribx6:
+		// Prioriser distribx3
+		break;
+	case Distribx3:
+		break;
+	case depart:
+		break;
+	case RecupBlueAcc:
+		break;
+	case PoseAcc:
+		break;
+	case RecupeGoldAcc:
+		break;
+	case Balance:
+		break;
+	case PoseSol:
+		break;
+	case MonteRampe:
+		break;
+	case PoseRampe:
+		break;
+	case DescendRamp:
+		break;
+	default:		// Sinon on choisit l'action suivant de la façon suivante, pas obligé de faire un test pour chaque cas
+		
+
+		break;
+	}
+
+	currentAction = newAction;
+}
+
+void Cerveau::finirAction()
+{
+	DONE[currentAction] = true;
+
+	choisirAction();	// Choisir une nouvelle action 
+	addActionOrders();	// Ajoute ses ordres au buffer
+}
+
+void Cerveau::addActionOrders()
+{
+	actionList[currentAction].addOrdersToBuffer(ordresFifo);
+}
+
+void Cerveau::finirOrdre()
+{
+	ordresFifo->pop();	// Pop le fifo
+	if (actionList[currentAction].finirOrder()) // Si l'action actuelle est termine
+	{
+		finirAction();
+	}
+
+	// Si on n'ajoute pas l'ensemble des ordres au buffer lors d'un changement d'acion, donc en ajoutant l'ordre par ordre
+	// J'ai commencé à le faire, je le garde au cas ou 
+	/*
+	if (!actionList[currentAction].finirOrder()) // On finit l'ordre et si l'action n'est pas encore fini
+	{
+		addNextOrder();							
+	}
+	else											// Sinon l'action est terminé
+	{
+		DONE[currentAction] = true;
+		choisirAction();							// On choisit l'action suivant
+	}
+	*/
+}
+
+/*
+void Cerveau::addNextOrder()						// Ajouter l'ordre suivant au buffer
+{
+	ordresFifo->add(*actionList[currentAction].getCurrentOrder());
+}
+*/
+
+void Cerveau::supprimerAction(ActionE action)
+{
+	DONE[action] = true;
+
+	choisirAction();	// Choisir l'action suivant 
+	addActionOrders();	// Ajouter ordres au buffer
+}
+
 Cerveau::Cerveau()
 {
+}
+
+Cerveau::Cerveau(Fifo * ordresFifo)
+{
+	this->ordresFifo = ordresFifo;
+
 	for (int i = 0; i < 12; i++)
 	{
 		DONE[i] = false;
@@ -107,6 +206,9 @@ Cerveau::Cerveau()
 	addMonteRampe();
 	addDescendRampe();
 	addPoseRampe();
+
+	currentAction = ActionE::Chaos;		// On commence avec le Chaos et on ajoute les ordres au buffer
+	addActionOrders();
 }
 
 Cerveau::~Cerveau()

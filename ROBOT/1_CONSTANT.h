@@ -42,6 +42,8 @@
 #define GAUCHE 0
 #define DROITE 1
 
+#define NERV RUSH
+#define TMOUT 100 
 
 #define ACRT 0    //accurate
 #define STD 1     //standard
@@ -69,6 +71,11 @@ enum ActionE
   RecupBlueAcc, PoseAcc, RecupeGoldAcc, Balance, PoseSol,
   MonteRampe, PoseRampe, DescendRamp
 };   
+
+enum ErreurE
+{
+	FAIL
+};
 
 //-------------------------DEPLACEMENTS-------------------------
 

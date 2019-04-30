@@ -21,12 +21,12 @@ class Robot
     Ghost ghost;
     VectorE posE;                                 //Position du robot
     Filtre vF,wF;
-    Fifo ordresFifo;                                 //Une liste d'ordres a effectuer
+    Fifo ordresFifo;                              //Une liste d'ordres a effectuer
     PID pid;
     Comm comm;
-  
+
     void actuateODO(float dt);
-    void set(float x0,float y0, float theta0);    //Remplie les champs de l'objet Robot
+    void set(float x0,float y0, float theta0, Cerveau * master);    //Remplie les champs de l'objet Robot
     void actuate(float dt);                       //Actualise les valeurs
 };
 
@@ -50,7 +50,7 @@ void Robot::actuateODO(float dt)
   posE.vec.y += avance*sin(posE.theta);  
 }
 
-void Robot::set(float x0,float y0, float theta0)
+void Robot::set(float x0,float y0, float theta0, Cerveau * master)
 {
   delay(1000);
   moteurDroite  = init_motor(PIN_MOTEUR_DROITE_PWR,PIN_MOTEUR_DROITE_SENS1,PIN_MOTEUR_DROITE_SENS2,1.0);
@@ -63,7 +63,8 @@ void Robot::set(float x0,float y0, float theta0)
   posE.vec.x = x0;posE.vec.y=y0;posE.theta=theta0;
   vF = newFiltre(0.0,60.0,2);wF=newFiltre(0.0,60.0,2);   // ----------------------------------
   ordresFifo.add(STBY(DYDM,"Tirt",255));
-  pid = init_PID(&moteurGauche,&moteurDroite,&ordresFifo,&ghost,&comm);
+
+  pid = PID(&moteurGauche,&moteurDroite,&ordresFifo,&ghost,&comm, master);
   comm.set(&ordresFifo,&pid);
 }
 
@@ -123,25 +124,17 @@ void printRobotState(Robot* robot)
 uint32_t m, microsStart, mLoop;
 float dtLoop;
 Robot robot;
-//Cerveau master;
+Cerveau master;
 
 void setup()
 {   
   Timer1.initialize((uint32_t)(0.5/FREQUENCY*1000000.0));
   Serial.begin(115200);
-  robot.set(1.5,1.0,0.0);
+  master = Cerveau(&robot.ordresFifo);
+  robot.set(1.5,1.0,0.0, &master);				// Malheureusement je set le master ici aussi pour l'instant
   Serial.println("--REBOOT--");
   m=micros();
   microsStart=m-((uint32_t)(1.0/FREQUENCY*1000000.0));
-//-----------------------------------------------------------------COMMANDES-----------------------------------------------------------------
-  //void addGoto( ACRT/STD/RUSH , fleche, xAim, yAim, thetaAim, arret,timeoutDs);
-  //void addSpin( ACRT/STD/RUSH , thetaAim,timeoutDs);
-
-
-  #define NERV RUSH
-  #define TMOUT 100 
-  robot.ordresFifo.add(GOTO(NERV,0.4,2.0,1,0,true,TMOUT));
-  robot.ordresFifo.add(SPINGOTO(NERV,0,0,50));
 }
 
 void loop()
