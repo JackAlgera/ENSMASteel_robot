@@ -140,8 +140,9 @@ void setup()
 
   #define NERV RUSH
   #define TMOUT 100 
-  robot.ordresFifo.add(GOTO(NERV,0.4,2.0,1,0,true,TMOUT));
-  robot.ordresFifo.add(SPINGOTO(NERV,0,0,50));
+  robot.ordresFifo.add(GOTO(NERV,0.4,2.1,1,0,true,TMOUT));
+  robot.ordresFifo.add(SPIN(NERV,3.14,TMOUT));
+  robot.ordresFifo.add(GOTO(NERV,0.4,1.5,1,3.14,true,TMOUT));
 }
 
 void loop()
