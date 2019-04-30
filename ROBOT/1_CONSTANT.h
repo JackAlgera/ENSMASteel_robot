@@ -36,7 +36,7 @@
 #define ELOIGNEMENT_CODEUSES 0.4008
 #define DIAMETRE_ROUE_CODEUSE 0.09
 #define TICKS_PER_ROUND 1200.0
-#define MAXPWM 1023
+#define MAXPWM 65535
 
 //-------------------------VOCABULAIRE-------------------------
 #define GAUCHE 0

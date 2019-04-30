@@ -9,7 +9,6 @@
 #include "Arduino.h"
 #include "Filtre.h"
 #include "Comm.h"
-#include "TimerOne.h"
 #include "Cerveau.h"
 
 class Robot
@@ -55,8 +54,8 @@ void Robot::set(float x0,float y0, float theta0)
   delay(1000);
   moteurDroite  = init_motor(PIN_MOTEUR_DROITE_PWR,PIN_MOTEUR_DROITE_SENS1,PIN_MOTEUR_DROITE_SENS2,1.0);
   moteurGauche  = init_motor(PIN_MOTEUR_GAUCHE_PWR,PIN_MOTEUR_GAUCHE_SENS1,PIN_MOTEUR_GAUCHE_SENS2,0.96);
-  codeuseGauche = init_codeuse(GAUCHE);
-  codeuseDroite = init_codeuse(DROITE);
+  codeuseGauche = *(new Codeuse(GAUCHE));
+  codeuseDroite = *(new Codeuse(DROITE));
 
   VectorE initVect = init_vectorE(x0,y0,theta0);
   ghost = *(new Ghost(initVect));
@@ -127,7 +126,6 @@ Robot robot;
 
 void setup()
 {   
-  Timer1.initialize((uint32_t)(0.5/FREQUENCY*1000000.0));
   Serial.begin(115200);
   robot.set(1.5,1.0,0.0);
   Serial.println("--REBOOT--");
