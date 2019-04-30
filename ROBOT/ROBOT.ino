@@ -24,9 +24,10 @@ class Robot
     Fifo ordresFifo;                              //Une liste d'ordres a effectuer
     PID pid;
     Comm comm;
+    Cerveau master;
 
     void actuateODO(float dt);
-    void set(float x0,float y0, float theta0, Cerveau * master);    //Remplie les champs de l'objet Robot
+    void set(float x0,float y0, float theta0);    //Remplie les champs de l'objet Robot
     void actuate(float dt);                       //Actualise les valeurs
 };
 
@@ -50,23 +51,21 @@ void Robot::actuateODO(float dt)
   posE.vec.y += avance*sin(posE.theta);  
 }
 
-Encoder EncG(0,1), EncD(0,1);     
 
-void Robot::set(float x0,float y0, float theta0, Cerveau * master)
+void Robot::set(float x0,float y0, float theta0)
 {
   delay(1000);
   moteurDroite  = init_motor(PIN_MOTEUR_DROITE_PWR,PIN_MOTEUR_DROITE_SENS1,PIN_MOTEUR_DROITE_SENS2,1.0);
   moteurGauche  = init_motor(PIN_MOTEUR_GAUCHE_PWR,PIN_MOTEUR_GAUCHE_SENS1,PIN_MOTEUR_GAUCHE_SENS2,0.96);
-  codeuseGauche = Codeuse(GAUCHE, &EncG);
-  codeuseDroite = Codeuse(DROITE, &EncD);
-
+  codeuseGauche = Codeuse(GAUCHE, new Encoder(PIN_CODEUSE_GAUCHE_A,PIN_CODEUSE_GAUCHE_B));
+  codeuseDroite = Codeuse(DROITE, new Encoder(PIN_CODEUSE_DROITE_A,PIN_CODEUSE_DROITE_B));
   VectorE initVect = init_vectorE(x0,y0,theta0);
   ghost = *(new Ghost(initVect));
   posE.vec.x = x0;posE.vec.y=y0;posE.theta=theta0;
-  vF = newFiltre(0.0,60.0,2);wF=newFiltre(0.0,60.0,2);   // ----------------------------------
+  vF = newFiltre(0.0,60.0,2);wF=newFiltre(0.0,60.0,2);
+  master=*(new Cerveau(&ordresFifo));
   ordresFifo.add(STBY(DYDM,"Tirt",255));
-
-  pid = PID(&moteurGauche,&moteurDroite,&ordresFifo,&ghost,&comm, master);
+  pid = PID(&moteurGauche,&moteurDroite,&ordresFifo,&ghost,&comm,&master);
   comm.set(&ordresFifo,&pid);
 }
 
@@ -130,9 +129,9 @@ Cerveau master;
 
 void setup()
 {   
+  delay(5000);
   Serial.begin(115200);
-  master = Cerveau(&robot.ordresFifo);
-  robot.set(1.5,1.0,0.0, &master);				// Malheureusement je set le master ici aussi pour l'instant
+  robot.set(1.5,1.0,0.0);				// Malheureusement je set le master ici aussi pour l'instant
   Serial.println("--REBOOT--");
   m=micros();
   microsStart=m-((uint32_t)(1.0/FREQUENCY*1000000.0));

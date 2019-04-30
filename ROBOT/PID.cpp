@@ -229,7 +229,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
           )
       {
         //On pop la liste
-		pointeurCerveau->finirOrdre();
+		    pointeurCerveau->finirOrdre();
 
         //On vide la boite au lettre si on est sorti du stby grace a un message
         if (messageITSTBY)pointeurSurComm->taken();

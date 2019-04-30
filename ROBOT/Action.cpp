@@ -106,7 +106,7 @@ bool Action::finirOrder()
 	return false;
 }
 
-void Action::addOrdersToBuffer(Fifo * ordresFifo, bool reAdd = false) // Si on souhaite re-ajouter la liste d'odres d'une action au buffer en partant du dernier ordre complete
+void Action::addOrdersToBuffer(Fifo * ordresFifo, bool reAdd) // Si on souhaite re-ajouter la liste d'odres d'une action au buffer en partant du dernier ordre complete
 {
 	if (reAdd)
 	{

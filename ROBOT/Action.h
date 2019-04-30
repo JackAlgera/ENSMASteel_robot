@@ -13,7 +13,7 @@ class Action				            // Classe qui contiendra l'ensemble des actions pred
   	Order * ordersList;		      // Chaque action (Chaos, Distribx6 etc) contient une liste d'ordres
   	int nbrOrders;
   	int currentOrder;			// L'ordre actuel de l'action non complete
-	int currentBufferOrder;		// Dernier ordre ajouté au buffer
+	  int currentBufferOrder;		// Dernier ordre ajoutï¿½ au buffer
   	bool actionCompleted;
   
   	Action(ActionE type, int nbrOrders);
@@ -24,12 +24,12 @@ class Action				            // Classe qui contiendra l'ensemble des actions pred
   	void addFWD(float acc, float v, uint8_t timeoutDs);
   	void addBWD(float acc, float v, uint8_t timeoutDs);
   	void addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeout);
-	void addPOST(const char message[], uint8_t timeoutDs);
-	void addEMSTOP(uint8_t timeoutDs);
+	  void addPOST(const char message[], uint8_t timeoutDs);
+	  void addEMSTOP(uint8_t timeoutDs);
   	Order * getCurrentOrder();
-	bool finirOrder();
+	  bool finirOrder();
   
-	void addOrdersToBuffer(Fifo* ordresFifo, bool reAdd = false);
+	  void addOrdersToBuffer(Fifo* ordresFifo, bool reAdd = false);
 
   private:
   	int currentOrderAdd = 0;	// Uniquement utilise lors de l'ajout des orders en lancant le robot

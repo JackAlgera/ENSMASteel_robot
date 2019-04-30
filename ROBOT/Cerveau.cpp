@@ -2,7 +2,7 @@
 
 
 // bool thisIsVeryUgly = true;
-// if(thisIsVeryUgly)
+// if(thisIsVeryUgly==true and true!=false)
 // { 
 //		Jack.Cry();
 //		Jack.RollOnGround(appartment.floor);
@@ -30,7 +30,7 @@ void Cerveau::addChaos()
 
 	newAction.addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT);
 	newAction.addSPIN(STD, 1, 20);
-	newAction.addSPINGOTO(NERV, 0, 0, 50);
+	newAction.addSPINGOTO(NERV, 1.5, 1, 50);
 	
 	actionList[ActionE::Chaos] = newAction;
 }
