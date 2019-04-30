@@ -7,6 +7,7 @@ Action::Action(ActionE type, int nbrOrders)
 	this->currentOrder = 0;
 	this->actionCompleted = false;
 	this->currentOrderAdd = 0;
+	this->currentBufferOrder = 0;
 	ordersList = new Order[nbrOrders];
 }
 
@@ -91,7 +92,7 @@ Order * Action::getCurrentOrder()
 	return &ordersList[currentOrder];
 }
 
-void Action::finirOrder()
+bool Action::finirOrder()
 {
 	if (!actionCompleted)
 	{
@@ -99,6 +100,22 @@ void Action::finirOrder()
 		if (currentOrder == nbrOrders)
 		{
 			actionCompleted = true;
+			return actionCompleted;
 		}
+	}
+	return false;
+}
+
+void Action::addOrdersToBuffer(Fifo * ordresFifo, bool reAdd = false) // Si on souhaite re-ajouter la liste d'odres d'une action au buffer en partant du dernier ordre complete
+{
+	if (reAdd)
+	{
+		currentBufferOrder = currentOrder;
+	}
+
+	while (currentBufferOrder < nbrOrders)					// On ajoute l'ensemble des ordres au buffer
+	{
+		ordresFifo->add(ordersList[currentBufferOrder]);
+		currentBufferOrder++;
 	}
 }

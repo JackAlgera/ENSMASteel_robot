@@ -43,6 +43,8 @@
 #define GAUCHE 0
 #define DROITE 1
 
+#define NERV RUSH
+#define TMOUT 100 
 
 #define ACRT 0    //accurate
 #define STD 1     //standard
@@ -64,12 +66,18 @@ enum OrderE
 
 // On aura Chaos = 0, Distribx6 = 1 etc..
 // ActionE::Chaos pour y acceder -> exemple : if(!DONE[ActionE::Chaos]) {...}
+#define NBR_ACTIONS 12
 enum ActionE
 {
   Chaos, Distribx6, Distribx3, depart,
   RecupBlueAcc, PoseAcc, RecupeGoldAcc, Balance, PoseSol,
   MonteRampe, PoseRampe, DescendRamp
 };   
+
+enum ErreurE
+{
+	FAIL
+};
 
 //-------------------------DEPLACEMENTS-------------------------
 
