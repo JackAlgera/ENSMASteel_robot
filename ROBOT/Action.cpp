@@ -30,7 +30,10 @@ void Action::addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float t
 {
 	if (currentOrderAdd < nbrOrders)
 	{
+		Serial.print("Dans la fonction GOTO \n");
+		Serial.print("Adresse action chaos : "); Serial.println((long unsigned int)this);
 		ordersList[currentOrderAdd] = GOTO(nerv, fleche, xAim, yAim, thetaAim, arret, timeoutDs,this);
+		Serial.print("Adr act depuis ordre : "); Serial.println((long unsigned int)ordersList[currentOrderAdd].ptrActionPere);
 		currentOrderAdd++;
 	}
 }

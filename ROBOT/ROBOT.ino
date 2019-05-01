@@ -66,6 +66,7 @@ void Robot::set(float x0,float y0, float theta0)
   vF = newFiltre(0.0,60.0,2);wF=newFiltre(0.0,60.0,2);
   ordresFifo.add(STBY(DYDM,"Tirt",255,nullptr));
   master=*(new Cerveau(&ordresFifo));
+  Serial.print("Adr act depuis ordre : "); Serial.println((long unsigned int)master.actionList[master.currentActionIndex].ordersList[1].ptrActionPere);
   pid = PID(&moteurGauche,&moteurDroite,&ordresFifo,&ghost,&comm,&master);
   comm.set(&ordresFifo,&pid);
 }
