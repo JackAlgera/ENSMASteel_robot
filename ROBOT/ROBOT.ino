@@ -39,6 +39,7 @@ void Robot::actuate(float dt)
   ghost.actuate(dt);
   pid.actuate(dt,posE,vF.out(),wF.out());
   comm.actuate();
+  master.actuate();
 }
 
 void Robot::actuateODO(float dt)
@@ -63,7 +64,7 @@ void Robot::set(float x0,float y0, float theta0)
   ghost = *(new Ghost(initVect));
   posE.vec.x = x0;posE.vec.y=y0;posE.theta=theta0;
   vF = newFiltre(0.0,60.0,2);wF=newFiltre(0.0,60.0,2);
-  ordresFifo.add(STBY(DYDM,"Tirt",255));
+  ordresFifo.add(STBY(DYDM,"Tirt",255,nullptr));
   master=*(new Cerveau(&ordresFifo));
   pid = PID(&moteurGauche,&moteurDroite,&ordresFifo,&ghost,&comm,&master);
   comm.set(&ordresFifo,&pid);

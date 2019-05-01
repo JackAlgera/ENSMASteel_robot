@@ -115,10 +115,11 @@ void PID::reload()
             Vector delta=minus(sg.posAim,posERobot.vec);
             Vector aim=sg.posAim;
             float nerv=sg.nerv;
+            Action * papa=pointeurSurFifo->ptrFst()->ptrActionPere;
             float timeout=pointeurSurFifo->ptrFst()->timeoutDs;
             Serial.print("angle ");Serial.println(angle(delta));
-            pointeurSurFifo->replaceHead(GOTO(nerv,0.1,aim.x, aim.y, angle(delta), true, timeout));
-            pointeurSurFifo->addHead(SPIN(nerv,angle(delta),timeout));
+            pointeurSurFifo->replaceHead(GOTO(nerv,0.1,aim.x, aim.y, angle(delta), true, timeout,papa));
+            pointeurSurFifo->addHead(SPIN(nerv,angle(delta),timeout,nullptr));
             reload();
           }
           break;
@@ -144,7 +145,7 @@ void PID::reload()
           Serial.println("Je prepare un SEND");
           #endif
           pointeurSurComm->send(pointeurSurFifo->ptrFst()->send.message);
-          pointeurCerveau->finirOrdre();
+          loadNext();
 		  break;
 		case OrderE::EMSTOP_E:
           #ifdef STATE
@@ -233,15 +234,23 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
               or (completeEMStop and orderNext)                                             //cas EMSTOP
           )
       {
-        //On pop la liste
-		    pointeurCerveau->finirOrdre();
-
         //On vide la boite au lettre si on est sorti du stby grace a un message
         if (messageITSTBY)pointeurSurComm->taken();
-
-        //On met le robot a jour
-        reload();
+      
+        loadNext();
       }
+}
+
+void PID::loadNext()
+{
+        //On fait avancer l'action si necessaire
+        if (pointeurSurFifo->ptrFst()->ptrActionPere!=nullptr)pointeurSurFifo->ptrFst()->ptrActionPere->nextStep();
+        
+        //On pop le Fifo
+        pointeurSurFifo->pop();
+
+        //On dit au robot que l'ordre actuel a change
+        reload();
 }
 
 PID init_PID(Motor* in_pointeurSurMoteurGauche,Motor* in_pointeurSurMoteurDroite,Fifo* in_pointeurSurFifo,Ghost* in_pointeurSurGhost,Comm* in_pointeurSurComm, Cerveau * in_pointeurCerveau)

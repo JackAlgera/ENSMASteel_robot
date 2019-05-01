@@ -19,15 +19,30 @@ public:
 	void choisirAction();		// TODO : a remplir
 	ActionE nextBestAction(ActionE *list, int size);
 
-	void finirAction();
+	void actuate();
 	void addActionOrders();
-	void finirOrdre();
+	//void finirOrdre();
 
 	//void addNextOrder();		// Ajouter l'ordre suivant au buffer
+  
 
 	Cerveau();
 	Cerveau(Fifo * ordresFifo);
 	~Cerveau();
+ private:
+  void addChaos();
+  void addDistribx6();
+  void addCoupDeCul();
+  void addDistribx3();
+  void addRecupBlueAcc();
+  void addPoseAcc();
+  void addRecupGoldAcc();
+  void addBalance();
+  void addPoseSol();
+  void addMonteRampe();
+  void addPoseRampe();
+  void addDescendRampe();
+
 };
 
 #endif

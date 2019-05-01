@@ -4,6 +4,7 @@
 #include "1_CONSTANT.h"
 #include "Vector.h"
 #include "Arduino.h"
+class Action;
 
 struct GOTO_S
 {
@@ -56,6 +57,7 @@ class Order
   public:
   	OrderE type;
   	uint8_t timeoutDs;
+    Action * ptrActionPere;
   	union                         //Une union permet de dire que uniquement l'un de ces champs à un intéret
   	{
   		GOTO_S goTo;
@@ -74,10 +76,11 @@ class Order
 class GOTO : public Order
 {
   public:  
-	  GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs) //abs(thetaAim-thetaIni)<=PI
+	  GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs, Action * ptrActionPere) //abs(thetaAim-thetaIni)<=PI
     {
       this->type = OrderE::GOTO_E;
       this->timeoutDs = timeoutDs;
+      this->ptrActionPere=ptrActionPere;
           
 	    this->goTo = { nerv , fleche, xAim, yAim, thetaAim, arret };
     }
@@ -86,10 +89,11 @@ class GOTO : public Order
 class SPIN : public Order
 {
   public:
-	  SPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs)
+	  SPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs, Action * ptrActionPere)
     {
       this->type = OrderE::SPIN_E;
       this->timeoutDs = timeoutDs;
+      this->ptrActionPere=ptrActionPere;
     
 	    this->spin = { nerv, thetaAim };
     }
@@ -98,10 +102,11 @@ class SPIN : public Order
 class SPINGOTO : public Order
 {
   public:
-    SPINGOTO(uint8_t nerv, float xAim, float yAim, uint8_t timeoutDs)
+    SPINGOTO(uint8_t nerv, float xAim, float yAim, uint8_t timeoutDs, Action * ptrActionPere)
     {
       this->type = OrderE::SPINGOTO_E;
       this->timeoutDs = timeoutDs;
+      this->ptrActionPere=ptrActionPere;
       
       this->spinGoTo.nerv=nerv;
       this->spinGoTo.posAim=init_vector(xAim,yAim);
@@ -111,10 +116,11 @@ class SPINGOTO : public Order
 class FWD : public Order
 {
   public:
-  	FWD(float acc, float v, uint8_t timeoutDs)
+  	FWD(float acc, float v, uint8_t timeoutDs, Action * ptrActionPere)
     {
       this->type = OrderE::FWD_E;
       this->timeoutDs = timeoutDs;
+      this->ptrActionPere=ptrActionPere;
     
 	    this->fwd = { acc, v };
     }
@@ -123,10 +129,11 @@ class FWD : public Order
 class BWD : public Order
 {
   public:
-  	BWD(float acc, float v, uint8_t timeoutDs)
+  	BWD(float acc, float v, uint8_t timeoutDs, Action * ptrActionPere)
     {
       this->type = OrderE::BWD_E;
       this->timeoutDs = timeoutDs;
+      this->ptrActionPere=ptrActionPere;
     
 	    this->bwd = { acc, v };
     }
@@ -138,10 +145,11 @@ class STBY : public Order
   	uint8_t nerv;
   	char unlockMessage[4];
   
-  	STBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs)
+  	STBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs, Action * ptrActionPere)
     {
       this->type = OrderE::STBY_E;
       this->timeoutDs = timeoutDs;
+      this->ptrActionPere=ptrActionPere;
 
 	    this->stby.nerv = nerv;
       this->stby.unlockMessage[0] = unlockMessage[0];
@@ -154,10 +162,11 @@ class STBY : public Order
 class SEND : public Order
 {
 public:
-	SEND(const char message[], uint8_t timeoutDs)
+	SEND(const char message[], uint8_t timeoutDs, Action * ptrActionPere)
 	{
 		this->type = OrderE::SEND_E;
 		this->timeoutDs = timeoutDs;
+    this->ptrActionPere=ptrActionPere;
 
 		this->send.message[0] = message[0];
 		this->send.message[1] = message[1];
@@ -169,10 +178,11 @@ public:
 class EMSTOP : public Order
 {
 public:
-	EMSTOP(uint8_t timeoutDs)
+	EMSTOP(uint8_t timeoutDs,Action * ptrActionPere)
 	{
 		this->type = OrderE::EMSTOP_E;
 		this->timeoutDs = timeoutDs;
+    this->ptrActionPere=ptrActionPere;
 	}
 };
 

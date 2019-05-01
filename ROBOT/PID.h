@@ -41,6 +41,7 @@ class PID
   
   void actuate(float dt,VectorE posERobot,float vRobot,float wRobot);              //Actualise les PID (compare la position du ghost et du robot, et donne les ordres au moteur en fonction
   void reload();
+  void loadNext();
 
   PID();
   PID(Motor* in_pointeurSurMoteurGauche, Motor* in_pointeurSurMoteurDroite, Fifo* in_pointeurSurFifo, Ghost* in_pointeurSurGhost, Comm* in_pointeurSurComm, Cerveau * in_pointeurCerveau);

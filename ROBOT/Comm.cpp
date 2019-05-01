@@ -28,14 +28,14 @@ void Comm::specialBehavior()
   if (strEqual(special1,lastMessage))
   {
     taken();
-  	ordresRobot->addHead(STBY(OFF, "DUMY", 100));	
-  	ordresRobot->addHead(EMSTOP(10));
+  	ordresRobot->addHead(STBY(OFF, "DUMY", 100,nullptr));	
+  	ordresRobot->addHead(EMSTOP(10,nullptr));
     ptrPid->reload();
   }
   if (strEqual(special2,lastMessage))
   {
     taken();
-    ordresRobot->add(SPINGOTO(RUSH,0,0,50));
+    ordresRobot->add(SPINGOTO(RUSH,0,0,50,nullptr));
   }
 }
 
@@ -64,5 +64,6 @@ void Comm::taken()
 
 void Comm::send(const char message[])
 {
-  Serial.println(message);
+  for (int i=0;i<=3;i++)Serial.print(message[i]);
+  Serial.println();
 }
