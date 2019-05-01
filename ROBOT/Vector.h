@@ -5,25 +5,27 @@
 
 struct Vector                       //Une classe Vecteur toute simple
 {
-  float x;
-  float y;
+    float x;
+    float y;
 };
 
 struct Matrix
 {
-  float a;float b;
-  float c;float d;
+    float a;
+    float b;
+    float c;
+    float d;
 };
 
 struct VectorE                      //E pour étendu, contient un angle
 {
-  Vector vec;
-  float theta;
+    Vector vec;
+    float theta;
 };
 
 
 
-Vector const vecNull={0.0,0.0};     //Vecteur nul
+Vector const vecNull= {0.0,0.0};    //Vecteur nul
 Vector init_vector(float x,float y);     //Nouveau vecteur
 VectorE init_vectorE(float x,float y,float theta);
 Matrix init_matrix(float a,float b,float c,float d);     //Nouveau vecteur

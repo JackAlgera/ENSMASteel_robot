@@ -9,7 +9,7 @@
 
 class Ghost
 {
-  public: 
+public:
     float t=0.0,t_e=0.0,v_e=1.0;                            // Temps depuis init,Temps fictif (entre 0 et 1), vitesse fictive
     bool spinning=true,reversed=false,locked=true;
     uint32_t microsStart=0;                                 // Microsecondes ecoulée lors du dernier appel
@@ -23,7 +23,7 @@ class Ghost
     Ghost();
     Ghost(VectorE posEini);
     void recalle(VectorE posERobot, float v);               // Teleporte le fantome sur le robot
-    void actuate(float dt);                                 // Actualise la position grace aux polynomes 
+    void actuate(float dt);                                 // Actualise la position grace aux polynomes
     void unlock();
 };
 #endif

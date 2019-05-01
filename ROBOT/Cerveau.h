@@ -10,38 +10,38 @@
 class Cerveau
 {
 public:
-	Action actionList[NBR_ACTIONS];		// Array qui contient l'ensemble des actions, qui contiennent chacun des ordres 
-	bool DONE[NBR_ACTIONS];				    // Array qui nous dit si un action est fini ou non
-	ActionE currentActionIndex;
-	Fifo *ordresFifo;
-	
-	void supprimerAction(ActionE action);
-	void choisirAction();		// TODO : a remplir
-	ActionE nextBestAction(ActionE *list, int size);
+    Action actionList[NBR_ACTIONS];		// Array qui contient l'ensemble des actions, qui contiennent chacun des ordres
+    bool DONE[NBR_ACTIONS];				    // Array qui nous dit si un action est fini ou non
+    ActionE currentActionIndex;
+    Fifo *ordresFifo;
 
-	void actuate();
-	void addActionOrders();
-	//void finirOrdre();
+    void supprimerAction(ActionE action);
+    void choisirAction();		// TODO : a remplir
+    ActionE nextBestAction(ActionE *list, int size);
 
-	//void addNextOrder();		// Ajouter l'ordre suivant au buffer
-  
+    void actuate();
+    void addActionOrders();
+    //void finirOrdre();
 
-	Cerveau();
-	Cerveau(Fifo * ordresFifo);
-	~Cerveau();
- private:
-  void addChaos();
-  void addDistribx6();
-  void addCoupDeCul();
-  void addDistribx3();
-  void addRecupBlueAcc();
-  void addPoseAcc();
-  void addRecupGoldAcc();
-  void addBalance();
-  void addPoseSol();
-  void addMonteRampe();
-  void addPoseRampe();
-  void addDescendRampe();
+    //void addNextOrder();		// Ajouter l'ordre suivant au buffer
+
+
+    Cerveau();
+    Cerveau(Fifo * ordresFifo);
+    ~Cerveau();
+private:
+    void addChaos();
+    void addDistribx6();
+    void addCoupDeCul();
+    void addDistribx3();
+    void addRecupBlueAcc();
+    void addPoseAcc();
+    void addRecupGoldAcc();
+    void addBalance();
+    void addPoseSol();
+    void addMonteRampe();
+    void addPoseRampe();
+    void addDescendRampe();
 
 };
 
