@@ -45,7 +45,7 @@
 #define DROITE 1
 
 #define NERV RUSH
-#define TMOUT 100 
+#define TMOUT 100
 
 #define ACRT 0    //accurate
 #define STD 1     //standard
@@ -62,7 +62,7 @@
 
 enum OrderE
 {
-  GOTO_E, SPIN_E, SPINGOTO_E, FWD_E, BWD_E, STBY_E, SEND_E, EMSTOP_E
+    GOTO_E, SPIN_E, SPINGOTO_E, FWD_E, BWD_E, STBY_E, SEND_E, EMSTOP_E
 };
 
 // On aura Chaos = 0, Distribx6 = 1 etc..
@@ -70,21 +70,21 @@ enum OrderE
 #define NBR_ACTIONS 12
 enum ActionE
 {
-  Chaos, Distribx6, Distribx3, CoupDeCul,
-  RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol,
-  MonteRampe, PoseRampe, DescendRampe
-};   
+    Chaos, Distribx6, Distribx3, CoupDeCul,
+    RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol,
+    MonteRampe, PoseRampe, DescendRampe
+};
 
 enum ErreurE
 {
-	FAIL
+    FAIL
 };
 
 //-------------------------DEPLACEMENTS-------------------------
 
 #define RAYON_RECONVERGENCE 0.90          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
 #define RAYON_TERMINE 0.05                //Distance en dessous duquel on considère que le robot est arrivé
-#define DELTA_THETA_TERMINE 0.08          //Delta theta en dessous duquel on considère le spin terminé 
+#define DELTA_THETA_TERMINE 0.08          //Delta theta en dessous duquel on considère le spin terminé
 #define FREQUENCY 50.0
 #define DELAY 0.100
 //NERV ---> FIFO.CPP
