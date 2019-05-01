@@ -26,75 +26,75 @@ Action::Action()
 {
 }
 
-void Action::addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs,Action * papa)
+void Action::addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = GOTO(nerv, fleche, xAim, yAim, thetaAim, arret, timeoutDs,papa);
+		ordersList[currentOrderAdd] = GOTO(nerv, fleche, xAim, yAim, thetaAim, arret, timeoutDs,this);
 		
   currentOrderAdd++;
 	}
 }
 
-void Action::addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs,Action * papa)
+void Action::addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = SPIN(nerv, thetaAim, timeoutDs,papa);
+		ordersList[currentOrderAdd] = SPIN(nerv, thetaAim, timeoutDs,this);
 		currentOrderAdd++;
 	}
 }
 
-void Action::addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs,Action * papa)
+void Action::addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs)
 {
   if (currentOrderAdd < nbrOrders)
   {
-    ordersList[currentOrderAdd] = SPINGOTO(nerv,xAim,yAim,timeoutDs,papa);
+    ordersList[currentOrderAdd] = SPINGOTO(nerv,xAim,yAim,timeoutDs,this);
     currentOrderAdd++;
   }
 }
 
-void Action::addFWD(float acc, float v, uint8_t timeoutDs,Action * papa)
+void Action::addFWD(float acc, float v, uint8_t timeoutDs)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = FWD(acc, v, timeoutDs,papa);
+		ordersList[currentOrderAdd] = FWD(acc, v, timeoutDs,this);
 		currentOrderAdd++;
 	}
 }
 
-void Action::addBWD(float acc, float v, uint8_t timeoutDs,Action * papa)
+void Action::addBWD(float acc, float v, uint8_t timeoutDs)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = BWD(acc, v, timeoutDs,papa);
+		ordersList[currentOrderAdd] = BWD(acc, v, timeoutDs,this);
 		currentOrderAdd++;
 	}
 }
 
-void Action::addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeout,Action * papa)
+void Action::addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeout)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = STBY(nerv, unlockMessage, timeout,papa);
+		ordersList[currentOrderAdd] = STBY(nerv, unlockMessage, timeout,this);
 		currentOrderAdd++;
 	}
 }
 
-void Action::addSEND(const char message[], uint8_t timeoutDs,Action * papa)
+void Action::addSEND(const char message[], uint8_t timeoutDs)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = SEND(message, timeoutDs,papa);
+		ordersList[currentOrderAdd] = SEND(message, timeoutDs,this);
 		currentOrderAdd++;
 	}
 }
 
-void Action::addEMSTOP(uint8_t timeoutDs,Action * papa)
+void Action::addEMSTOP(uint8_t timeoutDs)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = EMSTOP(timeoutDs,papa);
+		ordersList[currentOrderAdd] = EMSTOP(timeoutDs,this);
 		currentOrderAdd++;
 	}
 }
