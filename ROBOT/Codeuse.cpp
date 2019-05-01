@@ -8,16 +8,13 @@ void Codeuse::actuate(float dt)
   oldTicks=ticks;
 }
 
-Codeuse::Codeuse(uint8_t in_GD, Encoder *newEnc)
+Codeuse::Codeuse(uint8_t pinA,uint8_t pinB)
 {  
-  //if (in_GD==GAUCHE) enc=*(new Encoder(PIN_CODEUSE_GAUCHE_B,PIN_CODEUSE_GAUCHE_A));
-  //else enc=*(new Encoder(PIN_CODEUSE_DROITE_B,PIN_CODEUSE_DROITE_A));
+  enc=new Encoder(pinA,pinB);
   ticks=0;
   oldTicks=0;
   v=0.0;
   deltaAvance=0;
-
-  enc = newEnc;
 }
 
 Codeuse::Codeuse()

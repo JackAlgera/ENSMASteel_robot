@@ -1,6 +1,5 @@
 #include "Moteur.h"
 #include "Arduino.h"
-#include "TimerOne.h"
 
 void Motor::actuate()
 {
