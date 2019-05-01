@@ -68,6 +68,7 @@ enum OrderE
 // On aura Chaos = 0, Distribx6 = 1 etc..
 // ActionE::Chaos pour y acceder -> exemple : if(!DONE[ActionE::Chaos]) {...}
 #define NBR_ACTIONS 12
+
 enum ActionE
 {
   Chaos, Distribx6, Distribx3, CoupDeCul,

@@ -10,8 +10,8 @@
 class Cerveau
 {
 public:
-	Action actionList[12];		// Array qui contient l'ensemble des actions, qui contiennent chacun des ordres 
-	bool DONE[12];				    // Array qui nous dit si un action est fini ou non
+	Action actionList[NBR_ACTIONS];		// Array qui contient l'ensemble des actions, qui contiennent chacun des ordres 
+	bool DONE[NBR_ACTIONS];				    // Array qui nous dit si un action est fini ou non
 	ActionE currentActionIndex;
 	Fifo *ordresFifo;
 	

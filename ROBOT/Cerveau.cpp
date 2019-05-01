@@ -169,8 +169,6 @@ ActionE Cerveau::nextBestAction(ActionE *list, int size)
 
 void Cerveau::actuate()
 {
-	Serial.print("ptrSurPereIs ");Serial.println((int)actionList[currentActionIndex].ordersList[actionList[currentActionIndex].currentOrderIndex].ptrActionPere);
-  Serial.print("ptrSurPereShouldBe ");Serial.println((int)&(actionList[currentActionIndex]));
 	if (actionList[currentActionIndex].actionCompleted)
   {
 	  DONE[currentActionIndex] = true;
@@ -201,7 +199,7 @@ Cerveau::Cerveau(Fifo * ordresFifo)
 {
 	this->ordresFifo = ordresFifo;
 
-	for (int i = 0; i < 12; i++)
+	for (int i = 0; i < NBR_ACTIONS; i++)
 	{
 		DONE[i] = false;
 	}
