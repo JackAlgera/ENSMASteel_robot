@@ -111,6 +111,8 @@ void Action::nextStep()
 	if (!actionCompleted)
 	{
 		Serial.print("l'adresse de l'action dont j'ai ++ le currentOrder: ");Serial.println((int)this);
+		Serial.print("action type: "); Serial.println((int)this->type);
+		Serial.print("l'adresse de l'action dont j'ai ++ le currentOrder: "); Serial.println((int)this->ordersList[1].ptrActionPere);
 		currentOrder++;
 		if (currentOrder == nbrOrders)
 		{
