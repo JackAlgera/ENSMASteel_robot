@@ -6,13 +6,13 @@
 
 class Motor
 {
-public:
-    uint8_t pinPWR,pinSens1,pinSens2;   //Pin de puissance (PWM) et les deux pin pour donner le sens de rotation
-    int32_t order,masterOrder;              //Le regime moteur entre -65535 et 65535
-    float health=1.0;
-    bool bypass=false;
-
-    void actuate();                     //Actualisation de la puissance moteur
+  public:
+  uint8_t pinPWR,pinSens1,pinSens2;   //Pin de puissance (PWM) et les deux pin pour donner le sens de rotation
+  int32_t order,masterOrder;              //Le regime moteur entre -65535 et 65535
+  float health=1.0;
+  bool bypass=false; 
+  
+  void actuate();                     //Actualisation de la puissance moteur
 };
 
 Motor init_motor(uint8_t in_pinPWR, uint8_t in_pinSens1, uint8_t in_pinSens2,float health);

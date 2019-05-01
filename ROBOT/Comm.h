@@ -8,7 +8,7 @@ void strSet(char *str,const char in[]);
 
 class Comm
 {
-public:
+  public:
     Fifo* ordresRobot;
     PID* ptrPid;
     char lastMessage[4]="OBS";
@@ -16,7 +16,7 @@ public:
     void taken();
     void set(Fifo* in_ordresRobot,PID* in_ptrPid);
     void send(const char message[]);
-private:
+  private:
     void specialBehavior();
 };
 #endif
