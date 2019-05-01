@@ -12,7 +12,7 @@ class Cerveau
 public:
 	Action actionList[12];		// Array qui contient l'ensemble des actions, qui contiennent chacun des ordres 
 	bool DONE[12];				    // Array qui nous dit si un action est fini ou non
-	ActionE currentAction;
+	ActionE currentActionIndex;
 	Fifo *ordresFifo;
 	
 	void supprimerAction(ActionE action);
