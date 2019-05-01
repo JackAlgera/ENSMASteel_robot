@@ -133,8 +133,8 @@ void setup()
 {   
   delay(5000);
   Serial.begin(115200);
-  robot.set(1.5,1.0,0.0);				// Malheureusement je set le master ici aussi pour l'instant
   Serial.println("--REBOOT--");
+  robot.set(1.5,1.0,0.0);
   m=micros();
   microsStart=m-((uint32_t)(1.0/FREQUENCY*1000000.0));
 }

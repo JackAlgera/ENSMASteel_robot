@@ -169,8 +169,8 @@ ActionE Cerveau::nextBestAction(ActionE *list, int size)
 
 void Cerveau::actuate()
 {
-	Serial.print("&actionList[ActionE::Chaos]= ");Serial.println((int)&actionList[ActionE::Chaos]);
-	//Serial.println(actionList[currentAction].currentOrder);
+	Serial.print("adresse de la case contenant l'action courante= ");Serial.println((int)&actionList[currentActionIndex]);
+	Serial.print("currentOrder ");Serial.println(actionList[currentActionIndex].currentOrder);
 	if (actionList[currentActionIndex].actionCompleted)
   {
 	  DONE[currentActionIndex] = true;

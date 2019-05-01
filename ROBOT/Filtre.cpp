@@ -1,4 +1,5 @@
 #include "Filtre.h"
+#include "Vector.h"
 #include "Arduino.h"
 
 #include "1_CONSTANT.h"
