@@ -1,9 +1,5 @@
 #include "Cerveau.h"
 
-void Cerveau::neRienFaire(VectorE posRobot)
-{
-  
-}
 
 
 // bool thisIsVeryUgly = true;
@@ -18,7 +14,7 @@ void Cerveau::neRienFaire(VectorE posRobot)
 void Cerveau::addChaos()
 {
     actionList[ActionE::Chaos] = Action(ActionE::Chaos);
-    actionList[ActionE::Chaos].addSEND("CHAO",10,nullptr,0);
+    actionList[ActionE::Chaos].addSEND("CHAO",10,neRienFaire,0);//      <----------------------------------------HELP
     actionList[ActionE::Chaos].addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT,nullptr,0);
     actionList[ActionE::Chaos].addSPIN(STD, 1, 20,nullptr,0);
 }

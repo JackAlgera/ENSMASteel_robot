@@ -6,6 +6,11 @@
 #include "1_CONSTANT.h"
 #include "Fifo.h"
 #include "PID.h"
+void neRienFaire(VectorE posERobot)
+{
+  
+}
+
 class Cerveau
 {
 public:
