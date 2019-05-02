@@ -56,8 +56,8 @@ void Robot::actuateODO(float dt)
 void Robot::set(float x0,float y0, float theta0)
 {
     delay(1000);
-    moteurDroite  = init_motor(PIN_MOTEUR_DROITE_PWR,PIN_MOTEUR_DROITE_SENS1,PIN_MOTEUR_DROITE_SENS2,1.0);
-    moteurGauche  = init_motor(PIN_MOTEUR_GAUCHE_PWR,PIN_MOTEUR_GAUCHE_SENS1,PIN_MOTEUR_GAUCHE_SENS2,0.96);
+    moteurDroite  = init_motor(PIN_MOTEUR_DROITE_PWR,PIN_MOTEUR_DROITE_SENS,PIN_MOTEUR_DROITE_BRAKE,1.0);
+    moteurGauche  = init_motor(PIN_MOTEUR_GAUCHE_PWR,PIN_MOTEUR_GAUCHE_SENS,PIN_MOTEUR_GAUCHE_BRAKE,0.96);
     codeuseGauche = Codeuse(PIN_CODEUSE_GAUCHE_A,PIN_CODEUSE_GAUCHE_B);
     codeuseDroite = Codeuse(PIN_CODEUSE_DROITE_A,PIN_CODEUSE_DROITE_B);
     VectorE initVect = init_vectorE(x0,y0,theta0);
