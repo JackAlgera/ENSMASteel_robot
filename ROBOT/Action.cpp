@@ -1,14 +1,11 @@
 #include "Action.h"
 
-Action::Action(ActionE type, int nbrOrders)
+Action::Action(ActionE type)
 {
     this->type = type;
-    this->nbrOrders = nbrOrders;
+    this->nbrOrders = 0;
     this->currentOrderIndex = 0;
     this->actionCompleted = false;
-    this->currentOrderAdd = 0;
-    this->currentBufferOrderIndex = 0;
-    ordersList = new Order[nbrOrders];
 }
 
 Action::Action()
@@ -17,75 +14,50 @@ Action::Action()
 
 void Action::addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs)
 {
-    if (currentOrderAdd < nbrOrders)
-    {
-        ordersList[currentOrderAdd] = GOTO(nerv, fleche, xAim, yAim, thetaAim, arret, timeoutDs,this);
-
-        currentOrderAdd++;
-    }
+    ordersList[nbrOrders] = GOTO(nerv, fleche, xAim, yAim, thetaAim, arret, timeoutDs,this);
+    nbrOrders++;
 }
 
 void Action::addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs)
 {
-    if (currentOrderAdd < nbrOrders)
-    {
-        ordersList[currentOrderAdd] = SPIN(nerv, thetaAim, timeoutDs,this);
-        currentOrderAdd++;
-    }
+    ordersList[nbrOrders] = SPIN(nerv, thetaAim, timeoutDs,this);
+    nbrOrders++;
 }
 
 void Action::addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs)
 {
-    if (currentOrderAdd < nbrOrders)
-    {
-        ordersList[currentOrderAdd] = SPINGOTO(nerv,xAim,yAim,timeoutDs,this);
-        currentOrderAdd++;
-    }
+    ordersList[nbrOrders] = SPINGOTO(nerv,xAim,yAim,timeoutDs,this);
+    nbrOrders++;
 }
 
 void Action::addFWD(float acc, float v, uint8_t timeoutDs)
 {
-    if (currentOrderAdd < nbrOrders)
-    {
-        ordersList[currentOrderAdd] = FWD(acc, v, timeoutDs,this);
-        currentOrderAdd++;
-    }
+    ordersList[nbrOrders] = FWD(acc, v, timeoutDs,this);
+    nbrOrders++;
 }
 
 void Action::addBWD(float acc, float v, uint8_t timeoutDs)
 {
-    if (currentOrderAdd < nbrOrders)
-    {
-        ordersList[currentOrderAdd] = BWD(acc, v, timeoutDs,this);
-        currentOrderAdd++;
-    }
+    ordersList[nbrOrders] = BWD(acc, v, timeoutDs,this);
+    nbrOrders++;
 }
 
 void Action::addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeout)
 {
-    if (currentOrderAdd < nbrOrders)
-    {
-        ordersList[currentOrderAdd] = STBY(nerv, unlockMessage, timeout,this);
-        currentOrderAdd++;
-    }
+    ordersList[nbrOrders] = STBY(nerv, unlockMessage, timeout,this);
+    nbrOrders++;
 }
 
 void Action::addSEND(const char message[], uint8_t timeoutDs)
 {
-    if (currentOrderAdd < nbrOrders)
-    {
-        ordersList[currentOrderAdd] = SEND(message, timeoutDs,this);
-        currentOrderAdd++;
-    }
+    ordersList[nbrOrders] = SEND(message, timeoutDs,this);
+    nbrOrders++;
 }
 
 void Action::addEMSTOP(uint8_t timeoutDs)
 {
-    if (currentOrderAdd < nbrOrders)
-    {
-        ordersList[currentOrderAdd] = EMSTOP(timeoutDs,this);
-        currentOrderAdd++;
-    }
+    ordersList[nbrOrders] = EMSTOP(timeoutDs,this);
+    nbrOrders++;
 }
 
 Order * Action::getCurrentOrder()
@@ -105,16 +77,10 @@ void Action::nextStep()
     }
 }
 
-void Action::addOrdersToBuffer(Fifo * ordresFifo, bool reAdd) // Si on souhaite re-ajouter la liste d'odres d'une action au buffer en partant du dernier ordre complete
+void Action::addOrdersToBuffer(Fifo * ordresFifo)
 {
-    if (reAdd)
+    for(int i=0;i<nbrOrders;i++)					// On ajoute l'ensemble des ordres au buffer
     {
-        currentBufferOrderIndex = currentOrderIndex;
-    }
-
-    while (currentBufferOrderIndex < nbrOrders)					// On ajoute l'ensemble des ordres au buffer
-    {
-        ordresFifo->add(ordersList[currentBufferOrderIndex]);
-        currentBufferOrderIndex++;
+        ordresFifo->add(ordersList[i]);
     }
 }
