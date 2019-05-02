@@ -95,6 +95,7 @@ Order * Action::getCurrentOrder()
 
 void Action::nextStep()
 {
+<<<<<<< HEAD
     if (!actionCompleted)
     {
         currentOrderIndex++;
@@ -103,6 +104,19 @@ void Action::nextStep()
             actionCompleted = true;
         }
     }
+=======
+	if (!actionCompleted)
+	{
+		Serial.print("l'adresse de l'action dont j'ai ++ le currentOrder: ");Serial.println((int)this);
+		Serial.print("action type: "); Serial.println((int)this->type);
+		Serial.print("l'adresse de l'action dont j'ai ++ le currentOrder: "); Serial.println((int)this->ordersList[1].ptrActionPere);
+		currentOrderIndex++;
+		if (currentOrderIndex == nbrOrders-1)
+		{
+			actionCompleted = true;
+		}
+	}
+>>>>>>> b6d509f18dc5a547c55c0e46316446ad228acd10
 }
 
 void Action::addOrdersToBuffer(Fifo * ordresFifo, bool reAdd) // Si on souhaite re-ajouter la liste d'odres d'une action au buffer en partant du dernier ordre complete
