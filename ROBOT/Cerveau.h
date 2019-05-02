@@ -23,6 +23,7 @@ public:
 
     void actuate();
     void addActionOrders();
+    void abandonneCurrentAction();
     //void finirOrdre();
 
     //void addNextOrder();		// Ajouter l'ordre suivant au buffer

@@ -1,6 +1,7 @@
 #include "Comm.h"
 #include "Arduino.h"
 #include "Fifo.h"
+#include "ContreMesure.h"
 
 bool strEqual(char* str1,char* str2)
 {
@@ -25,17 +26,23 @@ void Comm::specialBehavior()
 {
     char special1[]="ESTP"; //Emergency SToP
     char special2[]="BACK";
+    char special3[]="FAIL";
     if (strEqual(special1,lastMessage))
     {
         taken();
-        ordresRobot->addHead(STBY(OFF, "DUMY", 100,nullptr,nullptr,0));
-        ordresRobot->addHead(EMSTOP(10,nullptr,nullptr,0));
+        ordresRobot->addHead(STBY(OFF, "DUMY", 100,nullptr,normalTimeout,0));
+        ordresRobot->addHead(EMSTOP(10,nullptr,simpleTimeout,0));
         ptrPid->reload();
     }
     if (strEqual(special2,lastMessage))
     {
         taken();
-        ordresRobot->add(SPINGOTO(RUSH,0,0,50,nullptr,nullptr,0));
+        ordresRobot->add(SPINGOTO(RUSH,0,0,50,nullptr,simpleTimeout,0));
+    }
+    if (strEqual(special3,lastMessage))
+    {
+        taken();
+        ptrPid->failureDetected(ErreurE::MEGA);
     }
 }
 

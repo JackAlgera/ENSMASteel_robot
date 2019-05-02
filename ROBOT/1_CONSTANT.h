@@ -14,8 +14,7 @@
 //#define DELAY_TUNE
 //#define X_TUNE
 #define STATIQUE false            //Permet de faire des essais sans robot
-#define PIDL true
-#define PIDA true
+
 
 //-------------------------PINS-------------------------
 #define PIN_CODEUSE_GAUCHE_A 28
@@ -77,14 +76,19 @@ enum ActionE
 
 enum ErreurE
 {
-    FAIL
+    TIMEOUT,PID_FAILURE,MEGA
 };
 
 //-------------------------DEPLACEMENTS-------------------------
 
-#define RAYON_RECONVERGENCE 0.90          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
+#define RAYON_RECONVERGENCE 0.05          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
 #define RAYON_TERMINE 0.05                //Distance en dessous duquel on considère que le robot est arrivé
 #define DELTA_THETA_TERMINE 0.08          //Delta theta en dessous duquel on considère le spin terminé
+
+#define RAYON_FAIL 0.10
+#define DELTA_THETA_FAIL 0.5
+#define FAIL_TIME 0.5
+
 #define FREQUENCY 50.0
 #define DELAY 0.100
 //NERV ---> FIFO.CPP
@@ -93,5 +97,6 @@ enum ErreurE
 //-------------------------MISCENCELLOUS-------------------------
 #define TAILLEFIFO 40           //Taille du buffer circulaire
 #define DEGRE_MAX 6
+
 
 #endif

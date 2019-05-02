@@ -4,6 +4,8 @@
 #include "1_CONSTANT.h"
 #include "Comm.h"
 #include "Robot.h"
+#include "Cerveau.h"
+#include "ContreMesure.h"
 
 float nervA[3]=   { 0.1, 0.8, 1.5   };
 float nervV[3]=   { 0.05, 0.5, 1.5   };
@@ -20,6 +22,21 @@ uint16_t K[5][2][3]=
     {{0,0,0},{0,0,0}}  //OFF
 };
 
+void PID::failureDetected(ErreurE erreur)
+{
+  ptrRobot->ordresFifo.ptrFst()->nbFail++;
+  if(ptrRobot->ordresFifo.ptrFst()->nbFail>ptrRobot->ordresFifo.ptrFst()->nbMaxFail)
+  {
+    if(ptrRobot->ordresFifo.ptrFst()->ptrActionPere!=nullptr){ptrRobot->master->abandonneCurrentAction();}
+    else{loadNext();}
+  }
+  else
+  {
+    bool sanction=(*(ptrRobot->ordresFifo.ptrFst()->contreMesure))(ptrRobot,erreur);
+    if (!sanction)ptrRobot->ordresFifo.ptrFst()->nbFail--;
+  }
+}
+
 void PID::reload()
 {
     float dt=lastDt;
@@ -27,13 +44,14 @@ void PID::reload()
     float vRobot=lastVRobot;
     //On libere dans le cas d'un timeout
     ptrRobot->ghost.locked=false;
+    //On suppose dans un premier temps qu'on est nearEnough
+    timeLastNearEnough=millis()/1000.0;
 
     //On debypass
     ptrRobot->moteurGauche.bypass=false;
     ptrRobot->moteurDroite.bypass=false;
 
     //On recalle le ghost sur le robot
-    //if ( (not STATIQUE) and ((ptrRobot->ordresFifo.ptrFst()->type==GOTO_TYPE and ptrRobot->ordresFifo.ptrFst()->goTo.arret) or ptrRobot->ordresFifo.ptrFst()->type==SPIN_TYPE)   ) {IA=0.0;IL=0.0;ptrRobot->ghost.recalle(posERobot,vRobot);}
     IA=0.0;
     IL=0.0;
     if (not STATIQUE)
@@ -138,11 +156,12 @@ void PID::reload()
         Vector aim=sg.posAim;
         float nerv=sg.nerv;
         Action * papa=ptrRobot->ordresFifo.ptrFst()->ptrActionPere;
+        ptrFonction contreMesure=ptrRobot->ordresFifo.ptrFst()->contreMesure;
         float timeout=ptrRobot->ordresFifo.ptrFst()->timeoutDs;
         Serial.print("angle ");
         Serial.println(angle(delta));
-        ptrRobot->ordresFifo.replaceHead(GOTO(nerv,0.1,aim.x, aim.y, angle(delta), true, timeout,papa,nullptr,0));
-        ptrRobot->ordresFifo.addHead(SPIN(nerv,angle(delta),timeout,nullptr,nullptr,0));
+        ptrRobot->ordresFifo.replaceHead(GOTO(nerv,0.1,aim.x, aim.y, angle(delta), true, timeout,papa,contreMesure,0));
+        ptrRobot->ordresFifo.addHead(SPIN(nerv,angle(delta),timeout,nullptr,contreMesure,0));
         reload();
     }
     break;
@@ -207,11 +226,15 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
         //Calcul de l'erreur angulaire avec retard
         float errorA;
         // Si le robot est proche du ghost, le robot imite la direction du ghost
-        if (abs(errorL)<RAYON_RECONVERGENCE or STATIQUE or (not PIDL))
+        if (abs(errorL)<RAYON_RECONVERGENCE or STATIQUE)
+        {
+            reconvergence=false;
             errorA=normalize(ptrRobot->ghost.posED.theta-posERobot.theta);
+        }
         // Sinon, le robot converge vers le ghost
         else
         {
+            reconvergence=true;
             if (errorL>=0)
                 errorA=normalize( angle(minus(ptrRobot->ghost.posED.vec,posERobot.vec)) -  posERobot.theta);
             else
@@ -223,16 +246,10 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
 
         //PD
         float ordreA= (K[PIDnervANG][ANG][KP]*errorA + K[PIDnervANG][ANG][KI]*IA + K[PIDnervANG][ANG][KD]*(ptrRobot->ghost.w - 0.8*wRobot))/1000.0;
-        if (not PIDA)
-            ordreA=0.0;
-        else
-            ordreA=constrain(ordreA*MAXPWM,-MAXPWM, MAXPWM);
+        ordreA=constrain(ordreA*MAXPWM,-MAXPWM, MAXPWM);
 
         float ordreL= (K[PIDnervLIN][LIN][KP]*errorL + K[PIDnervLIN][LIN][KI]*IL   + K[PIDnervLIN][LIN][KD]*(ptrRobot->ghost.v - 0.95*vRobot))/1000.0;
-        if (not PIDL)
-            ordreL=0.0;
-        else
-            ordreL=constrain(ordreL*MAXPWM,-MAXPWM+abs(ordreA),MAXPWM-abs(ordreA));
+        ordreL=constrain(ordreL*MAXPWM,-MAXPWM+abs(ordreA),MAXPWM-abs(ordreA));
 
         //On donne les ordres
         ptrRobot->moteurGauche.order= (int32_t)(ordreL - ordreA);
@@ -257,25 +274,30 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
 
     }
 
-    bool linOK        = longueur( minusFAST(&posERobot.vec,&ptrRobot->ghost.posED.vec) )<=RAYON_TERMINE or (not PIDL) or STATIQUE;
-    bool angOK        = (normalize(ptrRobot->ghost.posED.theta-posERobot.theta)<=DELTA_THETA_TERMINE) or (not PIDA) or STATIQUE;
+    bool nearEnough   = (longueur( minusFAST(&posERobot.vec,&ptrRobot->ghost.posED.vec) )<=RAYON_FAIL and (normalize(ptrRobot->ghost.posED.theta-posERobot.theta)<=DELTA_THETA_FAIL or reconvergence)) or STATIQUE;
+    bool linOK        = longueur( minusFAST(&posERobot.vec,&ptrRobot->ghost.posED.vec) )<=RAYON_TERMINE or STATIQUE;
+    bool angOK        = (normalize(ptrRobot->ghost.posED.theta-posERobot.theta)<=DELTA_THETA_TERMINE) or STATIQUE;
     bool vitesseOK    = (abs(vRobot)<0.005 and abs(wRobot)<0.005) or STATIQUE or (ptrRobot->ordresFifo.ptrFst()->type == OrderE::GOTO_E and ptrRobot->ordresFifo.ptrFst()->goTo.arret==false);
     bool ghostArrive  = ptrRobot->ghost.t_e>0.95;
     bool ghostFree    = not ptrRobot->ghost.locked;
-    bool orderNext    = ptrRobot->ordresFifo.inBuffer>=2;
+    //bool orderNext    = ptrRobot->ordresFifo.inBuffer>=2;
     
     bool timeout      = (micros()-ptrRobot->ghost.microsStart)/1000000.0  >   ptrRobot->ordresFifo.ptrFst()->timeoutDs/10.0;
     bool messageITSTBY  = ptrRobot->ordresFifo.ptrFst()->type == OrderE::STBY_E and strEqual(ptrRobot->comm.lastMessage,ptrRobot->ordresFifo.ptrFst()->stby.unlockMessage);
     bool completeEMStop = ptrRobot->ordresFifo.ptrFst()->type == OrderE::EMSTOP_E and abs(vRobot)<0.005 and abs(wRobot)<0.005;
+    
+    if(timeout){failureDetected(ErreurE::TIMEOUT);} 
+    if(nearEnough){timeLastNearEnough=millis()/1000.0;}
+    if(millis()/1000.0-timeLastNearEnough>FAIL_TIME){failureDetected(ErreurE::PID_FAILURE);}
 
+    
 
     //On regarde si l'action est terminée
     if  (
         (linOK and angOK and vitesseOK and ghostArrive and ghostFree)// and orderNext)   //cas standard
-        or (timeout) //and orderNext)                                                    //cas timeout
         or (messageITSTBY) //and orderNext)                                              //cas message
         or (completeEMStop) //and orderNext)                                             //cas EMSTOP
-    )
+        )
     {
         //On vide la boite au lettre si on est sorti du stby grace a un message
         if (messageITSTBY)
@@ -293,7 +315,7 @@ void PID::loadNext()
 
     //On pop le Fifo
     ptrRobot->ordresFifo.pop();
-    if (ptrRobot->ordresFifo.inBuffer==0){ptrRobot->ordresFifo.add(STBY(DYDM, "DUMY", 1, nullptr,nullptr,0));} //TODO verifier si OFF n'est pas mieux
+    if (ptrRobot->ordresFifo.inBuffer==0){ptrRobot->ordresFifo.add(STBY(DYDM, "DUMY", 1, nullptr,normalTimeout,0));} //TODO verifier si OFF n'est pas mieux
 
     //On dit au robot que l'ordre actuel a change
     reload();
@@ -306,6 +328,7 @@ PID::PID()
 PID::PID(Robot * ptrRobot)
 {
     this->ptrRobot=ptrRobot;
+    this->timeLastNearEnough=millis()/1000.0;
 }
 
 PID::~PID()

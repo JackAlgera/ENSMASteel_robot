@@ -30,11 +30,14 @@ class PID
     float lastVRobot=0,lastDt=1/FREQUENCY;
     float IL=0.0,IA=0.0;
     Robot * ptrRobot;
+    bool reconvergence=false;
+    float timeLastNearEnough;
 public:
 
     void actuate(float dt,VectorE posERobot,float vRobot,float wRobot);              //Actualise les PID (compare la position du ghost et du robot, et donne les ordres au moteur en fonction
     void reload();
     void loadNext();
+    void failureDetected(ErreurE erreur);
 
     PID();
     PID(Robot * ptrRobot);

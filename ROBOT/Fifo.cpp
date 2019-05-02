@@ -1,6 +1,7 @@
 #include "Fifo.h"
 #include "Vector.h"
 #include "Comm.h"
+#include "ContreMesure.h"
 
 Fifo::Fifo()
 {
@@ -61,5 +62,5 @@ void Fifo::clean()
     indiceDebut = 1;
     indiceFin = 0;
     inBuffer = 0;
-    add(STBY(DYDM, "DUMY", 255,nullptr,nullptr,0));
+    add(STBY(DYDM, "DUMY", 255,nullptr,normalTimeout,0));
 }

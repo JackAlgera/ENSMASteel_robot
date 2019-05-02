@@ -7,7 +7,7 @@
 class Action;
 class Robot;
 
-typedef void (*ptrFonction)(Robot * ptrRobot);
+typedef bool (*ptrFonction)(Robot * ptrRobot,ErreurE erreur);   //Renvoie la necessite de sanctionner l'erreur ou non
 
 
 struct GOTO_S
