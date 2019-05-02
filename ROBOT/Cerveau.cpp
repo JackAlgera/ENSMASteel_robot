@@ -9,20 +9,6 @@
 //		Jack.CrySomeMore(100);  // en secondes
 // }
 
-// Liste des actions a prioriser pour chaque action,
-ActionE ChaosL[2] = { ActionE::Distribx6, ActionE::RecupBlueAcc };
-ActionE Distribx6L[1] = { ActionE::Distribx3 };
-ActionE Distribx3L[1] = { ActionE::CoupDeCul };
-ActionE CoupDeCulL[1] = { ActionE::RecupBlueAcc };
-ActionE RecupBlueAccL[1] = { ActionE::PoseAcc };
-ActionE PoseAccL[1] = { ActionE::RecupGoldAcc };
-ActionE RecupeGoldAccL[1] = { ActionE::Balance };
-ActionE BalanceL[1] = { ActionE::PoseSol };
-ActionE PoseSolL[1] = { ActionE::MonteRampe };
-ActionE MonteRampeL[1] = { ActionE::PoseRampe };
-ActionE PoseRampeL[1] = { ActionE::DescendRampe };
-ActionE DescendRampL[1] = { ActionE::Chaos };
-
 // Remplissage des actions avec les Order
 void Cerveau::addChaos()
 {
@@ -32,10 +18,22 @@ void Cerveau::addChaos()
     actionList[ActionE::Chaos].addSPIN(STD, 1, 20);
 }
 
-void Cerveau::addDistribx6()
+void Cerveau::addDistribx6_1()
 {
-    actionList[ActionE::Distribx6] = Action(ActionE::Distribx6, TAILLEFIFO);
-    actionList[ActionE::Distribx6].addSEND("DIx6",10);
+    actionList[ActionE::Distribx6_1] = Action(ActionE::Distribx6_1, TAILLEFIFO);
+    actionList[ActionE::Distribx6_1].addSEND("Dx61",10);
+}
+
+void Cerveau::addDistribx6_2()
+{
+	actionList[ActionE::Distribx6_2] = Action(ActionE::Distribx6_2, TAILLEFIFO);
+	actionList[ActionE::Distribx6_2].addSEND("Dx62", 10);
+}
+
+void Cerveau::addDistribx6_3()
+{
+	actionList[ActionE::Distribx6_3] = Action(ActionE::Distribx6_3, TAILLEFIFO);
+	actionList[ActionE::Distribx6_3].addSEND("Dx63", 10);
 }
 
 void Cerveau::addCoupDeCul()
@@ -97,73 +95,86 @@ void Cerveau::addDescendRampe()
     actionList[ActionE::DescendRampe].addSEND("DRMP",10);
 }
 
+void Cerveau::addCasseCouilles()
+{
+}
+
 void Cerveau::choisirAction()
 {
     ActionE newAction = ActionE::Chaos;
 
-    switch (currentActionIndex)
-    {
-    case Chaos:
-        newAction = nextBestAction(ChaosL, 2);
-        break;
-    case Distribx6:
-        newAction = nextBestAction(Distribx6L, 1);
-        break;
-    case Distribx3:
-        newAction = nextBestAction(Distribx3L, 1);
-        break;
-    case CoupDeCul:
-        newAction = nextBestAction(CoupDeCulL, 1);
-        break;
-    case RecupBlueAcc:
-        newAction = nextBestAction(RecupBlueAccL, 1);
-        break;
-    case PoseAcc:
-        newAction = nextBestAction(PoseAccL, 1);
-        break;
-    case RecupGoldAcc:
-        newAction = nextBestAction(RecupeGoldAccL, 1);
-        break;
-    case Balance:
-        newAction = nextBestAction(BalanceL, 1);
-        break;
-    case PoseSol:
-        newAction = nextBestAction(PoseSolL, 1);
-        break;
-    case MonteRampe:
-        newAction = nextBestAction(MonteRampeL, 1);
-        break;
-    case PoseRampe:
-        newAction = nextBestAction(PoseRampeL, 1);
-        break;
-    case DescendRampe:
-        newAction = nextBestAction(DescendRampL, 1);
-        break;
-    default:
-        break;
-    }
+	switch (currentActionIndex)
+	{
+	case Chaos:
+		newAction = nextBestAction();
+		break;
+	case Distribx6_1:
+		newAction = nextBestAction();
+		break;
+	case Distribx6_2:
+		newAction = nextBestAction();
+		break;
+	case Distribx6_3:
+		newAction = nextBestAction();
+		break;
+	case CoupDeCul:
+		newAction = nextBestAction();
+		break;
+	case Distribx3:
+		newAction = nextBestAction();
+		break;
+	case MonteRampe:
+		newAction = nextBestAction();
+		break;
+	case PoseRampe:
+		newAction = nextBestAction();
+		break;
+	case DescendRampe:
+		newAction = nextBestAction();
+		break;
+	case RecupBlueAcc:
+		newAction = nextBestAction();
+		break;
+	case PoseAcc:
+		newAction = nextBestAction();
+		break;
+	case RecupGoldAcc:
+		newAction = nextBestAction();
+		break;
+	case Balance:
+		newAction = nextBestAction();
+		break;
+	case PoseSol:
+		newAction = nextBestAction();
+		break;
+	case CasseCouilles:
+		newAction = nextBestAction();
+		break;
+	default:
+		break;
+	}
 
     currentActionIndex = newAction;
 }
 
-ActionE Cerveau::nextBestAction(ActionE *list, int size)
+ActionE Cerveau::nextBestAction()
 {
-    // On prend la premiere action disponible en priorisant les actions dans l'ordre de la liste
-    int i = 0;
-    while (i < size)
-    {
-        if (!DONE[list[i]])
-            return list[i];
-        i++;
-    }
     // Sinon on prend la premiere action non complete
-    i = 0;
-    while (i < NBR_ACTIONS)
+    int i = (int) currentActionIndex;
+    while (i < NBR_ACTIONS)			// On prend l'action suivante non encore fini en partant de l'action actuelle dans la liste
     {
         if (!DONE[i])
             return (ActionE)i;
         i++;
     }
+	i = 0;
+	while (i < (int)currentActionIndex)	
+	{
+		if (!DONE[i])
+			return (ActionE)i;
+		i++;
+	}
+
     return ActionE::Chaos; // Ici il faudrait faire une action "casse les couilles de l'adversaire" // +1 pouce bleu
 }
 
@@ -206,7 +217,9 @@ Cerveau::Cerveau(Fifo * ordresFifo)
 
     //actionList[ActionE::Chaos]=newChaos();
     addChaos();
-    addDistribx6();
+    addDistribx6_1();
+    addDistribx6_2();
+    addDistribx6_3();
     addCoupDeCul();
     addDistribx3();
     addRecupBlueAcc();
