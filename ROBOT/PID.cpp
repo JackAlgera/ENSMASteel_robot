@@ -319,7 +319,7 @@ void PID::loadNext()
 
     //On pop le Fifo
     ptrRobot->ordresFifo.pop();
-    if (ptrRobot->ordresFifo.inBuffer==0){ptrRobot->ordresFifo.add(STBY(DYDM, "DUMY", 1, nullptr,normalTimeout,0));} //TODO verifier si OFF n'est pas mieux
+    if (ptrRobot->ordresFifo.inBuffer==0){ptrRobot->ordresFifo.add(STBY(DYDM, "DUMY", 1, nullptr,normalTimeout,1));} //TODO verifier si OFF n'est pas mieux
 
     //On dit au robot que l'ordre actuel a change
     reload();

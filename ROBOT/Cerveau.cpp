@@ -23,7 +23,7 @@ void Cerveau::addChaos()
 {
     actionList[ActionE::Chaos] = Action(ActionE::Chaos);
     actionList[ActionE::Chaos].addSEND("CHAO",10,simpleTimeout,2);
-    actionList[ActionE::Chaos].addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT,resetGoto,2);
+    actionList[ActionE::Chaos].addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT,wiggle,2);
     actionList[ActionE::Chaos].addSPIN(STD, 1, 20,simpleTimeout,2);
 }
 

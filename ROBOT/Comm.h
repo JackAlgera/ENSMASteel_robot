@@ -4,6 +4,8 @@
 #include "PID.h"
 
 bool strEqual(char *str1,char *str2);
+bool strEqual(const char str1[],char *str2);
+bool strEqual(char *str1,const char str2[]);
 void strSet(char *str,const char in[]);
 
 class Comm

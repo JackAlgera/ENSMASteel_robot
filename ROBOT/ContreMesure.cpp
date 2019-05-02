@@ -46,4 +46,28 @@ bool resetGoto(Robot * ptrRobot,ErreurE erreur)
     ptrRobot->pid.reload();
     return true;  //On sanctionne
   }
+  return false;
+}
+
+bool wiggle(Robot * ptrRobot,ErreurE erreur)
+{
+  #ifdef STATE
+  Serial.print("Erreur : ");Serial.println(erreur);
+  #endif
+  if(erreur==ErreurE::TIMEOUT)
+  {
+    ptrRobot->pid.loadNext();
+    return false; //Pas de sanction
+  }
+  if(erreur==ErreurE::PID_FAILURE)
+  {
+    #ifdef STATE
+    Serial.println("WIGGLE");
+    #endif
+    ptrRobot->ordresFifo.addHead(SPIN(STD,ptrRobot->posE.theta,10,nullptr,simpleTimeout,1));
+    ptrRobot->ordresFifo.addHead(SPIN(STD,ptrRobot->posE.theta+0.1,10,nullptr,simpleTimeout,1));
+    ptrRobot->pid.reload();
+    return true;  //On sanctionne
+  }
+  return false;
 }

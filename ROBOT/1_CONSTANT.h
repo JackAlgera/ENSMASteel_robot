@@ -83,7 +83,7 @@ enum ErreurE
 
 #define RAYON_RECONVERGENCE 0.05          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
 #define RAYON_TERMINE 0.05                //Distance en dessous duquel on considère que le robot est arrivé
-#define DELTA_THETA_TERMINE 0.08          //Delta theta en dessous duquel on considère le spin terminé
+#define DELTA_THETA_TERMINE 0.01          //Delta theta en dessous duquel on considère le spin terminé
 
 #define RAYON_FAIL 0.10
 #define DELTA_THETA_FAIL 0.5
