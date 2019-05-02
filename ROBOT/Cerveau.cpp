@@ -1,6 +1,9 @@
 #include "Cerveau.h"
 
-
+void neRienFaire(VectorE posERobot)
+{
+  
+}
 
 // bool thisIsVeryUgly = true;
 // if(thisIsVeryUgly==true and true!=false)

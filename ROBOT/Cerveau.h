@@ -6,10 +6,8 @@
 #include "1_CONSTANT.h"
 #include "Fifo.h"
 #include "PID.h"
-void neRienFaire(VectorE posERobot)
-{
-  
-}
+
+
 
 class Cerveau
 {
@@ -48,8 +46,6 @@ private:
     void addPoseRampe();
 	  void addDescendRampe();
 	  void addCasseCouilles();
-
-    void neRienFaire(VectorE posRobot);
 };
 
 #endif
