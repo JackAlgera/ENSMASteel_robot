@@ -17,21 +17,22 @@ public:
 
     void supprimerAction(ActionE action);
     void choisirAction();		// TODO : a remplir
-    ActionE nextBestAction(ActionE *list, int size);
+    ActionE nextBestAction();
 
     void actuate();
     void addActionOrders();
     //void finirOrdre();
 
     //void addNextOrder();		// Ajouter l'ordre suivant au buffer
-
-
+	
     Cerveau();
     Cerveau(Fifo * ordresFifo);
     ~Cerveau();
 private:
     void addChaos();
-    void addDistribx6();
+  	void addDistribx6_1();
+  	void addDistribx6_2();
+  	void addDistribx6_3();
     void addCoupDeCul();
     void addDistribx3();
     void addRecupBlueAcc();
@@ -41,8 +42,8 @@ private:
     void addPoseSol();
     void addMonteRampe();
     void addPoseRampe();
-    void addDescendRampe();
-
+	void addDescendRampe();
+	void addCasseCouilles();
 };
 
 #endif

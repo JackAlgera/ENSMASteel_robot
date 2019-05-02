@@ -67,13 +67,11 @@ enum OrderE
 
 // On aura Chaos = 0, Distribx6 = 1 etc..
 // ActionE::Chaos pour y acceder -> exemple : if(!DONE[ActionE::Chaos]) {...}
-#define NBR_ACTIONS 12
+#define NBR_ACTIONS 15
 
 enum ActionE
 {
-    Chaos, Distribx6, Distribx3, CoupDeCul,
-    RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol,
-    MonteRampe, PoseRampe, DescendRampe
+    Chaos, Distribx6_1, Distribx6_2, Distribx6_3, CoupDeCul, Distribx3, MonteRampe, PoseRampe, DescendRampe, RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol, CasseCouilles
 };
 
 enum ErreurE
