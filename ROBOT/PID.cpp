@@ -261,7 +261,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
     bool vitesseOK    = (abs(vRobot)<0.005 and abs(wRobot)<0.005) or STATIQUE or (pointeurSurFifo->ptrFst()->type == OrderE::GOTO_E and pointeurSurFifo->ptrFst()->goTo.arret==false);
     bool ghostArrive  = pointeurSurGhost->t_e>0.95;
     bool ghostFree    = not pointeurSurGhost->locked;
-    //bool orderNext    = pointeurSurFifo->inBuffer>=2;
+    bool orderNext    = pointeurSurFifo->inBuffer>=2;
     
     bool timeout      = (micros()-pointeurSurGhost->microsStart)/1000000.0  >   pointeurSurFifo->ptrFst()->timeoutDs/10.0;
     bool messageITSTBY  = pointeurSurFifo->ptrFst()->type == OrderE::STBY_E and strEqual(pointeurSurComm->lastMessage,pointeurSurFifo->ptrFst()->stby.unlockMessage);
@@ -292,7 +292,7 @@ void PID::loadNext()
 
     //On pop le Fifo
     pointeurSurFifo->pop();
-    if (pointeurSurFifo->inBuffer==0){pointeurSurFifo->add
+    //if (pointeurSurFifo->inBuffer==0){pointeurSurFifo->add
 
     //On dit au robot que l'ordre actuel a change
     reload();
