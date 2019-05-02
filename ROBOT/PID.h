@@ -26,26 +26,26 @@ class Comm;
 class Cerveau;
 class PID
 {
-  uint8_t PIDnervLIN=DYDM,PIDnervANG=DYDM;
-  VectorE lastPosERobot={{0,0},0};
-  float lastVRobot=0,lastDt=1/FREQUENCY;
-  float IL=0.0,IA=0.0;
-  
-  public:
-  Cerveau* pointeurCerveau;
-  Comm* pointeurSurComm;                      //Pointeur sur la communication
-  Ghost* pointeurSurGhost;                    //Pointeur sur le fantome
-  Fifo* pointeurSurFifo;                      //Pointeur sur le Fifo
-  Motor* pointeurSurMoteurGauche;             //Pointeur sur le moteur gauche
-  Motor* pointeurSurMoteurDroite;             //Pointeur sur le moteur droite
-  
-  void actuate(float dt,VectorE posERobot,float vRobot,float wRobot);              //Actualise les PID (compare la position du ghost et du robot, et donne les ordres au moteur en fonction
-  void reload();
-  void loadNext();
+    uint8_t PIDnervLIN=DYDM,PIDnervANG=DYDM;
+    VectorE lastPosERobot= {{0,0},0};
+    float lastVRobot=0,lastDt=1/FREQUENCY;
+    float IL=0.0,IA=0.0;
 
-  PID();
-  PID(Motor* in_pointeurSurMoteurGauche, Motor* in_pointeurSurMoteurDroite, Fifo* in_pointeurSurFifo, Ghost* in_pointeurSurGhost, Comm* in_pointeurSurComm, Cerveau * in_pointeurCerveau);
-  ~PID();
+public:
+    Cerveau* pointeurCerveau;
+    Comm* pointeurSurComm;                      //Pointeur sur la communication
+    Ghost* pointeurSurGhost;                    //Pointeur sur le fantome
+    Fifo* pointeurSurFifo;                      //Pointeur sur le Fifo
+    Motor* pointeurSurMoteurGauche;             //Pointeur sur le moteur gauche
+    Motor* pointeurSurMoteurDroite;             //Pointeur sur le moteur droite
+
+    void actuate(float dt,VectorE posERobot,float vRobot,float wRobot);              //Actualise les PID (compare la position du ghost et du robot, et donne les ordres au moteur en fonction
+    void reload();
+    void loadNext();
+
+    PID();
+    PID(Motor* in_pointeurSurMoteurGauche, Motor* in_pointeurSurMoteurDroite, Fifo* in_pointeurSurFifo, Ghost* in_pointeurSurGhost, Comm* in_pointeurSurComm, Cerveau * in_pointeurCerveau);
+    ~PID();
 };
 
 #endif
