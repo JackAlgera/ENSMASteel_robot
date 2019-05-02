@@ -4,10 +4,10 @@ Action::Action(ActionE type, int nbrOrders)
 {
 	this->type = type;
 	this->nbrOrders = nbrOrders;
-	this->currentOrder = 0;
+	this->currentOrderIndex = 0;
 	this->actionCompleted = false;
 	this->currentOrderAdd = 0;
-	this->currentBufferOrder = 0;
+	this->currentBufferOrderIndex = 0;
 	ordersList = new Order[nbrOrders];
 }
 
@@ -15,10 +15,10 @@ void Action::set(ActionE type, int nbrOrders)
 {
   this->type = type;
   this->nbrOrders = nbrOrders;
-  this->currentOrder = 0;
+  this->currentOrderIndex = 0;
   this->actionCompleted = false;
   this->currentOrderAdd = 0;
-  this->currentBufferOrder = 0;
+  this->currentBufferOrderIndex = 0;
   ordersList = new Order[nbrOrders];
 }
 
@@ -26,84 +26,82 @@ Action::Action()
 {
 }
 
-void Action::addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs)
+void Action::addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs,Action * papa)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		Serial.print("Dans la fonction GOTO \n");
-		Serial.print("Adresse action chaos : "); Serial.println((long unsigned int)this);
-		ordersList[currentOrderAdd] = GOTO(nerv, fleche, xAim, yAim, thetaAim, arret, timeoutDs,this);
-		Serial.print("Adr act depuis ordre : "); Serial.println((long unsigned int)ordersList[currentOrderAdd].ptrActionPere);
+		ordersList[currentOrderAdd] = GOTO(nerv, fleche, xAim, yAim, thetaAim, arret, timeoutDs,papa);
+		
+  currentOrderAdd++;
+	}
+}
+
+void Action::addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs,Action * papa)
+{
+	if (currentOrderAdd < nbrOrders)
+	{
+		ordersList[currentOrderAdd] = SPIN(nerv, thetaAim, timeoutDs,papa);
 		currentOrderAdd++;
 	}
 }
 
-void Action::addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs)
-{
-	if (currentOrderAdd < nbrOrders)
-	{
-		ordersList[currentOrderAdd] = SPIN(nerv, thetaAim, timeoutDs,this);
-		currentOrderAdd++;
-	}
-}
-
-void Action::addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs)
+void Action::addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs,Action * papa)
 {
   if (currentOrderAdd < nbrOrders)
   {
-    ordersList[currentOrderAdd] = SPINGOTO(nerv,xAim,yAim,timeoutDs,this);
+    ordersList[currentOrderAdd] = SPINGOTO(nerv,xAim,yAim,timeoutDs,papa);
     currentOrderAdd++;
   }
 }
 
-void Action::addFWD(float acc, float v, uint8_t timeoutDs)
+void Action::addFWD(float acc, float v, uint8_t timeoutDs,Action * papa)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = FWD(acc, v, timeoutDs,this);
+		ordersList[currentOrderAdd] = FWD(acc, v, timeoutDs,papa);
 		currentOrderAdd++;
 	}
 }
 
-void Action::addBWD(float acc, float v, uint8_t timeoutDs)
+void Action::addBWD(float acc, float v, uint8_t timeoutDs,Action * papa)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = BWD(acc, v, timeoutDs,this);
+		ordersList[currentOrderAdd] = BWD(acc, v, timeoutDs,papa);
 		currentOrderAdd++;
 	}
 }
 
-void Action::addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeout)
+void Action::addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeout,Action * papa)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = STBY(nerv, unlockMessage, timeout,this);
+		ordersList[currentOrderAdd] = STBY(nerv, unlockMessage, timeout,papa);
 		currentOrderAdd++;
 	}
 }
 
-void Action::addSEND(const char message[], uint8_t timeoutDs)
+void Action::addSEND(const char message[], uint8_t timeoutDs,Action * papa)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = SEND(message, timeoutDs,this);
+		ordersList[currentOrderAdd] = SEND(message, timeoutDs,papa);
 		currentOrderAdd++;
 	}
 }
 
-void Action::addEMSTOP(uint8_t timeoutDs)
+void Action::addEMSTOP(uint8_t timeoutDs,Action * papa)
 {
 	if (currentOrderAdd < nbrOrders)
 	{
-		ordersList[currentOrderAdd] = EMSTOP(timeoutDs,this);
+		ordersList[currentOrderAdd] = EMSTOP(timeoutDs,papa);
 		currentOrderAdd++;
 	}
 }
 
 Order * Action::getCurrentOrder()
 {
-	return &ordersList[currentOrder];
+	return &ordersList[currentOrderIndex];
 }
 
 void Action::nextStep()
@@ -113,8 +111,8 @@ void Action::nextStep()
 		Serial.print("l'adresse de l'action dont j'ai ++ le currentOrder: ");Serial.println((int)this);
 		Serial.print("action type: "); Serial.println((int)this->type);
 		Serial.print("l'adresse de l'action dont j'ai ++ le currentOrder: "); Serial.println((int)this->ordersList[1].ptrActionPere);
-		currentOrder++;
-		if (currentOrder == nbrOrders)
+		currentOrderIndex++;
+		if (currentOrderIndex == nbrOrders-1)
 		{
 			actionCompleted = true;
 		}
@@ -125,12 +123,12 @@ void Action::addOrdersToBuffer(Fifo * ordresFifo, bool reAdd) // Si on souhaite 
 {
 	if (reAdd)
 	{
-		currentBufferOrder = currentOrder;
+		currentBufferOrderIndex = currentOrderIndex;
 	}
 
-	while (currentBufferOrder < nbrOrders)					// On ajoute l'ensemble des ordres au buffer
+	while (currentBufferOrderIndex < nbrOrders)					// On ajoute l'ensemble des ordres au buffer
 	{
-		ordresFifo->add(ordersList[currentBufferOrder]);
-		currentBufferOrder++;
+		ordresFifo->add(ordersList[currentBufferOrderIndex]);
+		currentBufferOrderIndex++;
 	}
 }
