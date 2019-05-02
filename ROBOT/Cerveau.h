@@ -42,8 +42,8 @@ private:
     void addPoseSol();
     void addMonteRampe();
     void addPoseRampe();
-	void addDescendRampe();
-	void addCasseCouilles();
+	  void addDescendRampe();
+	  void addCasseCouilles();
 };
 
 #endif

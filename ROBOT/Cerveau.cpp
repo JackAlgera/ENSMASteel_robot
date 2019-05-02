@@ -159,23 +159,23 @@ void Cerveau::choisirAction()
 
 ActionE Cerveau::nextBestAction()
 {
-    // Sinon on prend la premiere action non complete
+    // On load l'action suivante
     int i = (int) currentActionIndex;
-    while (i < NBR_ACTIONS)			// On prend l'action suivante non encore fini en partant de l'action actuelle dans la liste
+    while (i < NBR_ACTIONS-1)			// On prend l'action suivante non encore fini en partant de l'action actuelle dans la liste. -1 car il ne faut pas prendre CASSE COUILLES
     {
         if (!DONE[i])
             return (ActionE)i;
         i++;
     }
-	i = 0;
-	while (i < (int)currentActionIndex)	
-	{
-		if (!DONE[i])
-			return (ActionE)i;
-		i++;
-	}
-
-    return ActionE::Chaos; // Ici il faudrait faire une action "casse les couilles de l'adversaire" // +1 pouce bleu
+    //On refait un tour si on a rien trouve
+	  i = 0;
+	  while (i <  NBR_ACTIONS-1)
+	  {
+		  if (!DONE[i])
+			  return (ActionE)i;
+		  i++;
+	  }
+      return ActionE::CasseCouilles; //On a fini, on va alors accidentelement faire chier l'adversaire
 }
 
 void Cerveau::actuate()
