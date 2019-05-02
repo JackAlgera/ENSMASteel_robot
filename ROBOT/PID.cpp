@@ -288,7 +288,11 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
     
     if(timeout){failureDetected(ErreurE::TIMEOUT);} 
     if(nearEnough){timeLastNearEnough=millis()/1000.0;}
-    if(millis()/1000.0-timeLastNearEnough>FAIL_TIME){failureDetected(ErreurE::PID_FAILURE);}
+    if(millis()/1000.0-timeLastNearEnough>FAIL_TIME)
+    {
+      failureDetected(ErreurE::PID_FAILURE);
+      timeLastNearEnough=millis()/1000.0;   //Petit repis
+    }
 
     
 
