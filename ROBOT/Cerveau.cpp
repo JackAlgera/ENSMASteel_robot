@@ -26,7 +26,7 @@ ActionE DescendRampL[1] = { ActionE::Chaos };
 // Remplissage des actions avec les Order
 void Cerveau::addChaos()
 {
-    actionList[ActionE::Chaos] = Action(ActionE::Chaos, TAILLEFIFO);
+    actionList[ActionE::Chaos] = Action(ActionE::Chaos);
     actionList[ActionE::Chaos].addSEND("CHAO",10);
     actionList[ActionE::Chaos].addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT);
     actionList[ActionE::Chaos].addSPIN(STD, 1, 20);
@@ -34,66 +34,66 @@ void Cerveau::addChaos()
 
 void Cerveau::addDistribx6()
 {
-    actionList[ActionE::Distribx6] = Action(ActionE::Distribx6, TAILLEFIFO);
+    actionList[ActionE::Distribx6] = Action(ActionE::Distribx6);
     actionList[ActionE::Distribx6].addSEND("DIx6",10);
 }
 
 void Cerveau::addCoupDeCul()
 {
-    actionList[ActionE::CoupDeCul] = Action(ActionE::CoupDeCul, TAILLEFIFO);
+    actionList[ActionE::CoupDeCul] = Action(ActionE::CoupDeCul);
     actionList[ActionE::CoupDeCul].addSEND("CDCU",10);
 }
 
 void Cerveau::addDistribx3()
 {
-    actionList[ActionE::Distribx3] = Action(ActionE::Distribx3, TAILLEFIFO);
+    actionList[ActionE::Distribx3] = Action(ActionE::Distribx3);
     actionList[ActionE::Distribx3].addSEND("DIx3",10);
 }
 
 void Cerveau::addRecupBlueAcc()
 {
-    actionList[ActionE::RecupBlueAcc] = Action(ActionE::RecupBlueAcc, TAILLEFIFO);
+    actionList[ActionE::RecupBlueAcc] = Action(ActionE::RecupBlueAcc);
     actionList[ActionE::RecupBlueAcc].addSEND("RBLU",10);
 }
 
 void Cerveau::addPoseAcc()
 {
-    actionList[ActionE::PoseAcc] = Action(ActionE::PoseAcc, TAILLEFIFO);
+    actionList[ActionE::PoseAcc] = Action(ActionE::PoseAcc);
     actionList[ActionE::PoseAcc].addSEND("PACC",10);
 }
 void Cerveau::addRecupGoldAcc()
 {
-    actionList[ActionE::RecupGoldAcc] = Action(ActionE::RecupGoldAcc, TAILLEFIFO);
+    actionList[ActionE::RecupGoldAcc] = Action(ActionE::RecupGoldAcc);
     actionList[ActionE::RecupGoldAcc].addSEND("RGOL",10);
 }
 
 void Cerveau::addBalance()
 {
-    actionList[ActionE::Balance] = Action(ActionE::Balance, TAILLEFIFO);
+    actionList[ActionE::Balance] = Action(ActionE::Balance);
     actionList[ActionE::Balance].addSEND("BALA",10);
 }
 
 void Cerveau::addPoseSol()
 {
-    actionList[ActionE::PoseSol] = Action(ActionE::PoseSol, TAILLEFIFO);
+    actionList[ActionE::PoseSol] = Action(ActionE::PoseSol);
     actionList[ActionE::PoseSol].addSEND("PSOL",10);
 }
 
 void Cerveau::addMonteRampe()
 {
-    actionList[ActionE::MonteRampe] = Action(ActionE::MonteRampe, TAILLEFIFO);
+    actionList[ActionE::MonteRampe] = Action(ActionE::MonteRampe);
     actionList[ActionE::MonteRampe].addSEND("MRMP",10);
 }
 
 void Cerveau::addPoseRampe()
 {
-    actionList[ActionE::PoseRampe] = Action(ActionE::PoseRampe, TAILLEFIFO);
+    actionList[ActionE::PoseRampe] = Action(ActionE::PoseRampe);
     actionList[ActionE::PoseRampe].addSEND("PRMP",10);
 }
 
 void Cerveau::addDescendRampe()
 {
-    actionList[ActionE::DescendRampe] = Action(ActionE::DescendRampe, TAILLEFIFO);
+    actionList[ActionE::DescendRampe] = Action(ActionE::DescendRampe);
     actionList[ActionE::DescendRampe].addSEND("DRMP",10);
 }
 

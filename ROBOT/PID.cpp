@@ -270,10 +270,10 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
 
     //On regarde si l'action est terminée
     if  (
-        (linOK and angOK and vitesseOK and ghostArrive and ghostFree and orderNext)   //cas standard
-        or (timeout and orderNext)                                                    //cas timeout
-        or (messageITSTBY and orderNext)                                              //cas message
-        or (completeEMStop and orderNext)                                             //cas EMSTOP
+        (linOK and angOK and vitesseOK and ghostArrive and ghostFree)// and orderNext)   //cas standard
+        or (timeout) //and orderNext)                                                    //cas timeout
+        or (messageITSTBY) //and orderNext)                                              //cas message
+        or (completeEMStop) //and orderNext)                                             //cas EMSTOP
     )
     {
         //On vide la boite au lettre si on est sorti du stby grace a un message
@@ -292,7 +292,7 @@ void PID::loadNext()
 
     //On pop le Fifo
     pointeurSurFifo->pop();
-    //if (pointeurSurFifo->inBuffer==0){pointeurSurFifo->add
+    if (pointeurSurFifo->inBuffer==0){pointeurSurFifo->add(STBY(DYDM, "DUMY", 1, nullptr));} //TODO verifier si OFF n'est pas mieux
 
     //On dit au robot que l'ordre actuel a change
     reload();
