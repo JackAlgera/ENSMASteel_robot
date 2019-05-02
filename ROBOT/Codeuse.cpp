@@ -5,6 +5,7 @@ void Codeuse::actuate(float dt)
     ticks=enc->read();
     deltaAvance=(ticks-oldTicks)*(PI*DIAMETRE_ROUE_CODEUSE)/TICKS_PER_ROUND;  //Simple géométrie
     v=deltaAvance/dt;
+    Serial.println(v);
     oldTicks=ticks;
 }
 

@@ -7,7 +7,7 @@
 class Motor
 {
 public:
-    uint8_t pinPWR,pinSens1,pinSens2;   //Pin de puissance (PWM) et les deux pin pour donner le sens de rotation
+    uint8_t pinPWR,pinSens,pinBrake;   //Pin de puissance (PWM) et les deux pin pour donner le sens de rotation
     int32_t order,masterOrder;              //Le regime moteur entre -65535 et 65535
     float health=1.0;
     bool bypass=false;

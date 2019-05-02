@@ -3,6 +3,8 @@
 
 void Motor::actuate()
 {
+    bypass=true;
+    masterOrder=-MAXPWM;
     if (bypass)
     {
         order=masterOrder;
@@ -10,25 +12,25 @@ void Motor::actuate()
     int orderComp=constrain((int)(order/health),-MAXPWM,MAXPWM);
     if (orderComp>0)
     {
-        digitalWrite(pinSens1,HIGH);
-        digitalWrite(pinSens2,LOW);
+        digitalWrite(pinSens,HIGH);
+        digitalWrite(pinBrake,LOW);
         analogWrite(pinPWR,orderComp);
     }
     else if (orderComp<-0)
     {
-        digitalWrite(pinSens1,LOW);
-        digitalWrite(pinSens2,HIGH);
+        digitalWrite(pinSens,LOW);
+        digitalWrite(pinBrake,LOW);
         analogWrite(pinPWR,abs(orderComp));
     }
     else
     {
-        digitalWrite(pinSens1,HIGH);
-        digitalWrite(pinSens2,LOW);
+        digitalWrite(pinSens,HIGH);
+        digitalWrite(pinBrake,HIGH);
         analogWrite(pinPWR,order);
     }
 }
 
-Motor init_motor(uint8_t in_pinPWR, uint8_t in_pinSens1, uint8_t in_pinSens2,float health)
+Motor init_motor(uint8_t in_pinPWR, uint8_t in_pinSens, uint8_t in_pinBrake,float health)
 {
 
     Motor out;
@@ -37,10 +39,10 @@ Motor init_motor(uint8_t in_pinPWR, uint8_t in_pinSens1, uint8_t in_pinSens2,flo
     out.bypass=false;
     out.pinPWR=in_pinPWR;
     pinMode(out.pinPWR,OUTPUT);
-    out.pinSens1=in_pinSens1;
-    pinMode(out.pinSens1,OUTPUT);
-    out.pinSens2=in_pinSens2;
-    pinMode(out.pinSens2,OUTPUT);
+    out.pinSens=in_pinSens;
+    pinMode(out.pinSens,OUTPUT);
+    out.pinBrake=in_pinBrake;
+    pinMode(out.pinBrake,OUTPUT);
     out.order=0;
     out.masterOrder=0;
     out.health=health;
