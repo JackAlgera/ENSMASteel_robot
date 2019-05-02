@@ -1,8 +1,8 @@
+#ifndef ROBOT_INCLUDED
+#define ROBOT_INCLUDED
 #include "1_CONSTANT.h"
 #include "Moteur.h"
 #include "Codeuse.h"
-#ifndef ROBOT_INCLUDED
-#define ROBOT_INCLUDED
 #include "Fifo.h"
 #include "Moteur.h"
 #include "PID.h"

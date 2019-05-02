@@ -1,8 +1,13 @@
 #include "Cerveau.h"
-
-void neRienFaire(VectorE posERobot)
+#include "Robot.h"
+void neRienFaire(Robot * ptrRobot)
 {
   
+}
+
+void passeALaSuite(Robot * ptrRobot)
+{
+  ptrRobot->pid.loadNext();
 }
 
 // bool thisIsVeryUgly = true;
@@ -17,8 +22,8 @@ void neRienFaire(VectorE posERobot)
 void Cerveau::addChaos()
 {
     actionList[ActionE::Chaos] = Action(ActionE::Chaos);
-    actionList[ActionE::Chaos].addSEND("CHAO",10,neRienFaire,0);//      <----------------------------------------HELP
-    actionList[ActionE::Chaos].addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT,nullptr,0);
+    actionList[ActionE::Chaos].addSEND("CHAO",10,neRienFaire,0);
+    actionList[ActionE::Chaos].addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT,passeALaSuite,0);
     actionList[ActionE::Chaos].addSPIN(STD, 1, 20,nullptr,0);
 }
 

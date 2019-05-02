@@ -5,8 +5,9 @@
 #include "Vector.h"
 #include "Arduino.h"
 class Action;
+class Robot;
 
-typedef void (*ptrFonction)(VectorE posERobot);
+typedef void (*ptrFonction)(Robot * ptrRobot);
 
 
 struct GOTO_S
