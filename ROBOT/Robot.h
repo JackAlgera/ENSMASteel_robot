@@ -1,0 +1,36 @@
+#include "1_CONSTANT.h"
+#include "Moteur.h"
+#include "Codeuse.h"
+#ifndef ROBOT_INCLUDED
+#define ROBOT_INCLUDED
+#include "Fifo.h"
+#include "Moteur.h"
+#include "PID.h"
+#include "Polynome.h"
+#include "Vector.h"
+#include "Arduino.h"
+#include "Filtre.h"
+#include "Comm.h"
+#include "Cerveau.h"
+#include "Encoder.h"
+
+class Robot
+{
+public:
+    float dt;
+    Motor moteurGauche, moteurDroite;
+    Codeuse codeuseGauche,codeuseDroite;
+    Ghost ghost;
+    VectorE posE;                                 //Position du robot
+    Filtre vF,wF;
+    Fifo ordresFifo;                              //Une liste d'ordres a effectuer
+    PID pid;
+    Comm comm;
+    Cerveau* master;
+
+    void actuateODO(float dt);
+    void set(float x0,float y0, float theta0);    //Remplie les champs de l'objet Robot
+    void actuate(float dt);                       //Actualise les valeurs
+};
+
+#endif

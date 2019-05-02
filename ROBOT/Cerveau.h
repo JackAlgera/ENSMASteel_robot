@@ -6,14 +6,13 @@
 #include "1_CONSTANT.h"
 #include "Fifo.h"
 #include "PID.h"
-
 class Cerveau
 {
 public:
     Action actionList[NBR_ACTIONS];		// Array qui contient l'ensemble des actions, qui contiennent chacun des ordres
     bool DONE[NBR_ACTIONS];				    // Array qui nous dit si un action est fini ou non
     ActionE currentActionIndex;
-    Fifo *ordresFifo;
+    Fifo *ptrFifo;
 
     void supprimerAction(ActionE action);
     void choisirAction();		// TODO : a remplir
@@ -26,7 +25,7 @@ public:
     //void addNextOrder();		// Ajouter l'ordre suivant au buffer
 	
     Cerveau();
-    Cerveau(Fifo * ordresFifo);
+    Cerveau(Fifo * ptrFifo);
     ~Cerveau();
 private:
     void addChaos();
@@ -44,6 +43,8 @@ private:
     void addPoseRampe();
 	  void addDescendRampe();
 	  void addCasseCouilles();
+
+    void neRienFaire(VectorE posRobot);
 };
 
 #endif

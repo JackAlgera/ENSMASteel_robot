@@ -140,8 +140,8 @@ void PID::reload()
         float timeout=pointeurSurFifo->ptrFst()->timeoutDs;
         Serial.print("angle ");
         Serial.println(angle(delta));
-        pointeurSurFifo->replaceHead(GOTO(nerv,0.1,aim.x, aim.y, angle(delta), true, timeout,papa));
-        pointeurSurFifo->addHead(SPIN(nerv,angle(delta),timeout,nullptr));
+        pointeurSurFifo->replaceHead(GOTO(nerv,0.1,aim.x, aim.y, angle(delta), true, timeout,papa,nullptr,0));
+        pointeurSurFifo->addHead(SPIN(nerv,angle(delta),timeout,nullptr,nullptr,0));
         reload();
     }
     break;
@@ -292,7 +292,7 @@ void PID::loadNext()
 
     //On pop le Fifo
     pointeurSurFifo->pop();
-    if (pointeurSurFifo->inBuffer==0){pointeurSurFifo->add(STBY(DYDM, "DUMY", 1, nullptr));} //TODO verifier si OFF n'est pas mieux
+    if (pointeurSurFifo->inBuffer==0){pointeurSurFifo->add(STBY(DYDM, "DUMY", 1, nullptr,nullptr,0));} //TODO verifier si OFF n'est pas mieux
 
     //On dit au robot que l'ordre actuel a change
     reload();

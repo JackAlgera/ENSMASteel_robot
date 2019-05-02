@@ -6,6 +6,9 @@
 #include "Arduino.h"
 class Action;
 
+typedef void (*ptrFonction)(VectorE posERobot);
+
+
 struct GOTO_S
 {
     uint8_t nerv;
@@ -58,6 +61,9 @@ public:
     OrderE type;
     uint8_t timeoutDs;
     Action * ptrActionPere;
+    ptrFonction contreMesure;
+    uint8_t nbFail;
+    uint8_t nbMaxFail;
     union                         //Une union permet de dire que uniquement l'un de ces champs à un intéret
     {
         GOTO_S goTo;
@@ -76,31 +82,31 @@ public:
 class GOTO : public Order
 {
 public:
-	GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs, Action * ptrActionPere);
+	GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail);
 };
 
 class SPIN : public Order
 {
 public:
-	SPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs, Action * ptrActionPere);
+	SPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
 class SPINGOTO : public Order
 {
 public:
-	SPINGOTO(uint8_t nerv, float xAim, float yAim, uint8_t timeoutDs, Action * ptrActionPere);
+	SPINGOTO(uint8_t nerv, float xAim, float yAim, uint8_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
 class FWD : public Order
 {
 public:
-	FWD(float acc, float v, uint8_t timeoutDs, Action * ptrActionPere);
+	FWD(float acc, float v, uint8_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
 class BWD : public Order
 {
 public:
-	BWD(float acc, float v, uint8_t timeoutDs, Action * ptrActionPere);
+	BWD(float acc, float v, uint8_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
 class STBY : public Order
@@ -109,19 +115,19 @@ public:
     uint8_t nerv;
     char unlockMessage[4];
 
-	STBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs, Action * ptrActionPere);
+	STBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
 class SEND : public Order
 {
 public:
-	SEND(const char message[], uint8_t timeoutDs, Action * ptrActionPere);
+	SEND(const char message[], uint8_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
 class EMSTOP : public Order
 {
 public:
-	EMSTOP(uint8_t timeoutDs, Action * ptrActionPere);
+	EMSTOP(uint8_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
 #endif

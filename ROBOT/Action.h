@@ -17,14 +17,14 @@ public:
 
     Action(ActionE type);
     Action();
-    void addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs);  //abs(thetaAim-thetaIni)<=PI
-    void addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs);
-    void addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs);
-    void addFWD(float acc, float v, uint8_t timeoutDs);
-    void addBWD(float acc, float v, uint8_t timeoutDs);
-    void addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeout);
-    void addSEND(const char message[], uint8_t timeoutDs);
-    void addEMSTOP(uint8_t timeoutDs);
+    void addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);  //abs(thetaAim-thetaIni)<=PI
+    void addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addFWD(float acc, float v, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addBWD(float acc, float v, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addSEND(const char message[], uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addEMSTOP(uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
     Order * getCurrentOrder();
     void nextStep();
 

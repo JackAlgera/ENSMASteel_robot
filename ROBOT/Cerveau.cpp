@@ -1,5 +1,10 @@
 #include "Cerveau.h"
 
+void Cerveau::neRienFaire(VectorE posRobot)
+{
+  
+}
+
 
 // bool thisIsVeryUgly = true;
 // if(thisIsVeryUgly==true and true!=false)
@@ -13,86 +18,86 @@
 void Cerveau::addChaos()
 {
     actionList[ActionE::Chaos] = Action(ActionE::Chaos);
-    actionList[ActionE::Chaos].addSEND("CHAO",10);
-    actionList[ActionE::Chaos].addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT);
-    actionList[ActionE::Chaos].addSPIN(STD, 1, 20);
+    actionList[ActionE::Chaos].addSEND("CHAO",10,nullptr,0);
+    actionList[ActionE::Chaos].addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT,nullptr,0);
+    actionList[ActionE::Chaos].addSPIN(STD, 1, 20,nullptr,0);
 }
 
 void Cerveau::addDistribx6_1()
 {
     actionList[ActionE::Distribx6_1] = Action(ActionE::Distribx6_1);
-    actionList[ActionE::Distribx6_1].addSEND("Dx61",10);
+    actionList[ActionE::Distribx6_1].addSEND("Dx61",10,nullptr,0);
 }
 
 void Cerveau::addDistribx6_2()
 {
 	actionList[ActionE::Distribx6_2] = Action(ActionE::Distribx6_2);
-	actionList[ActionE::Distribx6_2].addSEND("Dx62", 10);
+	actionList[ActionE::Distribx6_2].addSEND("Dx62", 10,nullptr,0);
 }
 
 void Cerveau::addDistribx6_3()
 {
 	actionList[ActionE::Distribx6_3] = Action(ActionE::Distribx6_3);
-	actionList[ActionE::Distribx6_3].addSEND("Dx63", 10);
+	actionList[ActionE::Distribx6_3].addSEND("Dx63", 10,nullptr,0);
 }
 
 void Cerveau::addCoupDeCul()
 {
     actionList[ActionE::CoupDeCul] = Action(ActionE::CoupDeCul);
-    actionList[ActionE::CoupDeCul].addSEND("CDCU",10);
+    actionList[ActionE::CoupDeCul].addSEND("CDCU",10,nullptr,0);
 }
 
 void Cerveau::addDistribx3()
 {
     actionList[ActionE::Distribx3] = Action(ActionE::Distribx3);
-    actionList[ActionE::Distribx3].addSEND("DIx3",10);
+    actionList[ActionE::Distribx3].addSEND("DIx3",10,nullptr,0);
 }
 
 void Cerveau::addRecupBlueAcc()
 {
     actionList[ActionE::RecupBlueAcc] = Action(ActionE::RecupBlueAcc);
-    actionList[ActionE::RecupBlueAcc].addSEND("RBLU",10);
+    actionList[ActionE::RecupBlueAcc].addSEND("RBLU",10,nullptr,0);
 }
 
 void Cerveau::addPoseAcc()
 {
     actionList[ActionE::PoseAcc] = Action(ActionE::PoseAcc);
-    actionList[ActionE::PoseAcc].addSEND("PACC",10);
+    actionList[ActionE::PoseAcc].addSEND("PACC",10,nullptr,0);
 }
 void Cerveau::addRecupGoldAcc()
 {
     actionList[ActionE::RecupGoldAcc] = Action(ActionE::RecupGoldAcc);
-    actionList[ActionE::RecupGoldAcc].addSEND("RGOL",10);
+    actionList[ActionE::RecupGoldAcc].addSEND("RGOL",10,nullptr,0);
 }
 
 void Cerveau::addBalance()
 {
     actionList[ActionE::Balance] = Action(ActionE::Balance);
-    actionList[ActionE::Balance].addSEND("BALA",10);
+    actionList[ActionE::Balance].addSEND("BALA",10,nullptr,0);
 }
 
 void Cerveau::addPoseSol()
 {
     actionList[ActionE::PoseSol] = Action(ActionE::PoseSol);
-    actionList[ActionE::PoseSol].addSEND("PSOL",10);
+    actionList[ActionE::PoseSol].addSEND("PSOL",10,nullptr,0);
 }
 
 void Cerveau::addMonteRampe()
 {
     actionList[ActionE::MonteRampe] = Action(ActionE::MonteRampe);
-    actionList[ActionE::MonteRampe].addSEND("MRMP",10);
+    actionList[ActionE::MonteRampe].addSEND("MRMP",10,nullptr,0);
 }
 
 void Cerveau::addPoseRampe()
 {
     actionList[ActionE::PoseRampe] = Action(ActionE::PoseRampe);
-    actionList[ActionE::PoseRampe].addSEND("PRMP",10);
+    actionList[ActionE::PoseRampe].addSEND("PRMP",10,nullptr,0);
 }
 
 void Cerveau::addDescendRampe()
 {
     actionList[ActionE::DescendRampe] = Action(ActionE::DescendRampe);
-    actionList[ActionE::DescendRampe].addSEND("DRMP",10);
+    actionList[ActionE::DescendRampe].addSEND("DRMP",10,nullptr,0);
 }
 
 void Cerveau::addCasseCouilles()
@@ -191,7 +196,7 @@ void Cerveau::actuate()
 
 void Cerveau::addActionOrders()
 {
-    actionList[currentActionIndex].addOrdersToBuffer(ordresFifo);
+    actionList[currentActionIndex].addOrdersToBuffer(ptrFifo);
 }
 
 void Cerveau::supprimerAction(ActionE action)
@@ -206,9 +211,9 @@ Cerveau::Cerveau()
 {
 }
 
-Cerveau::Cerveau(Fifo * ordresFifo)
+Cerveau::Cerveau(Fifo * ptrFifo)
 {
-    this->ordresFifo = ordresFifo;
+    this->ptrFifo = ptrFifo;
 
     for (int i = 0; i < NBR_ACTIONS; i++)
     {

@@ -11,77 +11,7 @@
 #include "Comm.h"
 #include "Cerveau.h"
 #include "Encoder.h"
-
-class Robot
-{
-public:
-    float dt;
-    Motor moteurGauche, moteurDroite;
-    Codeuse codeuseGauche,codeuseDroite;
-    Ghost ghost;
-    VectorE posE;                                 //Position du robot
-    Filtre vF,wF;
-    Fifo ordresFifo;                              //Une liste d'ordres a effectuer
-    PID pid;
-    Comm comm;
-    Cerveau* master;
-
-    void actuateODO(float dt);
-    void set(float x0,float y0, float theta0);    //Remplie les champs de l'objet Robot
-    void actuate(float dt);                       //Actualise les valeurs
-};
-
-void Robot::actuate(float dt)
-{
-    codeuseGauche.actuate(dt);
-    codeuseDroite.actuate(dt);
-    actuateODO(dt);
-    ghost.actuate(dt);
-    pid.actuate(dt,posE,vF.out(),wF.out());
-    comm.actuate();
-    master->actuate();
-}
-
-void Robot::actuateODO(float dt)
-{
-    vF.in((codeuseDroite.v+codeuseGauche.v)/2.0,dt);
-    wF.in((codeuseDroite.v-codeuseGauche.v)/ELOIGNEMENT_CODEUSES,dt);
-    posE.theta = normalize(posE.theta+(codeuseDroite.deltaAvance-codeuseGauche.deltaAvance)/ELOIGNEMENT_CODEUSES);
-    float avance = (codeuseDroite.deltaAvance+codeuseGauche.deltaAvance)/2;
-    posE.vec.x += avance*cos(posE.theta);
-    posE.vec.y += avance*sin(posE.theta);
-}
-
-
-void Robot::set(float x0,float y0, float theta0)
-{
-    delay(1000);
-    moteurDroite  = init_motor(PIN_MOTEUR_DROITE_PWR,PIN_MOTEUR_DROITE_SENS,PIN_MOTEUR_DROITE_BRAKE,1.0);
-    moteurGauche  = init_motor(PIN_MOTEUR_GAUCHE_PWR,PIN_MOTEUR_GAUCHE_SENS,PIN_MOTEUR_GAUCHE_BRAKE,0.96);
-    codeuseGauche = Codeuse(PIN_CODEUSE_GAUCHE_A,PIN_CODEUSE_GAUCHE_B);
-    codeuseDroite = Codeuse(PIN_CODEUSE_DROITE_A,PIN_CODEUSE_DROITE_B);
-    VectorE initVect = init_vectorE(x0,y0,theta0);
-    ghost = *(new Ghost(initVect));
-    posE.vec.x = x0;
-    posE.vec.y=y0;
-    posE.theta=theta0;
-    vF = newFiltre(0.0,60.0,2);
-    wF=newFiltre(0.0,60.0,2);
-    ordresFifo.add(STBY(DYDM,"Tirt",255,nullptr));
-    master=new Cerveau(&ordresFifo);
-    pid = PID(&moteurGauche,&moteurDroite,&ordresFifo,&ghost,&comm,master);
-    comm.set(&ordresFifo,&pid);
-}
-
-//Au cas ou....
-void emergencyStop(Robot* r)
-{
-    r->ordresFifo.clean();
-    r->moteurGauche.order=0;
-    r->moteurDroite.order=0;
-    r->moteurGauche.actuate();
-    r->moteurDroite.actuate();
-}
+#include "Robot.h"
 
 void print7(float f1,float f2,float f3,float f4,float f5,float f6,float f7)
 {
@@ -136,7 +66,7 @@ void printRobotState(Robot* robot)
 uint32_t m, microsStart, mLoop;
 float dtLoop;
 Robot robot;
-Cerveau master;
+//Cerveau master;
 
 void setup()
 {

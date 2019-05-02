@@ -61,5 +61,5 @@ void Fifo::clean()
     indiceDebut = 1;
     indiceFin = 0;
     inBuffer = 0;
-    add(STBY(DYDM, "DUMY", 255,nullptr));
+    add(STBY(DYDM, "DUMY", 255,nullptr,nullptr,0));
 }

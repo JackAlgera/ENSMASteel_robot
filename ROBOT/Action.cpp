@@ -12,51 +12,51 @@ Action::Action()
 {
 }
 
-void Action::addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs)
+void Action::addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
-    ordersList[nbrOrders] = GOTO(nerv, fleche, xAim, yAim, thetaAim, arret, timeoutDs,this);
+    ordersList[nbrOrders] = GOTO(nerv, fleche, xAim, yAim, thetaAim, arret, timeoutDs,this, contreMesure, nbMaxFail);
     nbrOrders++;
 }
 
-void Action::addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs)
+void Action::addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
-    ordersList[nbrOrders] = SPIN(nerv, thetaAim, timeoutDs,this);
+    ordersList[nbrOrders] = SPIN(nerv, thetaAim, timeoutDs,this, contreMesure, nbMaxFail);
     nbrOrders++;
 }
 
-void Action::addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs)
+void Action::addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
-    ordersList[nbrOrders] = SPINGOTO(nerv,xAim,yAim,timeoutDs,this);
+    ordersList[nbrOrders] = SPINGOTO(nerv,xAim,yAim,timeoutDs,this, contreMesure, nbMaxFail);
     nbrOrders++;
 }
 
-void Action::addFWD(float acc, float v, uint8_t timeoutDs)
+void Action::addFWD(float acc, float v, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
-    ordersList[nbrOrders] = FWD(acc, v, timeoutDs,this);
+    ordersList[nbrOrders] = FWD(acc, v, timeoutDs,this, contreMesure, nbMaxFail);
     nbrOrders++;
 }
 
-void Action::addBWD(float acc, float v, uint8_t timeoutDs)
+void Action::addBWD(float acc, float v, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
-    ordersList[nbrOrders] = BWD(acc, v, timeoutDs,this);
+    ordersList[nbrOrders] = BWD(acc, v, timeoutDs,this, contreMesure, nbMaxFail);
     nbrOrders++;
 }
 
-void Action::addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeout)
+void Action::addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
-    ordersList[nbrOrders] = STBY(nerv, unlockMessage, timeout,this);
+    ordersList[nbrOrders] = STBY(nerv, unlockMessage, timeoutDs,this, contreMesure, nbMaxFail);
     nbrOrders++;
 }
 
-void Action::addSEND(const char message[], uint8_t timeoutDs)
+void Action::addSEND(const char message[], uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
-    ordersList[nbrOrders] = SEND(message, timeoutDs,this);
+    ordersList[nbrOrders] = SEND(message, timeoutDs,this, contreMesure, nbMaxFail);
     nbrOrders++;
 }
 
-void Action::addEMSTOP(uint8_t timeoutDs)
+void Action::addEMSTOP(uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
-    ordersList[nbrOrders] = EMSTOP(timeoutDs,this);
+    ordersList[nbrOrders] = EMSTOP(timeoutDs,this, contreMesure, nbMaxFail);
     nbrOrders++;
 }
 
