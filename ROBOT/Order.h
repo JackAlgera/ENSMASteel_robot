@@ -76,67 +76,31 @@ public:
 class GOTO : public Order
 {
 public:
-    GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs, Action * ptrActionPere) //abs(thetaAim-thetaIni)<=PI
-    {
-        this->type = OrderE::GOTO_E;
-        this->timeoutDs = timeoutDs;
-        this->ptrActionPere=ptrActionPere;
-
-        this->goTo = { nerv, fleche, xAim, yAim, thetaAim, arret };
-    }
+	GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs, Action * ptrActionPere);
 };
 
 class SPIN : public Order
 {
 public:
-    SPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs, Action * ptrActionPere)
-    {
-        this->type = OrderE::SPIN_E;
-        this->timeoutDs = timeoutDs;
-        this->ptrActionPere=ptrActionPere;
-
-        this->spin = { nerv, thetaAim };
-    }
+	SPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs, Action * ptrActionPere);
 };
 
 class SPINGOTO : public Order
 {
 public:
-    SPINGOTO(uint8_t nerv, float xAim, float yAim, uint8_t timeoutDs, Action * ptrActionPere)
-    {
-        this->type = OrderE::SPINGOTO_E;
-        this->timeoutDs = timeoutDs;
-        this->ptrActionPere=ptrActionPere;
-
-        this->spinGoTo.nerv=nerv;
-        this->spinGoTo.posAim=init_vector(xAim,yAim);
-    }
+	SPINGOTO(uint8_t nerv, float xAim, float yAim, uint8_t timeoutDs, Action * ptrActionPere);
 };
 
 class FWD : public Order
 {
 public:
-    FWD(float acc, float v, uint8_t timeoutDs, Action * ptrActionPere)
-    {
-        this->type = OrderE::FWD_E;
-        this->timeoutDs = timeoutDs;
-        this->ptrActionPere=ptrActionPere;
-
-        this->fwd = { acc, v };
-    }
+	FWD(float acc, float v, uint8_t timeoutDs, Action * ptrActionPere);
 };
 
 class BWD : public Order
 {
 public:
-    BWD(float acc, float v, uint8_t timeoutDs, Action * ptrActionPere)
-    {
-        this->type = OrderE::BWD_E;
-        this->timeoutDs = timeoutDs;
-        this->ptrActionPere=ptrActionPere;
-
-        this->bwd = { acc, v };
-    }
+	BWD(float acc, float v, uint8_t timeoutDs, Action * ptrActionPere);
 };
 
 class STBY : public Order
@@ -145,45 +109,19 @@ public:
     uint8_t nerv;
     char unlockMessage[4];
 
-    STBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs, Action * ptrActionPere)
-    {
-        this->type = OrderE::STBY_E;
-        this->timeoutDs = timeoutDs;
-        this->ptrActionPere=ptrActionPere;
-
-        this->stby.nerv = nerv;
-        this->stby.unlockMessage[0] = unlockMessage[0];
-        this->stby.unlockMessage[1] = unlockMessage[1];
-        this->stby.unlockMessage[2] = unlockMessage[2];
-        this->stby.unlockMessage[3] = unlockMessage[3];
-    }
+	STBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs, Action * ptrActionPere);
 };
 
 class SEND : public Order
 {
 public:
-    SEND(const char message[], uint8_t timeoutDs, Action * ptrActionPere)
-    {
-        this->type = OrderE::SEND_E;
-        this->timeoutDs = timeoutDs;
-        this->ptrActionPere=ptrActionPere;
-
-        this->send.message[0] = message[0];
-        this->send.message[1] = message[1];
-        this->send.message[2] = message[2];
-        this->send.message[3] = message[3];
-    }
+	SEND(const char message[], uint8_t timeoutDs, Action * ptrActionPere);
 };
 
 class EMSTOP : public Order
 {
 public:
-    EMSTOP(uint8_t timeoutDs,Action * ptrActionPere)
-    {
-        this->type = OrderE::EMSTOP_E;
-        this->timeoutDs = timeoutDs;
-        this->ptrActionPere=ptrActionPere;
-    }
+	EMSTOP(uint8_t timeoutDs, Action * ptrActionPere);
 };
 
 #endif
