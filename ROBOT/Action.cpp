@@ -11,17 +11,6 @@ Action::Action(ActionE type, int nbrOrders)
     ordersList = new Order[nbrOrders];
 }
 
-void Action::set(ActionE type, int nbrOrders)
-{
-    this->type = type;
-    this->nbrOrders = nbrOrders;
-    this->currentOrderIndex = 0;
-    this->actionCompleted = false;
-    this->currentOrderAdd = 0;
-    this->currentBufferOrderIndex = 0;
-    ordersList = new Order[nbrOrders];
-}
-
 Action::Action()
 {
 }
@@ -109,7 +98,7 @@ void Action::nextStep()
     if (!actionCompleted)
     {
         currentOrderIndex++;
-        if (currentOrderIndex == nbrOrders-1)
+        if (currentOrderIndex == nbrOrders)
         {
             actionCompleted = true;
         }

@@ -38,9 +38,7 @@ Vector mult(float lambda,Vector v)
 
 float cross(Vector v1,Vector v2)
 {
-    float out;
-    out=v1.x*v2.x + v1.y*v2.y;
-    return out;
+    return v1.x*v2.x + v1.y*v2.y;;
 }
 
 
@@ -62,9 +60,7 @@ Vector minusFAST(Vector* v1,Vector* v2)
 
 float longueur(Vector v)
 {
-    float out;
-    out= sqrt(cross(v,v));
-    return out;
+    return sqrt(cross(v,v));
 }
 
 float normalize(float theta)
@@ -80,9 +76,7 @@ float normalize(float theta)
 
 float angle(Vector v)
 {
-    float out;
-    out=atan2(v.y,v.x);
-    return out;
+    return atan2(v.y,v.x);
 }
 
 Vector directeur(float theta)
@@ -114,9 +108,7 @@ Matrix init_matrix(float a,float b,float c,float d)
 
 float determinant(Matrix M)
 {
-    float out;
-    out=M.a*M.d-M.c*M.b;
-    return out;
+    return M.a*M.d-M.c*M.b;
 }
 
 Matrix inverse(Matrix M)
