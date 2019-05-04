@@ -6,8 +6,8 @@ Action::Action(ActionE type, int nbrPalentsMax = 0)
     this->nbrOrders = 0;
     this->currentOrderIndex = 0;
     this->actionCompleted = false;
-	this->nbrPalets = 0;
-	this->nbrPalentsMax = nbrPalentsMax;
+  	this->nbrPalets = 0;
+  	this->nbrPalentsMax = nbrPalentsMax;
 }
 
 Action::Action()
@@ -86,10 +86,10 @@ bool Action::gotAllPalets()
 
 void Action::addPalet()
 {
-	if (nbrPalets < nbrPalentsMax)
-	{
-		nbrPalets++;
-	}
+  	if (nbrPalets < nbrPalentsMax)
+  	{
+  		  nbrPalets++;
+  	}
 }
 
 void Action::addOrdersToBuffer(Fifo * ordresFifo)

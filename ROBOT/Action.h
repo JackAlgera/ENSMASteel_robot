@@ -14,10 +14,10 @@ public:
     int nbrOrders;
     int currentOrderIndex;			// L'ordre actuel de l'action non complete
     bool actionCompleted;
-	int nbrPalets;
-	int nbrPalentsMax;
+  	int nbrPalets;
+  	int nbrPalentsMax;
 
-	Action(ActionE type, int nbrPalentsMax = 0);
+	  Action(ActionE type, int nbrPalentsMax = 0);
     Action();
     void addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);  //abs(thetaAim-thetaIni)<=PI
     void addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
@@ -29,8 +29,8 @@ public:
     void addEMSTOP(uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
     Order * getCurrentOrder();
     void nextStep();
-	bool gotAllPalets();
-	void addPalet(); // TODO : ajouter la fonction "addPalet" la ou on recupere des palets
+  	bool gotAllPalets();
+  	void addPalet(); // TODO : ajouter la fonction "addPalet" la ou on recupere des palets
 
     void addOrdersToBuffer(Fifo* ordresFifo);
 

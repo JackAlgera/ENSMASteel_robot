@@ -77,14 +77,14 @@ void Cerveau::addDistribx6_1()
 
 void Cerveau::addDistribx6_2()
 {
-	actionList[ActionE::Distribx6_2] = Action(ActionE::Distribx6_2, 2);
-	actionList[ActionE::Distribx6_2].addSEND("Dx62", 10,simpleTimeout,2);
+  	actionList[ActionE::Distribx6_2] = Action(ActionE::Distribx6_2, 2);
+  	actionList[ActionE::Distribx6_2].addSEND("Dx62", 10,simpleTimeout,2);
 }
 
 void Cerveau::addDistribx6_3()
 {
-	actionList[ActionE::Distribx6_3] = Action(ActionE::Distribx6_3, 2);
-	actionList[ActionE::Distribx6_3].addSEND("Dx63", 10,simpleTimeout,2);
+  	actionList[ActionE::Distribx6_3] = Action(ActionE::Distribx6_3, 2);
+  	actionList[ActionE::Distribx6_3].addSEND("Dx63", 10,simpleTimeout,2);
 }
 
 void Cerveau::addCoupDeCul()
@@ -193,7 +193,7 @@ void Cerveau::choisirAction()
 	}
 
 	newAction = nextBestAction();
-    currentActionIndex = newAction;
+  currentActionIndex = newAction;
 }
 
 ActionE Cerveau::nextBestAction()
@@ -210,9 +210,9 @@ ActionE Cerveau::nextBestAction()
 	  i = 0;
 	  while (i <  NBR_ACTIONS-1)
 	  {
-		  if (!DONE[i])
-			  return (ActionE)i;
-		  i++;
+  		  if (!DONE[i])
+  			    return (ActionE)i;
+  		  i++;
 	  }
 
 	  // On regarde si on a pas rate des palets
@@ -220,30 +220,30 @@ ActionE Cerveau::nextBestAction()
 	  bool toutEstRamasse = true;
 	  for (int i = 0; i < NBR_ACTIONS-1; i++)
 	  {
-		  if (!actionList[i].gotAllPalets())
-		  {
-			  DONE[i] = false;
-			  toutEstRamasse = false;
-		  }
+  		  if (!actionList[i].gotAllPalets())
+  		  {
+    			  DONE[i] = false;
+    			  toutEstRamasse = false;
+  		  }
 	  }
 	  
 	  if (toutEstRamasse)  // si on a ramasse tout les palets
 	  {
-		  return ActionE::CasseCouilles; //On a fini, on va alors accidentelement faire chier l'adversaire
+		    return ActionE::CasseCouilles; //On a fini, on va alors accidentelement faire chier l'adversaire
 	  }
 	  else                 // Sinon on recup les palets manquant 
 	  {
-		  DONE[ActionE::PoseSol] = false; // On refait l'action PoseSol pour poser les palets qu'on vient de recuperer et on choisit une autre action
-		  i = 0;
-		  while (i < NBR_ACTIONS - 1)
-		  {
-			  if (!DONE[i])
-				  return (ActionE)i;
-			  i++;
-		  }
+  		  DONE[ActionE::PoseSol] = false; // On refait l'action PoseSol pour poser les palets qu'on vient de recuperer et on choisit une autre action
+  		  i = 0;
+  		  while (i < NBR_ACTIONS - 1)
+  		  {
+    			  if (!DONE[i])
+    				  return (ActionE)i;
+    			  i++;
+  		  }
 	  }
 
-	  return ActionE::CasseCouilles; // Pas besoin mais au cas où en cas de bug
+	  return ActionE::CasseCouilles; // Pas besoin mais au cas oï¿½ en cas de bug
 }
 
 void Cerveau::actuate()
