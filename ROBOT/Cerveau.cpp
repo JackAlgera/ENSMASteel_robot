@@ -15,13 +15,55 @@ void Cerveau::abandonneCurrentAction()
   #ifdef STATE
   Serial.println("ABANDON ACTION");
   #endif
-  //TODO
+
+  DONE[currentActionIndex] = true;
+
+  switch (currentActionIndex)
+  {
+  case Chaos:
+	  break;
+  case Distribx6_1:
+	  break;
+  case Distribx6_2:
+	  break;
+  case Distribx6_3:
+	  break;
+  case CoupDeCul:
+	  break;
+  case Distribx3:
+	  break;
+  case MonteRampe:
+	  DONE[ActionE::PoseRampe] = true;
+	  DONE[ActionE::DescendRampe] = true;
+	  break;
+  case PoseRampe:
+	  break;
+  case DescendRampe:
+	  break;
+  case RecupBlueAcc:
+	  break;
+  case PoseAcc:
+	  break;
+  case RecupGoldAcc:
+	  break;
+  case Balance:
+	  break;
+  case PoseSol:
+	  break;
+  case CasseCouilles:
+	  break;
+  default:
+	  break;
+  }
+
+  currentActionIndex = nextBestAction();
+  addActionOrders();
 }
 
 // Remplissage des actions avec les Order
 void Cerveau::addChaos()
 {
-    actionList[ActionE::Chaos] = Action(ActionE::Chaos);
+    actionList[ActionE::Chaos] = Action(ActionE::Chaos, 4);
     actionList[ActionE::Chaos].addSEND("CHAO",10,simpleTimeout,2);
     actionList[ActionE::Chaos].addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT,wiggle,2);
     actionList[ActionE::Chaos].addSPIN(STD, 1, 20,simpleTimeout,2);
@@ -29,19 +71,19 @@ void Cerveau::addChaos()
 
 void Cerveau::addDistribx6_1()
 {
-    actionList[ActionE::Distribx6_1] = Action(ActionE::Distribx6_1);
+    actionList[ActionE::Distribx6_1] = Action(ActionE::Distribx6_1, 2);
     actionList[ActionE::Distribx6_1].addSEND("Dx61",10,simpleTimeout,2);
 }
 
 void Cerveau::addDistribx6_2()
 {
-	actionList[ActionE::Distribx6_2] = Action(ActionE::Distribx6_2);
+	actionList[ActionE::Distribx6_2] = Action(ActionE::Distribx6_2, 2);
 	actionList[ActionE::Distribx6_2].addSEND("Dx62", 10,simpleTimeout,2);
 }
 
 void Cerveau::addDistribx6_3()
 {
-	actionList[ActionE::Distribx6_3] = Action(ActionE::Distribx6_3);
+	actionList[ActionE::Distribx6_3] = Action(ActionE::Distribx6_3, 2);
 	actionList[ActionE::Distribx6_3].addSEND("Dx63", 10,simpleTimeout,2);
 }
 
@@ -53,13 +95,13 @@ void Cerveau::addCoupDeCul()
 
 void Cerveau::addDistribx3()
 {
-    actionList[ActionE::Distribx3] = Action(ActionE::Distribx3);
+    actionList[ActionE::Distribx3] = Action(ActionE::Distribx3, 3);
     actionList[ActionE::Distribx3].addSEND("DIx3",10,simpleTimeout,2);
 }
 
 void Cerveau::addRecupBlueAcc()
 {
-    actionList[ActionE::RecupBlueAcc] = Action(ActionE::RecupBlueAcc);
+    actionList[ActionE::RecupBlueAcc] = Action(ActionE::RecupBlueAcc, 1);
     actionList[ActionE::RecupBlueAcc].addSEND("RBLU",10,simpleTimeout,2);
 }
 
@@ -70,7 +112,7 @@ void Cerveau::addPoseAcc()
 }
 void Cerveau::addRecupGoldAcc()
 {
-    actionList[ActionE::RecupGoldAcc] = Action(ActionE::RecupGoldAcc);
+    actionList[ActionE::RecupGoldAcc] = Action(ActionE::RecupGoldAcc, 1);
     actionList[ActionE::RecupGoldAcc].addSEND("RGOL",10,simpleTimeout,2);
 }
 
@@ -117,54 +159,40 @@ void Cerveau::choisirAction()
 	switch (currentActionIndex)
 	{
 	case Chaos:
-		newAction = nextBestAction();
 		break;
 	case Distribx6_1:
-		newAction = nextBestAction();
 		break;
 	case Distribx6_2:
-		newAction = nextBestAction();
 		break;
 	case Distribx6_3:
-		newAction = nextBestAction();
 		break;
 	case CoupDeCul:
-		newAction = nextBestAction();
 		break;
 	case Distribx3:
-		newAction = nextBestAction();
 		break;
 	case MonteRampe:
-		newAction = nextBestAction();
 		break;
 	case PoseRampe:
-		newAction = nextBestAction();
 		break;
 	case DescendRampe:
-		newAction = nextBestAction();
 		break;
 	case RecupBlueAcc:
-		newAction = nextBestAction();
 		break;
 	case PoseAcc:
-		newAction = nextBestAction();
 		break;
 	case RecupGoldAcc:
-		newAction = nextBestAction();
 		break;
 	case Balance:
-		newAction = nextBestAction();
 		break;
 	case PoseSol:
-		newAction = nextBestAction();
 		break;
 	case CasseCouilles:
-		newAction = nextBestAction();
 		break;
 	default:
 		break;
 	}
 
+	newAction = nextBestAction();
     currentActionIndex = newAction;
 }
 
@@ -186,7 +214,36 @@ ActionE Cerveau::nextBestAction()
 			  return (ActionE)i;
 		  i++;
 	  }
-      return ActionE::CasseCouilles; //On a fini, on va alors accidentelement faire chier l'adversaire
+
+	  // On regarde si on a pas rate des palets
+	  i = 0;
+	  bool toutEstRamasse = true;
+	  for (int i = 0; i < NBR_ACTIONS-1; i++)
+	  {
+		  if (!actionList[i].gotAllPalets())
+		  {
+			  DONE[i] = false;
+			  toutEstRamasse = false;
+		  }
+	  }
+	  
+	  if (toutEstRamasse)  // si on a ramasse tout les palets
+	  {
+		  return ActionE::CasseCouilles; //On a fini, on va alors accidentelement faire chier l'adversaire
+	  }
+	  else                 // Sinon on recup les palets manquant 
+	  {
+		  DONE[ActionE::PoseSol] = false; // On refait l'action PoseSol pour poser les palets qu'on vient de recuperer et on choisit une autre action
+		  i = 0;
+		  while (i < NBR_ACTIONS - 1)
+		  {
+			  if (!DONE[i])
+				  return (ActionE)i;
+			  i++;
+		  }
+	  }
+
+	  return ActionE::CasseCouilles; // Pas besoin mais au cas où en cas de bug
 }
 
 void Cerveau::actuate()

@@ -27,13 +27,20 @@ void PID::failureDetected(ErreurE erreur)
   ptrRobot->ordresFifo.ptrFst()->nbFail++;
   if(ptrRobot->ordresFifo.ptrFst()->nbFail>ptrRobot->ordresFifo.ptrFst()->nbMaxFail)
   {
-    if(ptrRobot->ordresFifo.ptrFst()->ptrActionPere!=nullptr){ptrRobot->master->abandonneCurrentAction();}
-    else{loadNext();}
+    if(ptrRobot->ordresFifo.ptrFst()->ptrActionPere!=nullptr)
+	{
+		ptrRobot->master->abandonneCurrentAction();
+	}
+    else
+	{
+		loadNext();
+	}
   }
   else
   {
     bool sanction=(*(ptrRobot->ordresFifo.ptrFst()->contreMesure))(ptrRobot,erreur);
-    if (!sanction)ptrRobot->ordresFifo.ptrFst()->nbFail--;
+    if (!sanction)
+		ptrRobot->ordresFifo.ptrFst()->nbFail--;
   }
 }
 
@@ -319,7 +326,10 @@ void PID::loadNext()
 
     //On pop le Fifo
     ptrRobot->ordresFifo.pop();
-    if (ptrRobot->ordresFifo.inBuffer==0){ptrRobot->ordresFifo.add(STBY(DYDM, "DUMY", 1, nullptr,normalTimeout,1));} //TODO verifier si OFF n'est pas mieux
+    if (ptrRobot->ordresFifo.inBuffer==0)
+	{
+		ptrRobot->ordresFifo.add(STBY(DYDM, "DUMY", 1, nullptr,normalTimeout,1)); //TODO verifier si OFF n'est pas mieux
+	} 
 
     //On dit au robot que l'ordre actuel a change
     reload();

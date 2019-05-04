@@ -18,14 +18,12 @@ public:
     Fifo *ptrFifo;
 
     void supprimerAction(ActionE action);
-    void choisirAction();		// TODO : a remplir
+    void choisirAction();	
     ActionE nextBestAction();
 
     void actuate();
     void addActionOrders();
     void abandonneCurrentAction();
-    //void finirOrdre();
-
     //void addNextOrder();		// Ajouter l'ordre suivant au buffer
 	
     Cerveau();

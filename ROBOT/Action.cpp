@@ -1,11 +1,13 @@
 #include "Action.h"
 
-Action::Action(ActionE type)
+Action::Action(ActionE type, int nbrPalentsMax = 0)
 {
     this->type = type;
     this->nbrOrders = 0;
     this->currentOrderIndex = 0;
     this->actionCompleted = false;
+	this->nbrPalets = 0;
+	this->nbrPalentsMax = nbrPalentsMax;
 }
 
 Action::Action()
@@ -75,6 +77,19 @@ void Action::nextStep()
             actionCompleted = true;
         }
     }
+}
+
+bool Action::gotAllPalets()
+{
+	return nbrPalets == nbrPalentsMax;
+}
+
+void Action::addPalet()
+{
+	if (nbrPalets < nbrPalentsMax)
+	{
+		nbrPalets++;
+	}
 }
 
 void Action::addOrdersToBuffer(Fifo * ordresFifo)
