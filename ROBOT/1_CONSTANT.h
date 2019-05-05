@@ -71,10 +71,10 @@ enum MessageE
 };
 
 
-#define NBR_ACTIONS 15
+#define NB_ACTIONS 16
 enum ActionE
 {
-    Chaos, Distribx6_1, Distribx6_2, Distribx6_3, CoupDeCul, Distribx3, MonteRampe, PoseRampe, DescendRampe, RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol, CasseCouilles
+    Chaos, Distribx6_1, Distribx6_2, Distribx6_3, CoupDeCul, Distribx3_1, Distribx3_2, MonteRampe, PoseRampe, DescendRampe, RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol, CasseCouilles
 };
 
 enum ErreurE

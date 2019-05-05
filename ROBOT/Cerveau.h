@@ -12,8 +12,8 @@
 class Cerveau
 {
 public:
-    Action actionList[NBR_ACTIONS];		// Array qui contient l'ensemble des actions, qui contiennent chacun des ordres
-    bool DONE[NBR_ACTIONS];				    // Array qui nous dit si un action est fini ou non
+    Action actionList[NB_ACTIONS];		// Array qui contient l'ensemble des actions, qui contiennent chacun des ordres
+    bool DONE[NB_ACTIONS];				    // Array qui nous dit si un action est fini ou non
     ActionE currentActionIndex;
     Fifo *ptrFifo;
 
@@ -24,27 +24,12 @@ public:
     void actuate();
     void addActionOrders();
     void abandonneCurrentAction();
+    void loadAction(ActionE actionType);
     //void addNextOrder();		// Ajouter l'ordre suivant au buffer
 	
     Cerveau();
     Cerveau(Fifo * ptrFifo);
     ~Cerveau();
-private:
-    void addChaos();
-  	void addDistribx6_1();
-  	void addDistribx6_2();
-  	void addDistribx6_3();
-    void addCoupDeCul();
-    void addDistribx3();
-    void addRecupBlueAcc();
-    void addPoseAcc();
-    void addRecupGoldAcc();
-    void addBalance();
-    void addPoseSol();
-    void addMonteRampe();
-    void addPoseRampe();
-	  void addDescendRampe();
-	  void addCasseCouilles();
 };
 
 #endif
