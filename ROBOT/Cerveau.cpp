@@ -41,6 +41,11 @@ void Cerveau::abandonneCurrentAction()
   case PoseRampe:
 	  break;
   case DescendRampe:
+	  // On a raté l'actoin DescendRampe
+	  // actionList[ActionE::DescendRampe].ordersList[1].goto.posAim = point A'
+	  // buffer.clean
+	  // DONE[ACtionE::DescendRampe] = false;
+	  // LoadAction(DescendRampe)
 	  break;
   case RecupBlueAcc:
 	  break;
@@ -108,6 +113,10 @@ void Cerveau::loadAction(ActionE actionType)
   case DescendRampe:
     actionList[actionType] = Action(actionType, 0);
     actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
+	// Exemple :
+	//actionList[actionType].addGOTO(Point A);
+	//actionList[actionType].addGOTO(Point B);
+	//actionList[actionType].addGOTO(Point C);
     break;
   case RecupBlueAcc:
     actionList[actionType] = Action(actionType, 1);
@@ -136,54 +145,6 @@ void Cerveau::loadAction(ActionE actionType)
   default:
     break;
   }
-}
-
-
-
-void Cerveau::choisirAction()
-{
-  ActionE newAction = ActionE::Chaos;
-
-	switch (currentActionIndex)
-	{
-	case Chaos:
-		break;
-	case Distribx6_1:
-		break;
-	case Distribx6_2:
-		break;
-	case Distribx6_3:
-		break;
-	case CoupDeCul:
-		break;
-	case Distribx3_1:
-		break;
-  case Distribx3_2:
-    break;
-	case MonteRampe:
-		break;
-	case PoseRampe:
-		break;
-	case DescendRampe:
-		break;
-	case RecupBlueAcc:
-		break;
-	case PoseAcc:
-		break;
-	case RecupGoldAcc:
-		break;
-	case Balance:
-		break;
-	case PoseSol:
-		break;
-	case CasseCouilles:
-		break;
-	default:
-		break;
-	}
-
-	newAction = nextBestAction();
-  currentActionIndex = newAction;
 }
 
 ActionE Cerveau::nextBestAction()
@@ -242,7 +203,7 @@ void Cerveau::actuate()
     {
         DONE[currentActionIndex] = true;
 
-        choisirAction();	// Choisir une nouvelle action
+		currentActionIndex = nextBestAction(); // Choisir une nouvelle action
         addActionOrders();	// Ajoute ses ordres au buffer
     }
     //TODO Scrutage de Comm
@@ -251,14 +212,6 @@ void Cerveau::actuate()
 void Cerveau::addActionOrders()
 {
     actionList[currentActionIndex].addOrdersToBuffer(ptrFifo);
-}
-
-void Cerveau::supprimerAction(ActionE action)
-{
-    DONE[action] = true;
-
-    choisirAction();	// Choisir l'action suivant
-    addActionOrders();	// Ajouter ordres au buffer
 }
 
 Cerveau::Cerveau()

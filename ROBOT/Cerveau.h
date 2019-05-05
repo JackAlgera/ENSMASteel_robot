@@ -17,15 +17,12 @@ public:
     ActionE currentActionIndex;
     Fifo *ptrFifo;
 
-    void supprimerAction(ActionE action);
-    void choisirAction();	
     ActionE nextBestAction();
 
     void actuate();
     void addActionOrders();
     void abandonneCurrentAction();
     void loadAction(ActionE actionType);
-    //void addNextOrder();		// Ajouter l'ordre suivant au buffer
 	
     Cerveau();
     Cerveau(Fifo * ptrFifo);
