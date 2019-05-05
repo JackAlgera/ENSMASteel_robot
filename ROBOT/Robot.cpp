@@ -12,6 +12,7 @@
 #include "Cerveau.h"
 #include "Encoder.h"
 #include "Robot.h"
+#include "ContreMesure.h"
 
 void Robot::actuate(float dt)
 {
@@ -20,7 +21,7 @@ void Robot::actuate(float dt)
     actuateODO(dt);
     ghost.actuate(dt);
     pid.actuate(dt,posE,vF.out(),wF.out());
-    comm.actuate();
+    comm.actuate(posE,vF.out());
     master->actuate();
 }
 
@@ -49,8 +50,8 @@ void Robot::set(float x0,float y0, float theta0)
     posE.theta=theta0;
     vF = newFiltre(0.0,60.0,2);
     wF=newFiltre(0.0,60.0,2);
-    ordresFifo.add(STBY(DYDM,"Tirt",255,nullptr,nullptr,1));
+    ordresFifo.add(STBY(DYDM,Tirette,255,nullptr,simpleTimeout,1));
     master=new Cerveau(&ordresFifo);
     pid = PID(this);
-    comm.set(&ordresFifo,&pid);
+    comm=*(new Comm());
 }

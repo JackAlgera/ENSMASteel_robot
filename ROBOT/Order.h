@@ -44,12 +44,12 @@ struct BWD_S
 struct STBY_S
 {
     uint8_t nerv;
-    char unlockMessage[4];
+    MessageE unlockMessage;
 };
 
 struct SEND_S
 {
-    char message[4];
+    MessageE message;
 };
 
 struct EMSTOP_S
@@ -114,15 +114,15 @@ class STBY : public Order
 {
 public:
     uint8_t nerv;
-    char unlockMessage[4];
+    MessageE unlockMessage;
 
-	STBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
+	STBY(uint8_t nerv, MessageE unlockMessage, uint8_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
 class SEND : public Order
 {
 public:
-	SEND(const char message[], uint8_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
+	SEND(MessageE message, uint8_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
 class EMSTOP : public Order

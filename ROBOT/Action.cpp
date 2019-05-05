@@ -1,6 +1,6 @@
 #include "Action.h"
 
-Action::Action(ActionE type, int nbrPalentsMax = 0)
+Action::Action(ActionE type, int nbrPalentsMax)
 {
     this->type = type;
     this->nbrOrders = 0;
@@ -44,13 +44,13 @@ void Action::addBWD(float acc, float v, uint8_t timeoutDs, ptrFonction contreMes
     nbrOrders++;
 }
 
-void Action::addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
+void Action::addSTBY(uint8_t nerv, MessageE unlockMessage, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
     ordersList[nbrOrders] = STBY(nerv, unlockMessage, timeoutDs,this, contreMesure, nbMaxFail);
     nbrOrders++;
 }
 
-void Action::addSEND(const char message[], uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
+void Action::addSEND(MessageE message, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
     ordersList[nbrOrders] = SEND(message, timeoutDs,this, contreMesure, nbMaxFail);
     nbrOrders++;

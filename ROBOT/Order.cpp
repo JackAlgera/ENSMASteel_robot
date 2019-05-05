@@ -81,7 +81,7 @@ BWD::BWD(float acc, float v, uint8_t timeoutDs, Action * ptrActionPere, ptrFonct
 	}
 }
 
-STBY::STBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
+STBY::STBY(uint8_t nerv, MessageE unlockMessage, uint8_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
 	{
 		this->type = OrderE::STBY_E;
@@ -93,14 +93,11 @@ STBY::STBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs, Action *
     this->nbFail=0;
 
 		this->stby.nerv = nerv;
-		this->stby.unlockMessage[0] = unlockMessage[0];
-		this->stby.unlockMessage[1] = unlockMessage[1];
-		this->stby.unlockMessage[2] = unlockMessage[2];
-		this->stby.unlockMessage[3] = unlockMessage[3];
+		this->stby.unlockMessage = unlockMessage;
 	}
 }
 
-SEND::SEND(const char message[], uint8_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
+SEND::SEND(MessageE message, uint8_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
 	{
 		this->type = OrderE::SEND_E;
@@ -111,10 +108,7 @@ SEND::SEND(const char message[], uint8_t timeoutDs, Action * ptrActionPere, ptrF
     
     this->nbFail=0;
 
-		this->send.message[0] = message[0];
-		this->send.message[1] = message[1];
-		this->send.message[2] = message[2];
-		this->send.message[3] = message[3];
+		this->send.message = message;
 	}
 }
 

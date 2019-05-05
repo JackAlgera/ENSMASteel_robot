@@ -64,11 +64,14 @@ enum OrderE
     GOTO_E, SPIN_E, SPINGOTO_E, FWD_E, BWD_E, STBY_E, SEND_E, EMSTOP_E
 };
 
-// On aura Chaos = 0, Distribx6 = 1 etc..
-// ActionE::Chaos pour y acceder -> exemple : if(!DONE[ActionE::Chaos]) {...}
+#define NB_MESSAGES 11
+enum MessageE
+{
+    Default,Impossible, Tirette, Pince_Ouverte, Pince_Mi_Fermee, Pince_Fermee, Evitemment, Ok, Done, New_Action, Sync
+};
+
+
 #define NBR_ACTIONS 15
-
-
 enum ActionE
 {
     Chaos, Distribx6_1, Distribx6_2, Distribx6_3, CoupDeCul, Distribx3, MonteRampe, PoseRampe, DescendRampe, RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol, CasseCouilles

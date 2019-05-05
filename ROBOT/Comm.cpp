@@ -1,94 +1,72 @@
 #include "Comm.h"
 #include "Arduino.h"
-#include "Fifo.h"
-#include "ContreMesure.h"
+#include "Vector.h"
 
-bool strEqual(char* str1,char* str2)
+void Comm::actuate(VectorE posERobot,float vRobot)
 {
-    return (str1[0]==str2[0] && str1[1]==str2[1] && str1[2]==str2[2] && str1[3]==str2[3]);
-}
-
-bool strEqual(const char str1[],char* str2)
-{
-    return (str1[0]==str2[0] && str1[1]==str2[1] && str1[2]==str2[2] && str1[3]==str2[3]);
-}
-
-bool strEqual(char* str1,const char str2[])
-{
-    return (str1[0]==str2[0] && str1[1]==str2[1] && str1[2]==str2[2] && str1[3]==str2[3]);
-}
-
-
-void strSet(char *str,const char in[])
-{
-    str[0]=in[0];
-    str[1]=in[1];
-    str[2]=in[2];
-    str[3]=in[3];
-}
-
-void Comm::set(Fifo* in_ordresRobot,PID* in_ptrPid)
-{
-    ordresRobot = in_ordresRobot;
-    ptrPid = in_ptrPid;
-}
-
-void Comm::specialBehavior()
-{
-    char special1[]="ESTP"; //Emergency SToP
-    char special2[]="BACK";
-    char special3[]="FAIL";
-    if (strEqual(special1,lastMessage))
+    if (Serial1.available()>=1)
     {
-        taken();
-        ordresRobot->addHead(STBY(OFF, "DUMY", 100,nullptr,normalTimeout,0));
-        ordresRobot->addHead(EMSTOP(10,nullptr,simpleTimeout,0));
-        ptrPid->reload();
+        switch(state)
+        {
+            case StatesE::Standard:
+                lastMessage=(MessageE)Serial1.read();
+                //if((uint8_t)lastMessage>=NB_MESSAGES){lastMessage=MessageE::Default;Serial.print("On a recu de le merde");} //On a recu de la merde
+                if (lastMessage==MessageE::Evitemment)
+                    {
+                        lastMessage=MessageE::Default;  //Les informations ne sont pas encore prete a etre lues
+                        state=StatesE::WaitingX;
+                    }
+            break;
+            case StatesE::WaitingX:
+                collisionX=((float)Serial1.read())*3.0/255.0;  //Produit en croix
+                state=StatesE::WaitingY;
+            break;
+            case StatesE::WaitingY:
+                collisionY=((float)Serial1.read())*2.0/255.0;  //Produit en croix
+                state=StatesE::Standard;
+                lastMessage=MessageE::Evitemment;  //Les informations sont pretes
+                #ifdef STATE
+                Serial.println("message d'evitemment recu");
+                Serial.print("X : ");Serial.println(collisionX);
+                Serial.print("Y : ");Serial.println(collisionY);
+                #endif
+            break;
+        }
+        
+        #ifdef STATE
+            Serial.print("lastMessage ");Serial.println((uint8_t)lastMessage);
+        #endif
     }
-    if (strEqual(special2,lastMessage))
+    if (millis()-millisLastSendPos>500)
     {
-        taken();
-        ordresRobot->add(SPINGOTO(RUSH,0,0,50,nullptr,simpleTimeout,0));
-    }
-    if (strEqual(special3,lastMessage))
-    {
-        taken();
-        ptrPid->failureDetected(ErreurE::MEGA);
-    }
-}
-
-void Comm::actuate()
-{
-    if (Serial.available()>0 && Serial.peek()!='!')
-    {
-        Serial.read();
-    }
-    if (Serial.available()>=5 && Serial.peek()=='!')
-    {
-        Serial.read(); //On retire le !
-        lastMessage[0]=Serial.read();
-        lastMessage[1]=Serial.read();
-        lastMessage[2]=Serial.read();
-        lastMessage[3]=Serial.read();
-#ifdef STATE
-        Serial.print(lastMessage[0]);
-        Serial.print(lastMessage[1]);
-        Serial.print(lastMessage[2]);
-        Serial.println(lastMessage[3]);
-#endif
+      millisLastSendPos=millis();
+      send(MessageE::Sync);
+      send((uint8_t)(posERobot.vec.x*255/3.0));
+      send((uint8_t)(posERobot.vec.y*255/2.0));
+      send((uint8_t)((posERobot.theta+PI)*255/(2*PI)));
+      send((uint8_t)(vRobot>0));
     }
 
-    specialBehavior();
 }
 
 void Comm::taken()
 {
-    strSet(lastMessage,"OBSL");
+    lastMessage=MessageE::Default;
 }
 
-void Comm::send(const char message[])
+void Comm::send(MessageE message)
 {
-    for (int i=0; i<=3; i++)
-        Serial.print(message[i]);
-    Serial.println();
+    Serial1.write((uint8_t)message);
+}
+
+void Comm::send(uint8_t value)
+{
+    Serial1.write(value);
+}
+
+Comm::Comm()
+{
+  while(Serial.available()>0){Serial.read();}
+  state=StatesE::Standard;
+  millisLastSendPos=millis();
 }

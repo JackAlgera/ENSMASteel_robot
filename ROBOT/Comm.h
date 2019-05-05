@@ -1,24 +1,20 @@
 #ifndef COMM_INCLUDED
 #define COMM_INCLUDED
-#include "Fifo.h"
-#include "PID.h"
-
-bool strEqual(char *str1,char *str2);
-bool strEqual(const char str1[],char *str2);
-bool strEqual(char *str1,const char str2[]);
-void strSet(char *str,const char in[]);
-
+#include "Arduino.h"
+#include "1_CONSTANT.h"
+struct VectorE;
 class Comm
 {
 public:
-    Fifo* ordresRobot;
-    PID* ptrPid;
-    char lastMessage[4]="OBS";
-    void actuate();
+    MessageE lastMessage=MessageE::Default;
+    float collisionX,collisionY;
+    void actuate(VectorE posERobot,float vRobot);
     void taken();
-    void set(Fifo* in_ordresRobot,PID* in_ptrPid);
-    void send(const char message[]);
+    void send(MessageE message);
+    Comm();
 private:
-    void specialBehavior();
+    enum StatesE{Standard,WaitingX,WaitingY} state;
+    uint32_t millisLastSendPos;
+    void send(uint8_t value);
 };
 #endif

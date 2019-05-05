@@ -290,7 +290,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
     //bool orderNext    = ptrRobot->ordresFifo.inBuffer>=2;
     
     bool timeout      = (micros()-ptrRobot->ghost.microsStart)/1000000.0  >   ptrRobot->ordresFifo.ptrFst()->timeoutDs/10.0;
-    bool messageITSTBY  = ptrRobot->ordresFifo.ptrFst()->type == OrderE::STBY_E and strEqual(ptrRobot->comm.lastMessage,ptrRobot->ordresFifo.ptrFst()->stby.unlockMessage);
+    bool messageITSTBY  = ptrRobot->ordresFifo.ptrFst()->type == OrderE::STBY_E and ptrRobot->comm.lastMessage==ptrRobot->ordresFifo.ptrFst()->stby.unlockMessage;
     bool completeEMStop = ptrRobot->ordresFifo.ptrFst()->type == OrderE::EMSTOP_E and abs(vRobot)<0.005 and abs(wRobot)<0.005;
     
     if(timeout){failureDetected(ErreurE::TIMEOUT);} 
@@ -328,7 +328,7 @@ void PID::loadNext()
     ptrRobot->ordresFifo.pop();
     if (ptrRobot->ordresFifo.inBuffer==0)
 	{
-		ptrRobot->ordresFifo.add(STBY(DYDM, "DUMY", 1, nullptr,normalTimeout,1)); //TODO verifier si OFF n'est pas mieux
+		ptrRobot->ordresFifo.add(STBY(DYDM, Impossible, 1, nullptr,normalTimeout,1)); //TODO verifier si OFF n'est pas mieux
 	} 
 
     //On dit au robot que l'ordre actuel a change

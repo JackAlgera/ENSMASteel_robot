@@ -72,8 +72,9 @@ void setup()
 {
     delay(5000);
     Serial.begin(115200);
+    Serial1.begin(115200);
     Serial.println("--REBOOT--");
-    robot.set(1.5,1.0,0.0);
+    robot.set(1.5,1,0.0);
     m=micros();
     microsStart=m-((uint32_t)(1.0/FREQUENCY*1000000.0));
 }
@@ -83,7 +84,9 @@ void loop()
     m=micros();
     dtLoop=(m-microsStart)/1000000.0;
     microsStart=m;
+    #ifdef STATE
     robot.ordresFifo.printAll();
+    #endif
     robot.actuate(dtLoop);
     printRobotState(&robot);
 

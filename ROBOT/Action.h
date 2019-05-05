@@ -24,8 +24,8 @@ public:
     void addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
     void addFWD(float acc, float v, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
     void addBWD(float acc, float v, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
-    void addSTBY(uint8_t nerv, const char unlockMessage[], uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
-    void addSEND(const char message[], uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addSTBY(uint8_t nerv, MessageE unlockMessage, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addSEND(MessageE message, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
     void addEMSTOP(uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
     Order * getCurrentOrder();
     void nextStep();
