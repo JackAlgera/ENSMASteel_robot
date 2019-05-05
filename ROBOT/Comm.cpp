@@ -4,17 +4,19 @@
 
 void Comm::actuate(VectorE posERobot,float vRobot)
 {
+    if (state!=StatesE::Standard and (millis()-millisOutOfStandardState)>500)state=StatesE::Standard;
     if (Serial1.available()>=1)
     {
         switch(state)
         {
             case StatesE::Standard:
                 lastMessage=(MessageE)Serial1.read();
-                //if((uint8_t)lastMessage>=NB_MESSAGES){lastMessage=MessageE::Default;Serial.print("On a recu de le merde");} //On a recu de la merde
+                if((uint8_t)lastMessage>=NB_MESSAGES){lastMessage=MessageE::Default;Serial.print("On a recu de le merde");} //On a recu de la merde
                 if (lastMessage==MessageE::Evitemment)
                     {
                         lastMessage=MessageE::Default;  //Les informations ne sont pas encore prete a etre lues
                         state=StatesE::WaitingX;
+                        millisOutOfStandardState=millis();
                     }
             break;
             case StatesE::WaitingX:

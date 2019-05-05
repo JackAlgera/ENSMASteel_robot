@@ -14,7 +14,7 @@ public:
     Comm();
 private:
     enum StatesE{Standard,WaitingX,WaitingY} state;
-    uint32_t millisLastSendPos;
+    uint32_t millisLastSendPos,millisOutOfStandardState;
     void send(uint8_t value);
 };
 #endif
