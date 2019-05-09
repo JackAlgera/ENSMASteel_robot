@@ -9,6 +9,55 @@
 //		Jack.RollOnGround(appartment.floor);
 //		Jack.CrySomeMore(100);  // en secondes
 // }
+bool isInMainSquare(Vector x){return true;}  //TODO a implementer. Le mainSquare est constitué de la table sans les rampes/balances/obstacles
+
+void Cerveau::computeEvitemment(float xObscl,float yObstcl,float thetaObstl)
+{
+    if (ptrRobot->ordresFifo.ptrFst()->type==OrderE::GOTO_E)
+    {
+        Vector obstcl=init_vector(xObscl,yObstcl);
+        Vector delta=minus(obstcl,ptrRobot->posE.vec);
+        float rObstcl=longueur(delta);
+        float rAim=longueur(minus(ptrRobot->ordresFifo.ptrFst()->goTo.posAim,ptrRobot->posE.vec));
+        if (rAim>rObstcl)
+        {
+            Vector orthogonal=rotate(mult(longueur(delta),delta));
+            Vector evitemmentGauche=
+            add (   obstcl,mult(DISTANCE_EVITEMMENT+2*RROBOT,orthogonal));
+            Vector evitemmentDroite=
+            add (   obstcl,mult(-1*(DISTANCE_EVITEMMENT+2*RROBOT),orthogonal));
+            //Bordel ca fait du bien d'avoir de la place RAM
+            Vector chosenOne=init_vector(0,0);
+            if (isInMainSquare(evitemmentDroite) && isInMainSquare(evitemmentGauche))
+            {
+                if (longueur(minus(ptrRobot->ordresFifo.ptrFst()->goTo.posAim,evitemmentDroite))<longueur(minus(ptrRobot->ordresFifo.ptrFst()->goTo.posAim,evitemmentGauche)))
+                {
+                    Vector chosenOne=evitemmentDroite;
+                }
+                else
+                {
+                    Vector chosenOne=evitemmentGauche;
+                }
+            }
+            else if(isInMainSquare(evitemmentDroite))
+            {
+                Vector chosenOne=evitemmentDroite;
+            }
+            else if(isInMainSquare(evitemmentGauche))
+            {
+                Vector chosenOne=evitemmentGauche;
+            }
+
+            if (isInMainSquare(evitemmentDroite) || isInMainSquare(evitemmentGauche))
+            {
+                Vector next=minus(ptrRobot->ordresFifo.ptrFst()->goTo.posAim,chosenOne);
+                ptrRobot->ordresFifo.addHead(GOTO(STD,0.3,chosenOne.x,chosenOne.y,angle(next),false,50,nullptr,simpleTimeout,1));
+                ptrRobot->pid.reload();
+            }
+        }
+    }
+}       //TODO IMPLEMENTER LE STOP PREALABLE DU ROBOT
+        //TODO QUE FAIRE SI LE MESSAGE D EVITEMMENT PERSISTE
 
 void Cerveau::abandonneCurrentAction()
 {
@@ -64,7 +113,7 @@ void Cerveau::abandonneCurrentAction()
   }
 
   currentActionIndex = nextBestAction();
-  ptrFifo->clean();
+  ptrRobot->ordresFifo.clean();
   addActionOrders();
 }
 
@@ -211,16 +260,16 @@ void Cerveau::actuate()
 
 void Cerveau::addActionOrders()
 {
-    actionList[currentActionIndex].addOrdersToBuffer(ptrFifo);
+    actionList[currentActionIndex].addOrdersToBuffer(&(ptrRobot->ordresFifo));
 }
 
 Cerveau::Cerveau()
 {
 }
 
-Cerveau::Cerveau(Fifo * ptrFifo)
+Cerveau::Cerveau(Robot * ptrRobot)
 {
-    this->ptrFifo = ptrFifo;
+    this->ptrRobot = ptrRobot;
 
     for (int i = 0; i < NB_ACTIONS; i++)
     {

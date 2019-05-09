@@ -51,7 +51,7 @@ void Robot::set(float x0,float y0, float theta0)
     vF = newFiltre(0.0,60.0,2);
     wF=newFiltre(0.0,60.0,2);
     ordresFifo.add(STBY(DYDM,Tirette,50,nullptr,simpleTimeout,1));
-    master=new Cerveau(&ordresFifo);
+    master=new Cerveau(this);
     pid = PID(this);
     comm=*(new Comm());
 }

@@ -38,6 +38,7 @@
 #define DIAMETRE_ROUE_CODEUSE 0.09
 #define TICKS_PER_ROUND 1200.0
 #define MAXPWM 65535
+#define RROBOT 0.20
 
 //-------------------------VOCABULAIRE-------------------------
 #define GAUCHE 0
@@ -94,6 +95,7 @@ enum ErreurE
 
 #define FREQUENCY 50.0
 #define DELAY 0.100
+#define DISTANCE_EVITEMMENT 0.10
 //NERV ---> FIFO.CPP
 
 
