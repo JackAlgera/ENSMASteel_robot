@@ -3,7 +3,6 @@
 
 #include "1_CONSTANT.h"
 #include "Order.h"
-#include "Arduino.h"
 #include "Fifo.h"
 
 class Action				            // Classe qui contiendra l'ensemble des actions predefinis (Chaos, Distribx6, Rampe etc)

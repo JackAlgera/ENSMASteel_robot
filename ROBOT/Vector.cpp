@@ -1,7 +1,6 @@
 #include "math.h"
 #include "Vector.h"
 #include "Arduino.h"
-
 Vector init_vector(float x,float y)
 {
     Vector out;
@@ -38,7 +37,7 @@ Vector mult(float lambda,Vector v)
 
 float cross(Vector v1,Vector v2)
 {
-    return v1.x*v2.x + v1.y*v2.y;;
+    return v1.x*v2.x + v1.y*v2.y;
 }
 
 

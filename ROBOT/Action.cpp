@@ -1,5 +1,6 @@
 #include "Action.h"
 
+
 Action::Action(ActionE type, int nbrPalentsMax)
 {
     this->type = type;

@@ -288,12 +288,12 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
     bool ghostArrive  = ptrRobot->ghost.t_e>0.95;
     bool ghostFree    = not ptrRobot->ghost.locked;
     //bool orderNext    = ptrRobot->ordresFifo.inBuffer>=2;
-    
+
     bool timeout      = (micros()-ptrRobot->ghost.microsStart)/1000000.0  >   ptrRobot->ordresFifo.ptrFst()->timeoutDs/10.0;
     bool messageITSTBY  = ptrRobot->ordresFifo.ptrFst()->type == OrderE::STBY_E and ptrRobot->comm.lastMessage==ptrRobot->ordresFifo.ptrFst()->stby.unlockMessage;
     bool completeEMStop = ptrRobot->ordresFifo.ptrFst()->type == OrderE::EMSTOP_E and abs(vRobot)<0.005 and abs(wRobot)<0.005;
-    
-    if(timeout){failureDetected(ErreurE::TIMEOUT);} 
+
+    if(timeout){failureDetected(ErreurE::TIMEOUT);}
     if(nearEnough){timeLastNearEnough=millis()/1000.0;}
     if(millis()/1000.0-timeLastNearEnough>FAIL_TIME)
     {
@@ -301,7 +301,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
       timeLastNearEnough=millis()/1000.0;   //Petit repis
     }
 
-    
+
 
     //On regarde si l'action est terminée
     if  (
@@ -329,7 +329,7 @@ void PID::loadNext()
     if (ptrRobot->ordresFifo.inBuffer==0)
 	{
 		ptrRobot->ordresFifo.add(STBY(DYDM, Impossible, 1, nullptr,normalTimeout,1)); //TODO verifier si OFF n'est pas mieux
-	} 
+	}
 
     //On dit au robot que l'ordre actuel a change
     reload();

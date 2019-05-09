@@ -16,7 +16,7 @@ void Cerveau::abandonneCurrentAction()
   Serial.println("ABANDON ACTION");
   #endif
 
-  DONE[currentActionIndex] = true;
+  DONE[currentActionIndex] = false;
 
   switch (currentActionIndex)
   {
@@ -177,12 +177,12 @@ ActionE Cerveau::nextBestAction()
     			  toutEstRamasse = false;
   		  }
 	  }
-	  
+
 	  if (toutEstRamasse)  // si on a ramasse tout les palets
 	  {
 		    return ActionE::CasseCouilles; //On a fini, on va alors accidentelement faire chier l'adversaire
 	  }
-	  else                 // Sinon on recup les palets manquant 
+	  else                 // Sinon on recup les palets manquant
 	  {
   		  DONE[ActionE::PoseSol] = false; // On refait l'action PoseSol pour poser les palets qu'on vient de recuperer et on choisit une autre action
   		  i = 0;
