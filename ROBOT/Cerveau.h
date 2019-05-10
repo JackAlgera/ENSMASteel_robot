@@ -23,7 +23,7 @@ public:
     void addActionOrders();
     void abandonneCurrentAction();
     void loadAction(ActionE actionType);
-    void computeEvitemment(float xObscl,float yObstcl,float thetaObstl);
+    void computeEvitemment(float xObscl,float yObstcl);
 
     Cerveau();
     Cerveau(Robot * ptrRobot);

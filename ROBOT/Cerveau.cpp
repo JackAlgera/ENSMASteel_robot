@@ -9,9 +9,10 @@
 //		Jack.RollOnGround(appartment.floor);
 //		Jack.CrySomeMore(100);  // en secondes
 // }
-bool isInMainSquare(Vector x){return true;}  //TODO a implementer. Le mainSquare est constitué de la table sans les rampes/balances/obstacles
 
-void Cerveau::computeEvitemment(float xObscl,float yObstcl,float thetaObstl)
+bool isInMainSquare(Vector vec,float marge){return (vec.y>0.60+marge && vec.y<2-marge && vec.x>marge && vec.x<3-marge);}
+
+void Cerveau::computeEvitemment(float xObscl,float yObstcl)
 {
     if (ptrRobot->ordresFifo.ptrFst()->type==OrderE::GOTO_E)
     {
@@ -28,36 +29,44 @@ void Cerveau::computeEvitemment(float xObscl,float yObstcl,float thetaObstl)
             add (   obstcl,mult(-1*(DISTANCE_EVITEMMENT+2*RROBOT),orthogonal));
             //Bordel ca fait du bien d'avoir de la place RAM
             Vector chosenOne=init_vector(0,0);
-            if (isInMainSquare(evitemmentDroite) && isInMainSquare(evitemmentGauche))
+            if (isInMainSquare(evitemmentDroite,2*RROBOT) && isInMainSquare(evitemmentGauche,2*RROBOT))
             {
                 if (longueur(minus(ptrRobot->ordresFifo.ptrFst()->goTo.posAim,evitemmentDroite))<longueur(minus(ptrRobot->ordresFifo.ptrFst()->goTo.posAim,evitemmentGauche)))
                 {
-                    Vector chosenOne=evitemmentDroite;
+                    chosenOne=evitemmentDroite;
                 }
                 else
                 {
-                    Vector chosenOne=evitemmentGauche;
+                    chosenOne=evitemmentGauche;
                 }
             }
-            else if(isInMainSquare(evitemmentDroite))
+            else if(isInMainSquare(evitemmentDroite,2*RROBOT))
             {
-                Vector chosenOne=evitemmentDroite;
+                chosenOne=evitemmentDroite;
             }
-            else if(isInMainSquare(evitemmentGauche))
+            else if(isInMainSquare(evitemmentGauche,2*RROBOT))
             {
-                Vector chosenOne=evitemmentGauche;
+                chosenOne=evitemmentGauche;
             }
 
-            if (isInMainSquare(evitemmentDroite) || isInMainSquare(evitemmentGauche))
+            if (isInMainSquare(evitemmentDroite,2*RROBOT) || isInMainSquare(evitemmentGauche,2*RROBOT))
             {
                 Vector next=minus(ptrRobot->ordresFifo.ptrFst()->goTo.posAim,chosenOne);
                 ptrRobot->ordresFifo.addHead(GOTO(STD,0.3,chosenOne.x,chosenOne.y,angle(next),false,50,nullptr,simpleTimeout,1));
+                ptrRobot->ordresFifo.addHead(SPIN(RUSH,angle(delta),30,nullptr,simpleTimeout,1));
+                ptrRobot->ordresFifo.addHead(EMSTOP(20,nullptr,simpleTimeout,1));
+                ptrRobot->pid.reload();
+            }
+            else
+            {
+                ptrRobot->ordresFifo.addHead(STBY(RUSH,MessageE::Evitemment_Clear,100,nullptr,jmeTire,1));
+                ptrRobot->ordresFifo.addHead(EMSTOP(20,nullptr,simpleTimeout,1));
                 ptrRobot->pid.reload();
             }
         }
     }
-}       //TODO IMPLEMENTER LE STOP PREALABLE DU ROBOT
-        //TODO QUE FAIRE SI LE MESSAGE D EVITEMMENT PERSISTE
+}       //TODO QUE FAIRE SI LE MESSAGE D EVITEMMENT PERSISTE
+        //TODO Remplacer le Spin(...angle(delta)...) par SpinTo(...chosenOne...) -> Nouveau type d'ordre, le spinTo
 
 void Cerveau::abandonneCurrentAction()
 {
