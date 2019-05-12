@@ -321,8 +321,14 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
 void PID::loadNext()
 {
     //On fait avancer l'action si necessaire
-    if (ptrRobot->ordresFifo.ptrFst()->ptrActionPere!=nullptr)
-        ptrRobot->ordresFifo.ptrFst()->ptrActionPere->nextStep();
+	if (ptrRobot->ordresFifo.ptrFst()->ptrActionPere != nullptr)
+	{
+		ptrRobot->ordresFifo.ptrFst()->ptrActionPere->nextStep();
+		if (ptrRobot->ordresFifo.ptrFst()->ptrActionPere->actionCompleted)
+		{
+			ptrRobot->master->isIdle = true;
+		}
+	}
 
     //On pop le Fifo
     ptrRobot->ordresFifo.pop();

@@ -16,6 +16,7 @@ public:
     bool DONE[NB_ACTIONS];				    // Array qui nous dit si un action est fini ou non
     ActionE currentActionIndex;
     Robot *ptrRobot;
+	bool isIdle = false;
 
     ActionE nextBestAction();
 

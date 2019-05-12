@@ -259,10 +259,18 @@ void Cerveau::actuate()
 {
     if (actionList[currentActionIndex].actionCompleted)
     {
-        DONE[currentActionIndex] = true;
+		if (!isIdle)
+		{
+			DONE[currentActionIndex] = true;
 
-		currentActionIndex = nextBestAction(); // Choisir une nouvelle action
-        addActionOrders();	// Ajoute ses ordres au buffer
+			currentActionIndex = nextBestAction(); // Choisir une nouvelle action
+			addActionOrders();	// Ajoute ses ordres au buffer
+		}
+		else
+		{
+			// regarder la position du robot evoluer quand on fait tourner les codeuses 
+			// puis isIdle = false; et c'est reparti
+		}
     }
     //TODO Scrutage de Comm
 }
