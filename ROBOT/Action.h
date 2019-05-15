@@ -18,14 +18,15 @@ public:
 
 	  Action(ActionE type, int nbrPalentsMax = 0);
     Action();
-    void addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);  //abs(thetaAim-thetaIni)<=PI
-    void addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
-    void addSPIN(uint8_t nerv, float thetaAim, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
-    void addFWD(float acc, float v, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
-    void addBWD(float acc, float v, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
-    void addSTBY(uint8_t nerv, MessageE unlockMessage, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
-    void addSEND(MessageE message, uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
-    void addEMSTOP(uint8_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance=AVOIDANCE);  //abs(thetaAim-thetaIni)<=PI
+    void addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance);
+    void addSPIN(uint8_t nerv, float thetaAim, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addSPINTO(uint8_t nerv,float xAim,float yAim,uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addFWD(float acc, float v, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addBWD(float acc, float v, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addSTBY(uint8_t nerv, MessageE unlockMessage, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addSEND(MessageE message, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addEMSTOP(uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
     Order * getCurrentOrder();
     void nextStep();
   	bool gotAllPalets();

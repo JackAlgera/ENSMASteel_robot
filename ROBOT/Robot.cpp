@@ -40,7 +40,7 @@ void Robot::set(float x0,float y0, float theta0)
 {
     delay(1000);
     moteurDroite  = init_motor(PIN_MOTEUR_DROITE_PWR,PIN_MOTEUR_DROITE_SENS,PIN_MOTEUR_DROITE_BRAKE,1.0);
-    moteurGauche  = init_motor(PIN_MOTEUR_GAUCHE_PWR,PIN_MOTEUR_GAUCHE_SENS,PIN_MOTEUR_GAUCHE_BRAKE,0.96);
+    moteurGauche  = init_motor(PIN_MOTEUR_GAUCHE_PWR,PIN_MOTEUR_GAUCHE_SENS,PIN_MOTEUR_GAUCHE_BRAKE,1.0);
     codeuseGauche = Codeuse(PIN_CODEUSE_GAUCHE_A,PIN_CODEUSE_GAUCHE_B);
     codeuseDroite = Codeuse(PIN_CODEUSE_DROITE_A,PIN_CODEUSE_DROITE_B);
     VectorE initVect = init_vectorE(x0,y0,theta0);
@@ -50,7 +50,7 @@ void Robot::set(float x0,float y0, float theta0)
     posE.theta=theta0;
     vF = newFiltre(0.0,60.0,2);
     wF=newFiltre(0.0,60.0,2);
-    ordresFifo.add(STBY(DYDM,Tirette,50,nullptr,simpleTimeout,1));
+    ordresFifo.add(STBY(DYDM,Tirette,65000,nullptr,simpleTimeout,1));
     master=new Cerveau(this);
     pid = PID(this);
     comm=*(new Comm());

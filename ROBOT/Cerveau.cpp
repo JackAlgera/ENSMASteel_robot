@@ -14,7 +14,7 @@ bool isInMainSquare(Vector vec,float marge){return (vec.y>0.60+marge && vec.y<2-
 
 void Cerveau::computeEvitemment(float xObscl,float yObstcl)
 {
-    if (ptrRobot->ordresFifo.ptrFst()->type==OrderE::GOTO_E)
+    if (ptrRobot->ordresFifo.ptrFst()->type==OrderE::GOTO_E && ptrRobot->ordresFifo.ptrFst()->goTo.avoidance)
     {
         Vector obstcl=init_vector(xObscl,yObstcl);
         Vector delta=minus(obstcl,ptrRobot->posE.vec);
@@ -23,10 +23,8 @@ void Cerveau::computeEvitemment(float xObscl,float yObstcl)
         if (rAim>rObstcl)
         {
             Vector orthogonal=rotate(mult(longueur(delta),delta));
-            Vector evitemmentGauche=
-            add (   obstcl,mult(DISTANCE_EVITEMMENT+2*RROBOT,orthogonal));
-            Vector evitemmentDroite=
-            add (   obstcl,mult(-1*(DISTANCE_EVITEMMENT+2*RROBOT),orthogonal));
+            Vector evitemmentGauche=add (   obstcl,mult(DISTANCE_EVITEMMENT+2*RROBOT,orthogonal));
+            Vector evitemmentDroite=add (   obstcl,mult(-1*(DISTANCE_EVITEMMENT+2*RROBOT),orthogonal));
             //Bordel ca fait du bien d'avoir de la place RAM
             Vector chosenOne=init_vector(0,0);
             if (isInMainSquare(evitemmentDroite,2*RROBOT) && isInMainSquare(evitemmentGauche,2*RROBOT))
@@ -52,8 +50,8 @@ void Cerveau::computeEvitemment(float xObscl,float yObstcl)
             if (isInMainSquare(evitemmentDroite,2*RROBOT) || isInMainSquare(evitemmentGauche,2*RROBOT))
             {
                 Vector next=minus(ptrRobot->ordresFifo.ptrFst()->goTo.posAim,chosenOne);
-                ptrRobot->ordresFifo.addHead(GOTO(STD,0.3,chosenOne.x,chosenOne.y,angle(next),false,50,nullptr,simpleTimeout,1));
-                ptrRobot->ordresFifo.addHead(SPIN(RUSH,angle(delta),30,nullptr,simpleTimeout,1));
+                ptrRobot->ordresFifo.addHead(GOTO(STD,0.3,chosenOne.x,chosenOne.y,angle(next),false,50,nullptr,simpleTimeout,1,true));
+                ptrRobot->ordresFifo.addHead(SPIN(RUSH,angle(orthogonal),30,nullptr,simpleTimeout,1));
                 ptrRobot->ordresFifo.addHead(EMSTOP(20,nullptr,simpleTimeout,1));
                 ptrRobot->pid.reload();
             }
@@ -65,8 +63,8 @@ void Cerveau::computeEvitemment(float xObscl,float yObstcl)
             }
         }
     }
+
 }       //TODO QUE FAIRE SI LE MESSAGE D EVITEMMENT PERSISTE
-        //TODO Remplacer le Spin(...angle(delta)...) par SpinTo(...chosenOne...) -> Nouveau type d'ordre, le spinTo
 
 void Cerveau::abandonneCurrentAction()
 {
@@ -268,11 +266,21 @@ void Cerveau::actuate()
 		}
 		else
 		{
-			// regarder la position du robot evoluer quand on fait tourner les codeuses 
+			// regarder la position du robot evoluer quand on fait tourner les codeuses
 			// puis isIdle = false; et c'est reparti
 		}
     }
     //TODO Scrutage de Comm
+    switch (ptrRobot->comm.lastMessage)
+    {
+        case (MessageE::Default):
+        //Rien a faire
+        break;
+        case (MessageE::Evitemment):
+            ptrRobot->master->computeEvitemment(ptrRobot->comm.collisionX,ptrRobot->comm.collisionY);
+            ptrRobot->comm.taken();
+        break;
+    }
 }
 
 void Cerveau::addActionOrders()

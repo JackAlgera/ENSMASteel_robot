@@ -17,7 +17,7 @@ bool jmeTire(Robot * ptrRobot,ErreurE erreur)
 {
     Vector devant=directeur(ptrRobot->posE.theta);
     Vector aim=add(ptrRobot->posE.vec,mult(-0.2,devant));
-    ptrRobot->ordresFifo.replaceHead(GOTO(RUSH,0.1,aim.x,aim.y,ptrRobot->posE.theta,true,20,nullptr,simpleTimeout,1));
+    ptrRobot->ordresFifo.replaceHead(GOTO(RUSH,0.1,aim.x,aim.y,ptrRobot->posE.theta,true,20,nullptr,simpleTimeout,1,AVOIDANCE));
     ptrRobot->pid.reload();
     return true;
 }

@@ -13,6 +13,7 @@
 //#define THETA_TUNE
 //#define DELAY_TUNE
 //#define X_TUNE
+#define AVOIDANCE true
 #define STATIQUE false            //Permet de faire des essais sans robot
 
 
@@ -62,7 +63,7 @@
 
 enum OrderE
 {
-    GOTO_E, SPIN_E, SPINGOTO_E, FWD_E, BWD_E, STBY_E, SEND_E, EMSTOP_E
+    GOTO_E, SPIN_E, SPINGOTO_E, SPINTO_E, FWD_E, BWD_E, STBY_E, SEND_E, EMSTOP_E
 };
 
 #define NB_MESSAGES 11

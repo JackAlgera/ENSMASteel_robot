@@ -165,10 +165,27 @@ void PID::reload()
         Action * papa=ptrRobot->ordresFifo.ptrFst()->ptrActionPere;
         ptrFonction contreMesure=ptrRobot->ordresFifo.ptrFst()->contreMesure;
         float timeout=ptrRobot->ordresFifo.ptrFst()->timeoutDs;
-        Serial.print("angle ");
-        Serial.println(angle(delta));
-        ptrRobot->ordresFifo.replaceHead(GOTO(nerv,0.1,aim.x, aim.y, angle(delta), true, timeout,papa,contreMesure,0));
-        ptrRobot->ordresFifo.addHead(SPIN(nerv,angle(delta),timeout,nullptr,contreMesure,0));
+        uint8_t nbMaxFail=ptrRobot->ordresFifo.ptrFst()->nbMaxFail;
+        bool avoidance=sg.avoidance;
+        ptrRobot->ordresFifo.replaceHead(GOTO(nerv,0.1,aim.x, aim.y, angle(delta), true, timeout,papa,contreMesure,nbMaxFail,avoidance));
+        ptrRobot->ordresFifo.addHead(SPIN(nerv,angle(delta),timeout,nullptr,contreMesure,nbMaxFail));
+        reload();
+    }
+    break;
+        case OrderE::SPINTO_E:
+    {
+#ifdef STATE
+        Serial.println("Je prepare un SPINTO");
+#endif
+        SPINTO_S sto=ptrRobot->ordresFifo.ptrFst()->spinTo;
+        Vector aim=init_vector(sto.xAim,sto.yAim);
+        Vector delta=minus(aim,posERobot.vec);
+        float nerv=sto.nerv;
+        Action * papa=ptrRobot->ordresFifo.ptrFst()->ptrActionPere;
+        ptrFonction contreMesure=ptrRobot->ordresFifo.ptrFst()->contreMesure;
+        float timeout=ptrRobot->ordresFifo.ptrFst()->timeoutDs;
+        uint8_t nbMaxFail=ptrRobot->ordresFifo.ptrFst()->nbMaxFail;
+        ptrRobot->ordresFifo.replaceHead(SPIN(nerv,angle(delta),timeout,papa,contreMesure,nbMaxFail));
         reload();
     }
     break;

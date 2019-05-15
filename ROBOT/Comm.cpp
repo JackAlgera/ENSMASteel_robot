@@ -14,9 +14,16 @@ void Comm::actuate(VectorE posERobot,float vRobot)
                 if((uint8_t)lastMessage>=NB_MESSAGES){lastMessage=MessageE::Default;Serial.print("On a recu de le merde");} //On a recu de la merde
                 if (lastMessage==MessageE::Evitemment)
                     {
-                        lastMessage=MessageE::Default;  //Les informations ne sont pas encore prete a etre lues
-                        state=StatesE::WaitingX;
-                        millisOutOfStandardState=millis();
+                        if (millis()-millisLastEvitemment>500)
+                        {
+                            lastMessage=MessageE::Default;  //Les informations ne sont pas encore prete a etre lues
+                            state=StatesE::WaitingX;
+                            millisOutOfStandardState=millis();
+                        }
+                        else
+                        {
+                            lastMessage=MessageE::Default;
+                        }
                     }
             break;
             case StatesE::WaitingX:
@@ -32,9 +39,10 @@ void Comm::actuate(VectorE posERobot,float vRobot)
                 Serial.print("X : ");Serial.println(collisionX);
                 Serial.print("Y : ");Serial.println(collisionY);
                 #endif
+                millisLastEvitemment=millis();
             break;
         }
-        
+
         #ifdef STATE
             Serial.print("lastMessage ");Serial.println((uint8_t)lastMessage);
         #endif
@@ -71,4 +79,5 @@ Comm::Comm()
   while(Serial.available()>0){Serial.read();}
   state=StatesE::Standard;
   millisLastSendPos=millis();
+  millisLastEvitemment=0;
 }
