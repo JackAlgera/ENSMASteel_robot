@@ -3,8 +3,8 @@
 
 
 //-------------------------MODE DE FONCTIONNEMENT-------------------------
-//#define RECORD  //Permet d'activer ou non le feedback
-#define STATE
+#define RECORD  //Permet d'activer ou non le feedback
+//#define STATE
 //#define RC
 //#define FILTRE_SETUP_ANG
 //#define FILTRE_SETUP_LIN
@@ -18,8 +18,8 @@
 
 
 //-------------------------PINS-------------------------
-#define PIN_CODEUSE_GAUCHE_A 28
-#define PIN_CODEUSE_GAUCHE_B 29
+#define PIN_CODEUSE_GAUCHE_A 29
+#define PIN_CODEUSE_GAUCHE_B 28
 #define PIN_CODEUSE_DROITE_A 34
 #define PIN_CODEUSE_DROITE_B 35
 
@@ -36,9 +36,10 @@
 
 //-------------------------PHYSIQUE-------------------------
 #define ELOIGNEMENT_CODEUSES 0.4008
-#define DIAMETRE_ROUE_CODEUSE 0.09
-#define TICKS_PER_ROUND 1200.0
-#define MAXPWM 65535
+#define DIAMETRE_ROUE_CODEUSE 0.05
+#define TICKS_PER_ROUND 4096.0
+//#define MAXPWM 65535
+#define MAXPWM 255
 #define RROBOT 0.20
 
 //-------------------------VOCABULAIRE-------------------------

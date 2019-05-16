@@ -3,6 +3,8 @@
 
 void Motor::actuate()
 {
+    bypass=true;
+    masterOrder=200;
     if (bypass)
     {
         order=masterOrder;
@@ -32,8 +34,8 @@ Motor init_motor(uint8_t in_pinPWR, uint8_t in_pinSens, uint8_t in_pinBrake,floa
 {
 
     Motor out;
-    analogWriteResolution(16);
-    analogWriteFrequency(in_pinPWR,3*FREQUENCY);
+    //analogWriteResolution(16);
+    //analogWriteFrequency(in_pinPWR,915.527);
     out.bypass=false;
     out.pinPWR=in_pinPWR;
     pinMode(out.pinPWR,OUTPUT);
