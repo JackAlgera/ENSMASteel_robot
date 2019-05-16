@@ -23,6 +23,8 @@ void Robot::actuate(float dt)
     pid.actuate(dt,posE,vF.out(),wF.out());
     comm.actuate(posE,vF.out());
     master->actuate();
+    contacteurDroite.actuate();
+    contacteurGauche.actuate();
 }
 
 void Robot::actuateODO(float dt)
@@ -43,6 +45,8 @@ void Robot::set(float x0,float y0, float theta0)
     moteurGauche  = init_motor(PIN_MOTEUR_GAUCHE_PWR,PIN_MOTEUR_GAUCHE_SENS,PIN_MOTEUR_GAUCHE_BRAKE,1.0);
     codeuseGauche = Codeuse(PIN_CODEUSE_GAUCHE_A,PIN_CODEUSE_GAUCHE_B);
     codeuseDroite = Codeuse(PIN_CODEUSE_DROITE_A,PIN_CODEUSE_DROITE_B);
+    contacteurDroite = Contacteur(PIN_CONTACTEUR_DROITE);
+    contacteurGauche = Contacteur(PIN_CONTACTEUR_GAUCHE);
     VectorE initVect = init_vectorE(x0,y0,theta0);
     ghost = *(new Ghost(initVect));
     posE.vec.x = x0;

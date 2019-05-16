@@ -13,13 +13,14 @@
 #include "Comm.h"
 #include "Cerveau.h"
 #include "Encoder.h"
-
+#include "Contacteur.h"
 class Robot
 {
 public:
     float dt;
     Motor moteurGauche, moteurDroite;
     Codeuse codeuseGauche,codeuseDroite;
+    Contacteur contacteurDroite,contacteurGauche;
     Ghost ghost;
     VectorE posE;                                 //Position du robot
     Filtre vF,wF;

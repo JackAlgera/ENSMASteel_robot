@@ -16,7 +16,6 @@ public:
     bool DONE[NB_ACTIONS];				    // Array qui nous dit si un action est fini ou non
     ActionE currentActionIndex;
     Robot *ptrRobot;
-	bool isIdle = false;
 
     ActionE nextBestAction();
 
@@ -25,6 +24,7 @@ public:
     void abandonneCurrentAction();
     void loadAction(ActionE actionType);
     void computeEvitemment(float xObscl,float yObstcl);
+    void recallageBordure(bool recalleX,bool recalleY);
 
     Cerveau();
     Cerveau(Robot * ptrRobot);

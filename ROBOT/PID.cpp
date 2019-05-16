@@ -24,24 +24,24 @@ uint16_t K[5][2][3]=
 
 void PID::failureDetected(ErreurE erreur)
 {
-  ptrRobot->ordresFifo.ptrFst()->nbFail++;
-  if(ptrRobot->ordresFifo.ptrFst()->nbFail>ptrRobot->ordresFifo.ptrFst()->nbMaxFail)
-  {
-    if(ptrRobot->ordresFifo.ptrFst()->ptrActionPere!=nullptr)
-	{
-		ptrRobot->master->abandonneCurrentAction();
-	}
+    ptrRobot->ordresFifo.ptrFst()->nbFail++;
+    if(ptrRobot->ordresFifo.ptrFst()->nbFail>ptrRobot->ordresFifo.ptrFst()->nbMaxFail)
+    {
+        if(ptrRobot->ordresFifo.ptrFst()->ptrActionPere!=nullptr)
+        {
+            ptrRobot->master->abandonneCurrentAction();
+        }
+        else
+        {
+            loadNext();
+        }
+    }
     else
-	{
-		loadNext();
-	}
-  }
-  else
-  {
-    bool sanction=(*(ptrRobot->ordresFifo.ptrFst()->contreMesure))(ptrRobot,erreur);
-    if (!sanction)
-		ptrRobot->ordresFifo.ptrFst()->nbFail--;
-  }
+    {
+        bool sanction=(*(ptrRobot->ordresFifo.ptrFst()->contreMesure))(ptrRobot,erreur);
+        if (!sanction)
+            ptrRobot->ordresFifo.ptrFst()->nbFail--;
+    }
 }
 
 void PID::reload()
@@ -172,7 +172,7 @@ void PID::reload()
         reload();
     }
     break;
-        case OrderE::SPINTO_E:
+    case OrderE::SPINTO_E:
     {
 #ifdef STATE
         Serial.println("Je prepare un SPINTO");
@@ -209,13 +209,16 @@ void PID::reload()
     }
     break;
     case OrderE::SEND_E:
+    {
 #ifdef STATE
         Serial.println("Je prepare un SEND");
 #endif
         ptrRobot->comm.send(ptrRobot->ordresFifo.ptrFst()->send.message);
         loadNext();
-        break;
+    }
+    break;
     case OrderE::EMSTOP_E:
+    {
 #ifdef STATE
         Serial.println("Je prepare un EMSTOP");
 #endif
@@ -223,7 +226,65 @@ void PID::reload()
         ptrRobot->moteurGauche.masterOrder=0;
         ptrRobot->moteurDroite.bypass=true;
         ptrRobot->moteurDroite.masterOrder=0;
-        break;
+    }
+    break;
+    case OrderE::SETX_E:
+    {
+        if (ptrRobot->posE.vec.x<HROBOT+0.2 && ptrRobot->posE.vec.x>HROBOT-0.2)//On vient de toucher le bord droit
+        {
+            ptrRobot->posE.vec.x=HROBOT;
+            ptrRobot->posE.theta=0.0;
+            ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
+        }
+        else if (ptrRobot->posE.vec.x<3.0-HROBOT+0.2 && ptrRobot->posE.vec.x>3.0-HROBOT-0.2)    //ON vient e toucher le bord gauche
+        {
+            ptrRobot->posE.vec.x=3.0-HROBOT;
+            ptrRobot->posE.theta=PI;
+            ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
+        }
+        else
+        {
+            #ifdef STATE
+            Serial.print("mur inconnu");
+            #endif // STATE
+        }
+    loadNext();
+    }
+    break;
+    case OrderE::SETY_E:
+    {
+        if (ptrRobot->posE.vec.y<HROBOT+0.2 && ptrRobot->posE.vec.y>HROBOT-0.2)//On vient de toucher le bord inferieur
+        {
+            ptrRobot->posE.vec.y=HROBOT;
+            ptrRobot->posE.theta=PI/2.0;
+            ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
+        }
+        else if (ptrRobot->posE.vec.y<0.4+HROBOT+0.2 && ptrRobot->posE.vec.y>0.4+HROBOT-0.2)//ON vient de toucher le distribx6
+        {
+            ptrRobot->posE.vec.x=0.4+HROBOT;
+            ptrRobot->posE.theta=PI/2.0;
+            ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
+        }
+        else if (ptrRobot->posE.vec.y<0.457+HROBOT+0.2 && ptrRobot->posE.vec.y>0.457+HROBOT-0.2)//ON vient de toucher le distribx6
+        {
+            ptrRobot->posE.vec.x=0.457+HROBOT;
+            ptrRobot->posE.theta=PI/2.0;
+            ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
+        }
+        else if (ptrRobot->posE.vec.y<1.965-HROBOT+0.2 && ptrRobot->posE.vec.y>1.965-HROBOT-0.2)//ON vient de toucher le couvre accelero
+        {
+            ptrRobot->posE.vec.x=1.965-HROBOT;
+            ptrRobot->posE.theta=-1*PI/2.0;
+            ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
+        }
+        else
+        {
+            #ifdef STATE
+            Serial.print("mur inconnu");
+            #endif // STATE
+        }
+    }
+    break;
     }
     ptrRobot->ghost.microsStart=micros();
     ptrRobot->ghost.t=0;
@@ -310,12 +371,18 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
     bool messageITSTBY  = ptrRobot->ordresFifo.ptrFst()->type == OrderE::STBY_E and ptrRobot->comm.lastMessage==ptrRobot->ordresFifo.ptrFst()->stby.unlockMessage;
     bool completeEMStop = ptrRobot->ordresFifo.ptrFst()->type == OrderE::EMSTOP_E and abs(vRobot)<0.005 and abs(wRobot)<0.005;
 
-    if(timeout){failureDetected(ErreurE::TIMEOUT);}
-    if(nearEnough){timeLastNearEnough=millis()/1000.0;}
+    if(timeout)
+    {
+        failureDetected(ErreurE::TIMEOUT);
+    }
+    if(nearEnough)
+    {
+        timeLastNearEnough=millis()/1000.0;
+    }
     if(millis()/1000.0-timeLastNearEnough>FAIL_TIME)
     {
-      failureDetected(ErreurE::PID_FAILURE);
-      timeLastNearEnough=millis()/1000.0;   //Petit repis
+        failureDetected(ErreurE::PID_FAILURE);
+        timeLastNearEnough=millis()/1000.0;   //Petit repis
     }
 
 
@@ -325,7 +392,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
         (linOK and angOK and vitesseOK and ghostArrive and ghostFree)// and orderNext)   //cas standard
         or (messageITSTBY) //and orderNext)                                              //cas message
         or (completeEMStop) //and orderNext)                                             //cas EMSTOP
-        )
+    )
     {
         //On vide la boite au lettre si on est sorti du stby grace a un message
         if (messageITSTBY)
@@ -338,21 +405,17 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
 void PID::loadNext()
 {
     //On fait avancer l'action si necessaire
-	if (ptrRobot->ordresFifo.ptrFst()->ptrActionPere != nullptr)
-	{
-		ptrRobot->ordresFifo.ptrFst()->ptrActionPere->nextStep();
-		if (ptrRobot->ordresFifo.ptrFst()->ptrActionPere->actionCompleted)
-		{
-			ptrRobot->master->isIdle = true;
-		}
-	}
+    if (ptrRobot->ordresFifo.ptrFst()->ptrActionPere != nullptr)
+    {
+        ptrRobot->ordresFifo.ptrFst()->ptrActionPere->nextStep();
+    }
 
     //On pop le Fifo
     ptrRobot->ordresFifo.pop();
     if (ptrRobot->ordresFifo.inBuffer==0)
-	{
-		ptrRobot->ordresFifo.add(STBY(DYDM, Impossible, 1, nullptr,normalTimeout,1)); //TODO verifier si OFF n'est pas mieux
-	}
+    {
+        ptrRobot->ordresFifo.add(STBY(DYDM, Impossible, 1, nullptr,normalTimeout,1)); //TODO verifier si OFF n'est pas mieux
+    }
 
     //On dit au robot que l'ordre actuel a change
     reload();

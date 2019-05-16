@@ -257,18 +257,11 @@ void Cerveau::actuate()
 {
     if (actionList[currentActionIndex].actionCompleted)
     {
-		if (!isIdle)
-		{
-			DONE[currentActionIndex] = true;
+		DONE[currentActionIndex] = true;
 
-			currentActionIndex = nextBestAction(); // Choisir une nouvelle action
-			addActionOrders();	// Ajoute ses ordres au buffer
-		}
-		else
-		{
-			// regarder la position du robot evoluer quand on fait tourner les codeuses
-			// puis isIdle = false; et c'est reparti
-		}
+		currentActionIndex = nextBestAction(); // Choisir une nouvelle action
+		addActionOrders();	// Ajoute ses ordres au buffer
+
     }
     //TODO Scrutage de Comm
     switch (ptrRobot->comm.lastMessage)
@@ -308,4 +301,17 @@ Cerveau::Cerveau(Robot * ptrRobot)
 
 Cerveau::~Cerveau()
 {
+}
+
+
+void Cerveau::recallageBordure(bool recalleX, bool recalleY, Action * ptrPere)
+{
+    if (recalleX)
+    {
+        if(ptrRobot->posE.vec.x<1.5)
+        {
+            //ptrRobot->ordresFifo.add(BWD());  TODO implementer BWD. Ca recule jusqu'a ce que le bool pointé soit acitvé
+            ptrRobot->ordresFifo.add(SPIN(STD,0.0,50,ptrPere,simpleTimeout,1));
+        }
+    }//TODO CONTINUER
 }

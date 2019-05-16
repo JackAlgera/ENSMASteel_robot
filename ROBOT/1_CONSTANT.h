@@ -41,6 +41,7 @@
 //#define MAXPWM 65535
 #define MAXPWM 255
 #define RROBOT 0.20
+#define HROBOT 0.15
 
 //-------------------------VOCABULAIRE-------------------------
 #define GAUCHE 0
@@ -64,7 +65,7 @@
 
 enum OrderE
 {
-    GOTO_E, SPIN_E, SPINGOTO_E, SPINTO_E, FWD_E, BWD_E, STBY_E, SEND_E, EMSTOP_E
+    GOTO_E, SPIN_E, SPINGOTO_E, SPINTO_E, FWD_E, BWD_E, STBY_E, SEND_E, EMSTOP_E, SETX_E,SETY_E
 };
 
 #define NB_MESSAGES 11

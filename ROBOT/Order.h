@@ -59,9 +59,6 @@ struct SEND_S
     MessageE message;
 };
 
-struct EMSTOP_S
-{
-};
 
 class Order
 {
@@ -82,7 +79,6 @@ public:
         BWD_S bwd;
         STBY_S stby;
         SEND_S send;
-        EMSTOP_S emStop;
     };
 
     Order();
@@ -143,6 +139,18 @@ class EMSTOP : public Order
 {
 public:
 	EMSTOP(uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
+};
+
+class SETX : public Order
+{
+public:
+    SETX(uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
+};
+
+class SETY : public Order
+{
+public:
+    SETY(uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
 #endif
