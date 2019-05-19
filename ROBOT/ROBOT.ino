@@ -35,6 +35,9 @@ void printRobotState(Robot* robot)
 {
 #ifdef RECORD
     print7( micros()/1000.0, robot->posE.vec.x*10000, robot->posE.vec.y*10000, robot->posE.theta*10000, robot->ghost.posED.vec.x*10000, robot->ghost.posED.vec.y*10000, robot->ghost.posED.theta*10000);
+    //print7( micros()/1000.0, robot->posE.vec.x*10000, robot->posE.vec.y*10000, robot->posE.vec.x*10000, robot->ghost.posED.vec.x*10000, robot->ghost.posED.vec.y*10000, robot->ghost.posED.vec.x*10000);
+    //print7( micros()/1000.0, robot->posE.vec.x*10000, robot->posE.vec.y*10000, robot->moteurGauche.order*10000, robot->ghost.posED.vec.x*10000, robot->ghost.posED.vec.y*10000, robot->moteurGauche.order*10000);
+
 #endif
 #ifdef FILTRE_SETUP_ANG
     print7( micros()/1000.0, robot->wF.out()*10000, robot->wF.raw*10000, robot->ghost.w*10000, 0, 0,0);
@@ -70,7 +73,7 @@ Robot robot;
 
 void setup()
 {
-    delay(5000);
+    delay(3000);
     Serial.begin(115200);
     Serial1.begin(115200);
     Serial.println("--REBOOT--");

@@ -201,12 +201,16 @@ void S_function::set(float in_uIni,float in_uFin,float in_duIni,float in_duMax,f
     dduIni=signe*in_dduIni;
     dduFin=signe*in_dduFin;
     duMax=signe*min(in_duMax,sqrt( (2*D-duFin*duFin/dduFin+duIni*duIni/dduIni)/(1/dduIni-1/dduFin) ));
-    t1=(duMax-duIni)/dduIni;
+    t1=abs((duMax-duIni)/dduIni);
+    float Dini=(duMax+duIni)/2*t1;
+    float t3moinst2=abs((duFin-duMax)/dduFin);
+    float Dfin=(duFin+duMax)/2*(t3moinst2);
+    float t2moinst1=(D-Dini-Dfin)/duMax;
     if (D==0.0)
         t2=0.0;
     else
-        t2=(D+t1*duMax-(duMax*duMax-duIni*duIni)/(2*dduIni)-(duFin*duFin-duMax*duMax)/(2*dduFin))/duMax;
-    t3=(duFin-duMax)/dduFin+t2;
+        t2=t1+t2moinst1;
+    t3=t3moinst2+t2;
 }
 
 float S_function::f(float t)

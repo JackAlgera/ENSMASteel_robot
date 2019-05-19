@@ -16,6 +16,10 @@
 #define AVOIDANCE true
 #define STATIQUE false            //Permet de faire des essais sans robot
 
+//103826.79 -> il faut retirer 1500
+//103838.88 -> idem
+//103319.37 -> idem
+//103266.61
 
 //-------------------------PINS-------------------------
 #define PIN_CODEUSE_GAUCHE_A 29
@@ -34,12 +38,12 @@
 #define PIN_CONTACTEUR_GAUCHE 30
 #define PIN_CONTACTEUR_DROITE 33
 
+
 //-------------------------PHYSIQUE-------------------------
-#define ELOIGNEMENT_CODEUSES 0.4008
-#define DIAMETRE_ROUE_CODEUSE 0.05
-#define TICKS_PER_ROUND 4096.0
-//#define MAXPWM 65535
-#define MAXPWM 255
+#define ELOIGNEMENT_CODEUSES 0.296255
+#define DIAMETRE_ROUE_CODEUSE 0.053860024
+#define TICKS_PER_ROUND 16384
+#define MAXPWM 4090
 #define RROBOT 0.20
 #define HROBOT 0.15
 
@@ -88,16 +92,16 @@ enum ErreurE
 
 //-------------------------DEPLACEMENTS-------------------------
 
-#define RAYON_RECONVERGENCE 0.05          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
+#define RAYON_RECONVERGENCE 0.5          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
 #define RAYON_TERMINE 0.05                //Distance en dessous duquel on considère que le robot est arrivé
-#define DELTA_THETA_TERMINE 0.01          //Delta theta en dessous duquel on considère le spin terminé
+#define DELTA_THETA_TERMINE 0.001          //Delta theta en dessous duquel on considère le spin terminé
 
 #define RAYON_FAIL 0.10
 #define DELTA_THETA_FAIL 0.5
 #define FAIL_TIME 0.5
 
 #define FREQUENCY 50.0
-#define DELAY 0.100
+#define DELAY 0.050
 #define DISTANCE_EVITEMMENT 0.10
 //NERV ---> FIFO.CPP
 

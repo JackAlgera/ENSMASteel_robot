@@ -24,7 +24,7 @@ public:
     void abandonneCurrentAction();
     void loadAction(ActionE actionType);
     void computeEvitemment(float xObscl,float yObstcl);
-    void recallageBordure(bool recalleX,bool recalleY);
+    void recallageBordure(bool recalleX, bool recalleY, Action * ptrPere);
 
     Cerveau();
     Cerveau(Robot * ptrRobot);

@@ -14,6 +14,7 @@
 #include "Cerveau.h"
 #include "Encoder.h"
 #include "Contacteur.h"
+
 class Robot
 {
 public:

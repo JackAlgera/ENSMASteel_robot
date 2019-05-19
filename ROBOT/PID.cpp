@@ -7,9 +7,9 @@
 #include "Cerveau.h"
 #include "ContreMesure.h"
 
-float nervA[3]=   { 0.1, 0.8, 1.5   };
-float nervV[3]=   { 0.05, 0.5, 1.5   };
-float nervTPP[3]= { 0.5, 5.0, 11.0  };
+float nervA[3]=   { 0.1, 0.8, 2.0   };
+float nervV[3]=   { 0.05, 0.5, 1.1   };
+float nervTPP[3]= { 0.5, 5.0, 20.0  };
 float nervTP[3]=  { 0.5, 1.5, 999.9  };
 
 uint16_t K[5][2][3]=
@@ -17,8 +17,8 @@ uint16_t K[5][2][3]=
     //LINEAIRE               //ANGULAIRE  (PID)
     {{4100, 0, 1958}, {6700, 50, 450}},           //ACRT
     {{4100, 0, 1958}, {6700, 50, 450}},           //STD
-    {{4100, 0, 1958}, {6700, 50, 450}},             //RUSH
-    {{2500, 200, 9000}, {7000, 200, 1800}},        //DYDM
+    {{1900, 50, 1000}, {3000, 50, 380}},             //RUSH
+    {{1500, 0, 500}, {5000, 0, 400}},        //DYDM
     {{0,0,0},{0,0,0}}  //OFF
 };
 
@@ -319,6 +319,9 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
         // Sinon, le robot converge vers le ghost
         else
         {
+            #ifdef STATE
+            Serial.println("reconvergence");
+            #endif
             reconvergence=true;
             if (errorL>=0)
                 errorA=normalize( angle(minus(ptrRobot->ghost.posED.vec,posERobot.vec)) -  posERobot.theta);
@@ -333,7 +336,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
         float ordreA= (K[PIDnervANG][ANG][KP]*errorA + K[PIDnervANG][ANG][KI]*IA + K[PIDnervANG][ANG][KD]*(ptrRobot->ghost.w - 0.8*wRobot))/1000.0;
         ordreA=constrain(ordreA*MAXPWM,-MAXPWM, MAXPWM);
 
-        float ordreL= (K[PIDnervLIN][LIN][KP]*errorL + K[PIDnervLIN][LIN][KI]*IL   + K[PIDnervLIN][LIN][KD]*(ptrRobot->ghost.v - 0.95*vRobot))/1000.0;
+        float ordreL= (K[PIDnervLIN][LIN][KP]*errorL + K[PIDnervLIN][LIN][KI]*IL   + K[PIDnervLIN][LIN][KD]*(ptrRobot->ghost.v - 0.8*vRobot))/1000.0;
         ordreL=constrain(ordreL*MAXPWM,-MAXPWM+abs(ordreA),MAXPWM-abs(ordreA));
 
         //On donne les ordres

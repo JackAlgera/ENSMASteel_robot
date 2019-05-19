@@ -1,4 +1,4 @@
-#include "contacteur.h"
+#include "Contacteur.h"
 
 Contacteur::Contacteur(uint8_t pin)
 {
@@ -6,6 +6,13 @@ Contacteur::Contacteur(uint8_t pin)
   pinMode(pin,INPUT_PULLDOWN);
   pressed=false;
 }
+
+Contacteur::Contacteur()
+{
+  
+}
+
+
 
 void Contacteur::actuate()
 {
