@@ -56,7 +56,7 @@ void Robot::set(float x0,float y0, float theta0)
     vF = newFiltre(0.0,100.0,2);
     wF=newFiltre(0.0,100.0,2);
     //ordresFifo.add(STBY(DYDM,Tirette,65000,nullptr,simpleTimeout,1));
-    ordresFifo.add(STBY(OFF,Tirette,10,nullptr,simpleTimeout,1));
+    ordresFifo.add(STBY(DYDM,Tirette,60000,nullptr,simpleTimeout,1));
     ordresFifo.add(GOTO(RUSH,0.1,3.0,1,0,true,30,nullptr,simpleTimeout,1,false));
     ordresFifo.add(SPIN(RUSH,PI,50,nullptr,simpleTimeout,1));
     ordresFifo.add(GOTO(RUSH,0.3,1.6,1,PI,true,100,nullptr,simpleTimeout,1,false));

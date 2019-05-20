@@ -3,8 +3,8 @@
 
 
 //-------------------------MODE DE FONCTIONNEMENT-------------------------
-#define RECORD  //Permet d'activer ou non le feedback
-//#define STATE
+//#define RECORD  //Permet d'activer ou non le feedback
+#define STATE
 //#define RC
 //#define FILTRE_SETUP_ANG
 //#define FILTRE_SETUP_LIN
@@ -72,10 +72,10 @@ enum OrderE
     GOTO_E, SPIN_E, SPINGOTO_E, SPINTO_E, FWD_E, BWD_E, STBY_E, SEND_E, EMSTOP_E, SETX_E,SETY_E
 };
 
-#define NB_MESSAGES 11
+#define NB_MESSAGES 13
 enum MessageE
 {
-    Default,Impossible, Tirette, Pince_Ouverte, Pince_Mi_Fermee, Pince_Fermee, Evitemment, Ok, Done, New_Action, Sync, Evitemment_Clear
+    Default,Impossible, Tirette, Pince_Retracted,Pince_Half_Retracted,Pince_Half_Extended,Pince_Extended, Evitemment, Ok, Done, New_Action, Sync, Evitemment_Clear
 };
 
 
