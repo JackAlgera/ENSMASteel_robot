@@ -16,7 +16,7 @@ void Ghost::actuate(float dt)
         if (spinning==false)
         {
             v_e=sqrt(v_e_P2.f(t_e));
-            v=s.df(t);
+            v=((reversed)?(-1):(1))*s.df(t);
             if (v_e!=0.0)
                 t_e+=s.df(t)/v_e*dt;
             if (t_e>1.0)
