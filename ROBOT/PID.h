@@ -38,7 +38,7 @@ public:
     void reload();
     void loadNext();
     void failureDetected(ErreurE erreur);
-
+    bool jeVeuxAvancer;
     PID();
     PID(Robot * ptrRobot);
     ~PID();

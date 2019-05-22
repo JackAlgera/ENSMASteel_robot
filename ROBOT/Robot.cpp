@@ -22,7 +22,14 @@ void Robot::actuate(float dt)
     actuateODO(dt);
     ghost.actuate(dt);
     pid.actuate(dt,posE,vF.out(),wF.out());
-    comm.actuate(posE,vF.out());
+    if (ordresFifo.ptrFst()->type==GOTO_E && ordresFifo.ptrFst()->goTo.avoidance)
+    {
+        comm.actuate(posE,(pid.jeVeuxAvancer)?AnticolE::Front:AnticolE::Back  );
+    }
+    else
+    {
+        comm.actuate(posE,AnticolE::No);
+    }
     master->actuate();
     contacteurDroite.actuate();
     contacteurGauche.actuate();
@@ -55,13 +62,17 @@ void Robot::set(float x0,float y0, float theta0)
     posE.theta=theta0;
     vF = newFiltre(0.0,100.0,2);
     wF=newFiltre(0.0,100.0,2);
-    //ordresFifo.add(STBY(DYDM,Tirette,65000,nullptr,simpleTimeout,1));
-    ordresFifo.add(STBY(DYDM,Tirette,60000,nullptr,simpleTimeout,1));
-    ordresFifo.add(GOTO(RUSH,0.1,3.0,1,0,true,30,nullptr,simpleTimeout,1,false));
-    ordresFifo.add(SPIN(RUSH,PI,50,nullptr,simpleTimeout,1));
-    ordresFifo.add(GOTO(RUSH,0.3,1.6,1,PI,true,100,nullptr,simpleTimeout,1,false));
-    ordresFifo.add(SPIN(RUSH,PI,50,nullptr,simpleTimeout,1));
-    ordresFifo.add(STBY(DYDM,Tirette,65000,nullptr,simpleTimeout,1));
+
+    
+    ordresFifo.add(STBY(DYDM,MessageE::Tirette,60000,nullptr,simpleTimeout,1));
+    ordresFifo.add(SEND(MessageE::Pince_Half_Extended,10, nullptr,simpleTimeout,1));
+    ordresFifo.add(GOTO(RUSH,0.48,1.0671936758893281,0.97,-0.7621465405869852,true,100,nullptr,simpleTimeout,1,true));
+    ordresFifo.add(SEND(MessageE::Pince_Half_Retracted,10, nullptr,simpleTimeout,1));
+    ordresFifo.add(STBY(DYDM,MessageE::Impossible,5,nullptr,normalTimeout,1));
+    ordresFifo.add(GOTO(STD,0.48,0.22,1.4,0.0,true,150,nullptr,simpleTimeout,1,true));
+    ordresFifo.add(SEND(MessageE::Pince_Extended,10, nullptr,simpleTimeout,1));
+    ordresFifo.add(STBY(DYDM,Impossible,65000,nullptr,simpleTimeout,1));
+
     master=new Cerveau(this);
     pid = PID(this);
     comm=*(new Comm());

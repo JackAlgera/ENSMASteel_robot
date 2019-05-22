@@ -73,11 +73,11 @@ Robot robot;
 
 void setup()
 {
-    delay(3000);
-    Serial.begin(115200);
-    Serial1.begin(115200);
+    delay(1000);
+    Serial.begin(250000);
+    Serial1.begin(250000);
     Serial.println("--REBOOT--");
-    robot.set(1.5,1,0.0);
+    robot.set(0.20,1.4,0.0);
     m=micros();
     microsStart=m-((uint32_t)(1.0/FREQUENCY*1000000.0));
 }

@@ -23,7 +23,7 @@ void Ghost::actuate(float dt)
                 t_e=1.0;
             posE.vec.x=X_P.f(t_e);
             posE.vec.y=Y_P.f(t_e);
-            posE.theta=atan2(Y_P.df(t_e),X_P.df(t_e));
+            posE.theta=normalize(atan2(Y_P.df(t_e),X_P.df(t_e))+((reversed)?(PI):(0)));
             if (v_e>0.0001)
             {
                 wF.in((DDY_P.f(t_e)*cos(posE.theta) - DDX_P.f(t_e)*sin(posE.theta)) *   v/(v_e*v_e),dt);

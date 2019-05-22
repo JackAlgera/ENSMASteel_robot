@@ -3,8 +3,8 @@
 
 void Motor::actuate()
 {
-    //bypass=true;
-    //masterOrder=MAXPWM/2.0;
+//    bypass=true;
+//    masterOrder=MAXPWM/2.0;
     
     if (bypass)
     {

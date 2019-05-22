@@ -270,7 +270,9 @@ void Cerveau::actuate()
         //Rien a faire
         break;
         case (MessageE::Evitemment):
-            ptrRobot->master->computeEvitemment(ptrRobot->comm.collisionX,ptrRobot->comm.collisionY);
+            //ptrRobot->master->computeEvitemment(ptrRobot->comm.collisionX,ptrRobot->comm.collisionY);
+            ptrRobot->ordresFifo.addHead(STBY(RUSH,Impossible,50000,nullptr,simpleTimeout,1));
+            ptrRobot->pid.reload();
             ptrRobot->comm.taken();
         break;
     }

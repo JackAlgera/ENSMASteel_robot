@@ -7,16 +7,21 @@
 #include "Cerveau.h"
 #include "ContreMesure.h"
 
-float nervA[3]=   { 0.1, 0.8, 2.0   };
-float nervV[3]=   { 0.05, 0.5, 1.1   };
-float nervTPP[3]= { 0.5, 5.0, 20.0  };
+//float nervA[3]=   { 0.1, 0.8, 2.0   };
+//float nervV[3]=   { 0.05, 0.5, 1.1   };
+//float nervTPP[3]= { 0.5, 5.0, 15.0  };
+//float nervTP[3]=  { 0.5, 1.5, 999.9  };
+
+float nervA[3]=   { 0.1, 0.1, 1.0   };
+float nervV[3]=   { 0.05, 0.5, 0.8   };
+float nervTPP[3]= { 0.5, 5.0, 10.0  };
 float nervTP[3]=  { 0.5, 1.5, 999.9  };
 
 uint16_t K[5][2][3]=
 {
     //LINEAIRE               //ANGULAIRE  (PID)
-    {{4100, 0, 1958}, {6700, 50, 450}},           //ACRT
-    {{4100, 0, 1958}, {6700, 50, 450}},           //STD
+    {{1900, 50, 1000}, {3000, 50, 380}},           //ACRT
+    {{2300, 50, 1000}, {4000, 50, 380}},           //STD
     {{1900, 50, 1000}, {3000, 50, 380}},             //RUSH
     {{1500, 0, 500}, {5000, 0, 400}},        //DYDM
     {{0,0,0},{0,0,0}}  //OFF
@@ -76,16 +81,20 @@ void PID::reload()
         GOTO_S g=ptrRobot->ordresFifo.ptrFst()->goTo;
         PIDnervLIN=g.nerv;
         PIDnervANG=(g.nerv==RUSH)?(DYDM):(g.nerv);
+        if (cross(directeur(ptrRobot->posE.theta) , minus(g.posAim,ptrRobot->posE.vec))<0)
+            ptrRobot->ghost.reversed=true;
+        else
+            ptrRobot->ghost.reversed=false;
         //Ici on trouve les points a renseigner pour faire la trajectoire
         float L=longueur(minus(g.posAim,ptrRobot->ghost.posE.vec));
         {
             //BLOC GEOMETRIE BEZIER
             float x0=ptrRobot->ghost.posE.vec.x;
             float y0=ptrRobot->ghost.posE.vec.y;
-            float thetaIni=ptrRobot->ghost.posE.theta;
+            float thetaIni=normalize(ptrRobot->ghost.posE.theta+((ptrRobot->ghost.reversed)?(PI):(0)));
             float x3=g.posAim.x;
             float y3=g.posAim.y;
-            float thetaAim=g.thetaAim;
+            float thetaAim=normalize(g.thetaAim+((ptrRobot->ghost.reversed)?(PI):(0)));;
             float delta;
             if (sin(thetaAim-thetaIni)!=0.0)
             {
@@ -116,7 +125,6 @@ void PID::reload()
 
         }  //BLOC POLYNOMES
         ptrRobot->ghost.spinning=false;
-        ptrRobot->ghost.reversed=false;
         float D=0.0,t_e_integral=0.0,v=0.0;
         float lastV=sqrt(ptrRobot->ghost.v_e_P2.f(t_e_integral));
         float pas=0.01;
@@ -299,6 +307,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
     {
         //Calcul de l'erreur linéaire avec retard
         float errorL=cross( minus(ptrRobot->ghost.posED.vec,posERobot.vec), directeur(posERobot.theta));
+        jeVeuxAvancer=errorL>0;
         if (errorL<0)
         {
             errorL=-1*sqrt(-1*errorL);
@@ -432,6 +441,7 @@ PID::PID(Robot * ptrRobot)
 {
     this->ptrRobot=ptrRobot;
     this->timeLastNearEnough=millis()/1000.0;
+    this->jeVeuxAvancer=false;
 }
 
 PID::~PID()

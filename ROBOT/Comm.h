@@ -6,9 +6,10 @@ struct VectorE;
 class Comm
 {
 public:
+
     MessageE lastMessage=MessageE::Default;
     float collisionX,collisionY;
-    void actuate(VectorE posERobot,float vRobot);
+    void actuate(VectorE posERobot,AnticolE anticol);
     void taken();
     void send(MessageE message);
     Comm();

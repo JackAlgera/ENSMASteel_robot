@@ -3,8 +3,8 @@
 
 
 //-------------------------MODE DE FONCTIONNEMENT-------------------------
-//#define RECORD  //Permet d'activer ou non le feedback
-#define STATE
+#define RECORD  //Permet d'activer ou non le feedback
+//#define STATE
 //#define RC
 //#define FILTRE_SETUP_ANG
 //#define FILTRE_SETUP_LIN
@@ -16,10 +16,6 @@
 #define AVOIDANCE true
 #define STATIQUE false            //Permet de faire des essais sans robot
 
-//103826.79 -> il faut retirer 1500
-//103838.88 -> idem
-//103319.37 -> idem
-//103266.61
 
 //-------------------------PINS-------------------------
 #define PIN_CODEUSE_GAUCHE_A 29
@@ -78,6 +74,7 @@ enum MessageE
     Default,Impossible, Tirette, Pince_Retracted,Pince_Half_Retracted,Pince_Half_Extended,Pince_Extended, Evitemment, Ok, Done, New_Action, Sync, Evitemment_Clear
 };
 
+enum AnticolE{Front,Back,No};
 
 #define NB_ACTIONS 16
 enum ActionE
@@ -92,15 +89,15 @@ enum ErreurE
 
 //-------------------------DEPLACEMENTS-------------------------
 
-#define RAYON_RECONVERGENCE 0.5          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
+#define RAYON_RECONVERGENCE 10.5          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
 #define RAYON_TERMINE 0.05                //Distance en dessous duquel on considère que le robot est arrivé
-#define DELTA_THETA_TERMINE 0.001          //Delta theta en dessous duquel on considère le spin terminé
+#define DELTA_THETA_TERMINE 0.05          //Delta theta en dessous duquel on considère le spin terminé
 
 #define RAYON_FAIL 0.10
 #define DELTA_THETA_FAIL 0.5
 #define FAIL_TIME 0.5
 
-#define FREQUENCY 50.0
+#define FREQUENCY 200.0
 #define DELAY 0.050
 #define DISTANCE_EVITEMMENT 0.10
 //NERV ---> FIFO.CPP
