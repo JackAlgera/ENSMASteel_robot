@@ -5,10 +5,12 @@ Order::Order()
 {
 }
 
-SPIN::SPIN(uint8_t nerv, float thetaAim, uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
+SPIN::SPIN(uint8_t nerv, float thetaAim, uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail,bool relativ)
 {
     {
         this->type = OrderE::SPIN_E;
+        this->errorIntegralLin=0;
+        this->errorIntegralAng=0;
         this->timeoutDs = timeoutDs;
         this->ptrActionPere = ptrActionPere;
         this->contreMesure=contreMesure;
@@ -16,15 +18,17 @@ SPIN::SPIN(uint8_t nerv, float thetaAim, uint16_t timeoutDs, Action * ptrActionP
 
         this->nbFail=0;
 
-        this->spin = { nerv, thetaAim };
+        this->spin = { nerv, thetaAim,relativ };
     }
 }
 
-GOTO::GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance)
+GOTO::GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance,bool relativ)
 {
     //abs(thetaAim-thetaIni)<=PI
     {
         this->type = OrderE::GOTO_E;
+        this->errorIntegralLin=0;
+        this->errorIntegralAng=0;
         this->timeoutDs = timeoutDs;
         this->ptrActionPere = ptrActionPere;
         this->contreMesure=contreMesure;
@@ -32,13 +36,15 @@ GOTO::GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, b
 
         this->nbFail=0;
 
-        this->goTo = { nerv, fleche, xAim, yAim, thetaAim, arret,avoidance };
+        this->goTo = { nerv, fleche, xAim, yAim, thetaAim, arret,avoidance,relativ };
     }
 }
 
 SPINTO::SPINTO(uint8_t nerv, float xAim, float yAim, uint16_t timeoutDs, Action* ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
     this->type = OrderE::SPIN_E;
+    this->errorIntegralLin=0;
+    this->errorIntegralAng=0;
     this->timeoutDs = timeoutDs;
     this->ptrActionPere = ptrActionPere;
     this->contreMesure=contreMesure;
@@ -52,6 +58,8 @@ SPINGOTO::SPINGOTO(uint8_t nerv, float xAim, float yAim, uint16_t timeoutDs, Act
 {
     {
         this->type = OrderE::SPINGOTO_E;
+        this->errorIntegralLin=0;
+        this->errorIntegralAng=0;
         this->timeoutDs = timeoutDs;
         this->ptrActionPere = ptrActionPere;
         this->contreMesure=contreMesure;
@@ -70,6 +78,8 @@ FWD::FWD(float acc, float v, uint16_t timeoutDs, Action * ptrActionPere, ptrFonc
 {
     {
         this->type = OrderE::FWD_E;
+        this->errorIntegralLin=0;
+        this->errorIntegralAng=0;
         this->timeoutDs = timeoutDs;
         this->ptrActionPere = ptrActionPere;
         this->contreMesure=contreMesure;
@@ -85,6 +95,8 @@ BWD::BWD(float acc, float v, uint16_t timeoutDs, Action * ptrActionPere, ptrFonc
 {
     {
         this->type = OrderE::BWD_E;
+        this->errorIntegralLin=0;
+        this->errorIntegralAng=0;
         this->timeoutDs = timeoutDs;
         this->ptrActionPere = ptrActionPere;
         this->contreMesure=contreMesure;
@@ -100,6 +112,8 @@ STBY::STBY(uint8_t nerv, MessageE unlockMessage, uint16_t timeoutDs, Action * pt
 {
     {
         this->type = OrderE::STBY_E;
+        this->errorIntegralLin=0;
+        this->errorIntegralAng=0;
         this->timeoutDs = timeoutDs;
         this->ptrActionPere = ptrActionPere;
         this->contreMesure=contreMesure;
@@ -116,6 +130,8 @@ SEND::SEND(MessageE message, uint16_t timeoutDs, Action * ptrActionPere, ptrFonc
 {
     {
         this->type = OrderE::SEND_E;
+        this->errorIntegralLin=0;
+        this->errorIntegralAng=0;
         this->timeoutDs = timeoutDs;
         this->ptrActionPere = ptrActionPere;
         this->contreMesure=contreMesure;
@@ -131,6 +147,8 @@ EMSTOP::EMSTOP(uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMes
 {
     {
         this->type = OrderE::EMSTOP_E;
+        this->errorIntegralLin=0;
+        this->errorIntegralAng=0;
         this->timeoutDs = timeoutDs;
         this->ptrActionPere = ptrActionPere;
         this->contreMesure=contreMesure;
@@ -144,6 +162,8 @@ SETX::SETX(uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure,
 {
     {
         this->type = OrderE::SETX_E;
+        this->errorIntegralLin=0;
+        this->errorIntegralAng=0;
         this->timeoutDs = timeoutDs;
         this->ptrActionPere = ptrActionPere;
         this->contreMesure=contreMesure;
@@ -157,6 +177,8 @@ SETY::SETY(uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure,
 {
     {
         this->type = OrderE::SETY_E;
+        this->errorIntegralLin=0;
+        this->errorIntegralAng=0;
         this->timeoutDs = timeoutDs;
         this->ptrActionPere = ptrActionPere;
         this->contreMesure=contreMesure;

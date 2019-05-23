@@ -33,6 +33,7 @@ public:
     void actuateODO(float dt);
     void set(float x0,float y0, float theta0);    //Remplie les champs de l'objet Robot
     void actuate(float dt);                       //Actualise les valeurs
+    void autoTune(uint8_t nerv,uint8_t coeff,float delta,uint8_t type);
 };
 
 #endif

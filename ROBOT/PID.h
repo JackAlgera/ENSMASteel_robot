@@ -39,6 +39,10 @@ public:
     void loadNext();
     void failureDetected(ErreurE erreur);
     bool jeVeuxAvancer;
+    float lastLossLin,lastLossAng;
+    float increment(uint8_t nerv,uint8_t coeff,uint8_t type,float value);
+    float decrement(uint8_t nerv,uint8_t coeff,uint8_t type,float value);
+    void printK(uint8_t nerv,uint8_t type);
     PID();
     PID(Robot * ptrRobot);
     ~PID();

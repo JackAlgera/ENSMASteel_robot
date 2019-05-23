@@ -12,25 +12,30 @@
 //float nervTPP[3]= { 0.5, 5.0, 15.0  };
 //float nervTP[3]=  { 0.5, 1.5, 999.9  };
 
-float nervA[3]=   { 0.1, 0.1, 1.0   };
-float nervV[3]=   { 0.05, 0.5, 0.8   };
-float nervTPP[3]= { 0.5, 5.0, 10.0  };
+float nervA[3]=   { 0.1, 0.5, 1.5   };
+float nervV[3]=   { 0.05, 0.5, 1.2   };
+float nervTPP[3]= { 0.5, 10, 20.0  };
 float nervTP[3]=  { 0.5, 1.5, 999.9  };
 
 uint16_t K[5][2][3]=
 {
     //LINEAIRE               //ANGULAIRE  (PID)
-    {{1900, 50, 1000}, {3000, 50, 380}},           //ACRT
-    {{2300, 50, 1000}, {4000, 50, 380}},           //STD
-    {{1900, 50, 1000}, {3000, 50, 380}},             //RUSH
-    {{1500, 0, 500}, {5000, 0, 400}},        //DYDM
+    {{1900, 50, 1000}, {1500, 50, 380}},           //ACRT
+    {{5000, 300, 100}, {2740, 300, 606}},           //STD
+    {{500, 100, 100}, {1920, 300, 106}},             //RUSH
+    {{1500, 0, 500}, {5000, 50, 400}},        //DYDM     //5000 400
     {{0,0,0},{0,0,0}}  //OFF
 };
+
+void PID::printK(uint8_t nerv,uint8_t type)
+{
+    Serial.print("K[KP] =");Serial.print(K[nerv][type][KP]);Serial.print("\tK[KD] =");Serial.println(K[nerv][type][KD]);
+}
 
 void PID::failureDetected(ErreurE erreur)
 {
     ptrRobot->ordresFifo.ptrFst()->nbFail++;
-    if(ptrRobot->ordresFifo.ptrFst()->nbFail>ptrRobot->ordresFifo.ptrFst()->nbMaxFail)
+    if(ptrRobot->ordresFifo.ptrFst()->nbFail > ptrRobot->ordresFifo.ptrFst()->nbMaxFail)
     {
         if(ptrRobot->ordresFifo.ptrFst()->ptrActionPere!=nullptr)
         {
@@ -66,6 +71,8 @@ void PID::reload()
     //On recalle le ghost sur le robot
     IA=0.0;
     IL=0.0;
+    ptrRobot->ordresFifo.ptrFst()->errorIntegralLin=0;
+    ptrRobot->ordresFifo.ptrFst()->errorIntegralAng=0;
     if (not STATIQUE)
         ptrRobot->ghost.recalle(posERobot,vRobot);
 
@@ -81,25 +88,38 @@ void PID::reload()
         GOTO_S g=ptrRobot->ordresFifo.ptrFst()->goTo;
         PIDnervLIN=g.nerv;
         PIDnervANG=(g.nerv==RUSH)?(DYDM):(g.nerv);
-        if (cross(directeur(ptrRobot->posE.theta) , minus(g.posAim,ptrRobot->posE.vec))<0)
+        Vector posAim;
+        float thetaAim;
+        if (!g.relativ)
+        {
+            posAim=g.posAim;
+            thetaAim=g.thetaAim;
+        }
+        else
+        {
+            posAim=add(ptrRobot->posE.vec,g.posAim);
+            thetaAim=ptrRobot->posE.theta+g.thetaAim;
+        }
+
+        if (cross(directeur(ptrRobot->posE.theta) , minus(posAim,ptrRobot->posE.vec))<0)
             ptrRobot->ghost.reversed=true;
         else
             ptrRobot->ghost.reversed=false;
         //Ici on trouve les points a renseigner pour faire la trajectoire
-        float L=longueur(minus(g.posAim,ptrRobot->ghost.posE.vec));
+        float L=longueur(minus(posAim,ptrRobot->ghost.posE.vec));
         {
             //BLOC GEOMETRIE BEZIER
             float x0=ptrRobot->ghost.posE.vec.x;
             float y0=ptrRobot->ghost.posE.vec.y;
             float thetaIni=normalize(ptrRobot->ghost.posE.theta+((ptrRobot->ghost.reversed)?(PI):(0)));
-            float x3=g.posAim.x;
-            float y3=g.posAim.y;
-            float thetaAim=normalize(g.thetaAim+((ptrRobot->ghost.reversed)?(PI):(0)));;
+            float x3=posAim.x;
+            float y3=posAim.y;
+            thetaAim=normalize(thetaAim+((ptrRobot->ghost.reversed)?(PI):(0)));
             float delta;
             if (sin(thetaAim-thetaIni)!=0.0)
             {
                 Vector I=intersection(x0,y0,thetaIni,x3,y3,thetaAim);
-                delta=max(  longueur(minusFAST(&g.posAim,&I)), longueur(minusFAST(&ptrRobot->ghost.posE.vec,&I))   );
+                delta=max(  longueur(minusFAST(&posAim,&I)), longueur(minusFAST(&ptrRobot->ghost.posE.vec,&I))   );
             }
             else
                 delta=9.9;//infini sur une table de 2x3
@@ -152,11 +172,16 @@ void PID::reload()
         SPIN_S s=ptrRobot->ordresFifo.ptrFst()->spin;
         PIDnervANG=s.nerv;
         PIDnervLIN=DYDM;
+        float thetaAim;
+        if (!s.relativ)
+            thetaAim=s.thetaAim;
+        else
+            thetaAim=normalize(ptrRobot->ghost.posE.theta+s.thetaAim);
         ptrRobot->ghost.X_P.set(ptrRobot->ghost.posE.vec.x,0.0,0.0,0.0,0.0,0.0,0.0);
         ptrRobot->ghost.Y_P.set(ptrRobot->ghost.posE.vec.y,0.0,0.0,0.0,0.0,0.0,0.0);
         ptrRobot->ghost.spinning=true;
         ptrRobot->ghost.reversed=false;
-        float thetaAimPropre=ptrRobot->ghost.posE.theta+normalize(s.thetaAim-ptrRobot->ghost.posE.theta);
+        float thetaAimPropre=ptrRobot->ghost.posE.theta+normalize(thetaAim - ptrRobot->ghost.posE.theta);
         ptrRobot->ghost.theta_S.set(ptrRobot->ghost.posE.theta,thetaAimPropre,0.0,nervTP[s.nerv],0.0,nervTPP[s.nerv],-nervTPP[s.nerv]);
         ptrRobot->ghost.t_e=0;
     }
@@ -316,6 +341,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
         {
             errorL=sqrt(errorL);
         }
+        ptrRobot->ordresFifo.ptrFst()->errorIntegralLin += abs(errorL)*dt;
 
         //Calcul de l'erreur angulaire avec retard
         float errorA;
@@ -337,6 +363,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
             else
                 errorA=normalize( angle(minus(ptrRobot->ghost.posED.vec,posERobot.vec)) -  posERobot.theta+PI);
         }
+        ptrRobot->ordresFifo.ptrFst()->errorIntegralAng += abs(errorA)*dt;
 
         IL+=errorL*dt;
         IA+=errorA*dt;
@@ -374,7 +401,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
     bool nearEnough   = (longueur( minusFAST(&posERobot.vec,&ptrRobot->ghost.posED.vec) )<=RAYON_FAIL and (normalize(ptrRobot->ghost.posED.theta-posERobot.theta)<=DELTA_THETA_FAIL or reconvergence)) or STATIQUE;
     bool linOK        = longueur( minusFAST(&posERobot.vec,&ptrRobot->ghost.posED.vec) )<=RAYON_TERMINE or STATIQUE;
     bool angOK        = (normalize(ptrRobot->ghost.posED.theta-posERobot.theta)<=DELTA_THETA_TERMINE) or STATIQUE;
-    bool vitesseOK    = (abs(vRobot)<0.005 and abs(wRobot)<0.005) or STATIQUE or (ptrRobot->ordresFifo.ptrFst()->type == OrderE::GOTO_E and ptrRobot->ordresFifo.ptrFst()->goTo.arret==false);
+    bool vitesseOK    = (abs(vRobot)<0.005 and abs(wRobot)<MAX_W) or STATIQUE or (ptrRobot->ordresFifo.ptrFst()->type == OrderE::GOTO_E and ptrRobot->ordresFifo.ptrFst()->goTo.arret==false);
     bool ghostArrive  = ptrRobot->ghost.t_e>0.95;
     bool ghostFree    = not ptrRobot->ghost.locked;
     //bool orderNext    = ptrRobot->ordresFifo.inBuffer>=2;
@@ -416,6 +443,8 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
 
 void PID::loadNext()
 {
+    lastLossAng=ptrRobot->ordresFifo.ptrFst()->errorIntegralAng;
+    lastLossLin=ptrRobot->ordresFifo.ptrFst()->errorIntegralLin;
     //On fait avancer l'action si necessaire
     if (ptrRobot->ordresFifo.ptrFst()->ptrActionPere != nullptr)
     {
@@ -432,6 +461,19 @@ void PID::loadNext()
     //On dit au robot que l'ordre actuel a change
     reload();
 }
+
+float PID::increment(uint8_t nerv, uint8_t coeff, uint8_t type, float value)
+{
+        K[nerv][type][coeff]+=value;
+        return K[nerv][type][coeff];
+}
+
+float PID::decrement(uint8_t nerv, uint8_t coeff, uint8_t type, float value)
+{
+        K[nerv][type][coeff]-=value;
+        return K[nerv][type][coeff];
+}
+
 
 PID::PID()
 {

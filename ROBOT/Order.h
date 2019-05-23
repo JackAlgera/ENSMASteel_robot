@@ -16,13 +16,14 @@ struct GOTO_S
     float fleche;         //La flèche est sans unité. Elle indique de combien le robot peut d'éloigner du trajet le plus court
     Vector posAim;        //Position cibe
     float thetaAim;       //Deceleration, angle cible, vitesse cible
-    bool arret,avoidance;
+    bool arret,avoidance,relativ;
 };
 
 struct SPIN_S
 {
     uint8_t nerv;
     float thetaAim;       //angle cible, acceleration et deceleration angulaire (theta point point)
+    bool relativ;
 };
 
 struct SPINTO_S
@@ -64,6 +65,7 @@ class Order
 {
 public:
     OrderE type;
+    float errorIntegralLin,errorIntegralAng;
     uint16_t timeoutDs;
     Action * ptrActionPere;
     ptrFonction contreMesure;
@@ -87,13 +89,13 @@ public:
 class GOTO : public Order
 {
 public:
-	GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance);
+	GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance,bool relativ=false);
 };
 
 class SPIN : public Order
 {
 public:
-	SPIN(uint8_t nerv, float thetaAim, uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
+	SPIN(uint8_t nerv, float thetaAim, uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail,bool relativ=false);
 };
 
 class SPINTO : public Order

@@ -3,7 +3,7 @@
 
 
 //-------------------------MODE DE FONCTIONNEMENT-------------------------
-#define RECORD  //Permet d'activer ou non le feedback
+//#define RECORD  //Permet d'activer ou non le feedback
 //#define STATE
 //#define RC
 //#define FILTRE_SETUP_ANG
@@ -91,10 +91,11 @@ enum ErreurE
 
 #define RAYON_RECONVERGENCE 10.5          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
 #define RAYON_TERMINE 0.05                //Distance en dessous duquel on considère que le robot est arrivé
-#define DELTA_THETA_TERMINE 0.05          //Delta theta en dessous duquel on considère le spin terminé
+#define DELTA_THETA_TERMINE 0.0000001          //Delta theta en dessous duquel on considère le spin terminé
 
 #define RAYON_FAIL 0.10
 #define DELTA_THETA_FAIL 0.5
+#define MAX_W 0.000001
 #define FAIL_TIME 0.5
 
 #define FREQUENCY 200.0
