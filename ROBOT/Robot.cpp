@@ -47,7 +47,6 @@ void Robot::actuateODO(float dt)
     float avance = (codeuseDroite.deltaAvance+codeuseGauche.deltaAvance)/2;
     posE.vec.x += avance*cos(posE.theta);
     posE.vec.y += avance*sin(posE.theta);
-    Serial.println(posE.theta);
 }
 
 

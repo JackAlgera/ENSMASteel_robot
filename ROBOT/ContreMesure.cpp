@@ -80,3 +80,23 @@ bool wiggle(Robot * ptrRobot,ErreurE erreur)
   }
   return false;
 }
+
+bool recalleX(Robot * ptrRobot,ErreurE erreur)
+{
+    if(ptrRobot->posE.vec.x<1.5)
+    {
+        ptrRobot->ordresFifo.add(SPIN(STD,0.0,50,ptrPere,simpleTimeout,1));
+        ptrRobot->ordresFifo.add(GO_UNTIL(true,RECALLE,0.4,MessageE::Calle,100,ptrPere,simpleTimeout,1);
+        ptrRobot->ordresFifo.add(STBY(DYDM,Impossible,3,ptrPere,normalTimeout,1));
+        ptrRobot->ordresFifo.add(SETX(10,ptrPere,simpleTimeout,1));
+        ptrRobot->ordresFifo.add(GOTO(STD,0.1,0.1,0.0,0.0,true,50,ptrPere,simpleTimeout,1,false,true));
+    }
+    else
+    {
+        ptrRobot->ordresFifo.add(SPIN(STD,PI,50,ptrPere,simpleTimeout,1));
+        ptrRobot->ordresFifo.add(GO_UNTIL(true,RECALLE,0.4,MessageE::Calle,100,ptrPere,simpleTimeout,1);
+        ptrRobot->ordresFifo.add(STBY(DYDM,Impossible,3,ptrPere,normalTimeout,1));
+        ptrRobot->ordresFifo.add(SETX(10,ptrPere,simpleTimeout,1));
+        ptrRobot->ordresFifo.add(GOTO(STD,0.1,0.1,0.0,0.0,true,50,ptrPere,simpleTimeout,1,false,true));
+    }
+}

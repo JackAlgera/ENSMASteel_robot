@@ -226,7 +226,7 @@ void PID::reload()
     break;
     case OrderE::GO_UNTIL_E:
     {
-        Serial.print("Je prepare un GO_UNTIL");
+        Serial.println("Je prepare un GO_UNTIL");
         GO_UNTIL_S gou=ptrRobot->ordresFifo.ptrFst()->go_until;
         PIDnervLIN=gou.nerv;
         PIDnervANG=gou.nerv;
@@ -331,14 +331,20 @@ void PID::reload()
     break;
     case OrderE::SETX_E:
     {
-        if (ptrRobot->posE.vec.x<HROBOT+0.2 && ptrRobot->posE.vec.x>HROBOT-0.2)//On vient de toucher le bord droit
+        if (ptrRobot->posE.vec.x<HROBOT+0.2 && ptrRobot->posE.vec.x>HROBOT-0.2)//On vient de toucher le bord gauche
         {
+            #ifdef STATE
+            Serial.print("recallage x=0");
+            #endif // STATE
             ptrRobot->posE.vec.x=HROBOT;
             ptrRobot->posE.theta=0.0;
             ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
         }
-        else if (ptrRobot->posE.vec.x<3.0-HROBOT+0.2 && ptrRobot->posE.vec.x>3.0-HROBOT-0.2)    //ON vient e toucher le bord gauche
+        else if (ptrRobot->posE.vec.x<3.0-HROBOT+0.2 && ptrRobot->posE.vec.x>3.0-HROBOT-0.2)    //ON vient e toucher le bord droite
         {
+            #ifdef STATE
+            Serial.print("recallage x=3.0");
+            #endif // STATE
             ptrRobot->posE.vec.x=3.0-HROBOT;
             ptrRobot->posE.theta=PI;
             ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
@@ -360,21 +366,15 @@ void PID::reload()
             ptrRobot->posE.theta=PI/2.0;
             ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
         }
-        else if (ptrRobot->posE.vec.y<0.4+HROBOT+0.2 && ptrRobot->posE.vec.y>0.4+HROBOT-0.2)//ON vient de toucher le distribx6
-        {
-            ptrRobot->posE.vec.x=0.4+HROBOT;
-            ptrRobot->posE.theta=PI/2.0;
-            ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
-        }
         else if (ptrRobot->posE.vec.y<0.457+HROBOT+0.2 && ptrRobot->posE.vec.y>0.457+HROBOT-0.2)//ON vient de toucher le distribx6
         {
-            ptrRobot->posE.vec.x=0.457+HROBOT;
+            ptrRobot->posE.vec.y=0.457+HROBOT;
             ptrRobot->posE.theta=PI/2.0;
             ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
         }
         else if (ptrRobot->posE.vec.y<1.965-HROBOT+0.2 && ptrRobot->posE.vec.y>1.965-HROBOT-0.2)//ON vient de toucher le couvre accelero
         {
-            ptrRobot->posE.vec.x=1.965-HROBOT;
+            ptrRobot->posE.vec.y=1.965-HROBOT;
             ptrRobot->posE.theta=-1*PI/2.0;
             ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
         }

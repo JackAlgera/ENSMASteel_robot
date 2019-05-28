@@ -7,4 +7,5 @@ bool normalTimeout(Robot * ptrRobot,ErreurE erreur);  //Print toutes les erreurs
 bool resetGoto(Robot * ptrRobot,ErreurE erreur);      //Recalcul le Goto avec sanction. Passe sur un timeout
 bool wiggle(Robot * ptrRobot,ErreurE erreur);         //Petit dandinage
 bool jmeTire(Robot * ptrRobot,ErreurE erreur);          //Marche arriere qui remplace l'ordre actuel (un stby)
+bool recallageX(Robot * ptrRobot,ErreurE erreur);
 #endif
