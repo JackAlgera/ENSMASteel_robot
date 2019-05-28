@@ -12,7 +12,7 @@
 //float nervTPP[3]= { 0.5, 5.0, 15.0  };
 //float nervTP[3]=  { 0.5, 1.5, 999.9  };
 
-float nervA[3]=   { 0.1, 0.5, 1.5   };
+float nervA[3]=   { 0.05, 0.5, 1.5   };
 float nervV[3]=   { 0.05, 0.5, 1.2   };
 float nervTPP[3]= { 0.5, 10, 20.0  };
 float nervTP[3]=  { 0.5, 1.5, 999.9  };
@@ -20,9 +20,9 @@ float nervTP[3]=  { 0.5, 1.5, 999.9  };
 uint16_t K[5][2][3]=
 {
     //LINEAIRE               //ANGULAIRE  (PID)
-    {{1900, 50, 1000}, {1500, 50, 380}},           //ACRT
-    {{5000, 300, 100}, {2740, 300, 606}},           //STD
-    {{500, 100, 100}, {1920, 300, 106}},             //RUSH
+    {{2000, 200, 1000}, {300, 0, 500}},           //RECALLE
+    {{3000, 300, 1000}, {3000, 300, 500}},           //STD
+    {{1200, 100, 2500}, {1920, 300, 106}},             //RUSH
     {{1500, 0, 500}, {5000, 50, 400}},        //DYDM     //5000 400
     {{0,0,0},{0,0,0}}  //OFF
 };
@@ -100,6 +100,7 @@ void PID::reload()
             posAim=add(ptrRobot->posE.vec,g.posAim);
             thetaAim=ptrRobot->posE.theta+g.thetaAim;
         }
+        ptrRobot->ghost.aim=posAim;
 
         if (cross(directeur(ptrRobot->posE.theta) , minus(posAim,ptrRobot->posE.vec))<0)
             ptrRobot->ghost.reversed=true;
@@ -177,6 +178,7 @@ void PID::reload()
             thetaAim=s.thetaAim;
         else
             thetaAim=normalize(ptrRobot->ghost.posE.theta+s.thetaAim);
+        ptrRobot->ghost.aim=ptrRobot->posE.vec;
         ptrRobot->ghost.X_P.set(ptrRobot->ghost.posE.vec.x,0.0,0.0,0.0,0.0,0.0,0.0);
         ptrRobot->ghost.Y_P.set(ptrRobot->ghost.posE.vec.y,0.0,0.0,0.0,0.0,0.0,0.0);
         ptrRobot->ghost.spinning=true;
@@ -222,9 +224,74 @@ void PID::reload()
         reload();
     }
     break;
-    case OrderE::FWD_E:
-        break;
-    case OrderE::BWD_E:
+    case OrderE::GO_UNTIL_E:
+    {
+        Serial.print("Je prepare un GO_UNTIL");
+        GO_UNTIL_S gou=ptrRobot->ordresFifo.ptrFst()->go_until;
+        PIDnervLIN=gou.nerv;
+        PIDnervANG=gou.nerv;
+        Vector posAim;
+        if (gou.arriere)
+        {
+            ptrRobot->ghost.reversed=true;
+            posAim=add(ptrRobot->posE.vec, mult(-1*gou.distanceMax,directeur(ptrRobot->posE.theta))  );
+        }
+        else
+        {
+            ptrRobot->ghost.reversed=false;
+            posAim=add(ptrRobot->posE.vec, mult(gou.distanceMax,directeur(ptrRobot->posE.theta))  );
+        }
+        float thetaAim=ptrRobot->posE.theta;
+
+        //Ici on trouve les points a renseigner pour faire la trajectoire
+        float L=longueur(minus(posAim,ptrRobot->ghost.posE.vec));
+        {
+            //BLOC GEOMETRIE BEZIER
+            float x0=ptrRobot->ghost.posE.vec.x;
+            float y0=ptrRobot->ghost.posE.vec.y;
+            float thetaIni=normalize(ptrRobot->ghost.posE.theta+((ptrRobot->ghost.reversed)?(PI):(0)));
+            float x3=posAim.x;
+            float y3=posAim.y;
+            thetaAim=normalize(thetaAim+((ptrRobot->ghost.reversed)?(PI):(0)));
+
+            float x1=x0+cos(thetaIni)*0.1*L;
+            float y1=y0+sin(thetaIni)*0.1*L;
+            float x2=x3-cos(thetaAim)*0.1*L;
+            float y2=y3-sin(thetaAim)*0.1*L;
+
+            //On actualise les polynomes
+            ptrRobot->ghost.X_P.set(x0, -3*(x0-x1), 3*(x0-2*x1+x2), -1*(x0-3*x1+3*x2-x3),0.0,0.0,0.0);
+            ptrRobot->ghost.Y_P.set(y0, -3*(y0-y1), 3*(y0-2*y1+y2), -1*(y0-3*y1+3*y2-y3),0.0,0.0,0.0);
+        }  //BLOC GEOMETRIE BEZIER
+        {
+            //BLOC POLYNOMES
+            Polynome DX=deriveeFAST(&ptrRobot->ghost.X_P);
+            Polynome DDX=deriveeFAST(&DX);
+            Polynome DY=deriveeFAST(&ptrRobot->ghost.Y_P);
+            Polynome DDY=deriveeFAST(&DY);
+            ptrRobot->ghost.v_e_P2=somme(  carreFAST(&DX), carreFAST(&DY) );
+            ptrRobot->ghost.DDX_P=DDX;
+            ptrRobot->ghost.DDY_P=DDY;
+
+        }  //BLOC POLYNOMES
+        ptrRobot->ghost.spinning=false;
+        float D=0.0,t_e_integral=0.0,v=0.0;
+        float lastV=sqrt(ptrRobot->ghost.v_e_P2.f(t_e_integral));
+        float pas=0.01;
+        t_e_integral=t_e_integral+pas;
+        while (t_e_integral<=1.0)
+        {
+            v=sqrt(ptrRobot->ghost.v_e_P2.f(t_e_integral));
+            D=D+(v+lastV)/2*pas;
+            lastV=v;
+            t_e_integral=t_e_integral+pas;
+        }
+        ptrRobot->ghost.s.set(0.0,D,ptrRobot->ghost.v,nervV[gou.nerv], 0.0,nervA[gou.nerv],-1.5*nervA[gou.nerv]);
+        if (L>0)
+            ptrRobot->ghost.t_e=0;
+        else
+            ptrRobot->ghost.t_e=1;
+    }
         break;
     case OrderE::STBY_E:
     {
@@ -233,6 +300,7 @@ void PID::reload()
 #endif
         PIDnervANG=ptrRobot->ordresFifo.ptrFst()->stby.nerv;
         PIDnervLIN=ptrRobot->ordresFifo.ptrFst()->stby.nerv;
+        ptrRobot->ghost.aim=ptrRobot->posE.vec;
         ptrRobot->ghost.X_P.set(ptrRobot->ghost.posE.vec.x,0.0,0.0,0.0,0.0,0.0,0.0);
         ptrRobot->ghost.Y_P.set(ptrRobot->ghost.posE.vec.y,0.0,0.0,0.0,0.0,0.0,0.0);
         ptrRobot->ghost.spinning=true;
@@ -326,13 +394,14 @@ void PID::reload()
 
 void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
 {
+    float errorL;
     lastDt=dt;
     lastPosERobot=posERobot;
     lastVRobot=vRobot;
     {
         //Calcul de l'erreur linéaire avec retard
-        float errorL=cross( minus(ptrRobot->ghost.posED.vec,posERobot.vec), directeur(posERobot.theta));
-        jeVeuxAvancer=errorL>0;
+        errorL=cross( minus(ptrRobot->ghost.posED.vec,posERobot.vec), directeur(posERobot.theta));
+        jeVeuxAvancer=cross( minus(ptrRobot->ghost.aim,posERobot.vec), directeur(posERobot.theta))>0;
         if (errorL<0)
         {
             errorL=-1*sqrt(-1*errorL);
@@ -341,7 +410,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
         {
             errorL=sqrt(errorL);
         }
-        ptrRobot->ordresFifo.ptrFst()->errorIntegralLin += abs(errorL)*dt;
+        ptrRobot->ordresFifo.ptrFst()->errorIntegralLin += abs(errorL)*dt + abs(ptrRobot->ghost.v - vRobot)*dt;
 
         //Calcul de l'erreur angulaire avec retard
         float errorA;
@@ -363,7 +432,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
             else
                 errorA=normalize( angle(minus(ptrRobot->ghost.posED.vec,posERobot.vec)) -  posERobot.theta+PI);
         }
-        ptrRobot->ordresFifo.ptrFst()->errorIntegralAng += abs(errorA)*dt;
+        ptrRobot->ordresFifo.ptrFst()->errorIntegralAng += abs(errorA)*dt+ abs(ptrRobot->ghost.w - wRobot)*dt;
 
         IL+=errorL*dt;
         IA+=errorA*dt;
@@ -399,15 +468,15 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
     }
 
     bool nearEnough   = (longueur( minusFAST(&posERobot.vec,&ptrRobot->ghost.posED.vec) )<=RAYON_FAIL and (normalize(ptrRobot->ghost.posED.theta-posERobot.theta)<=DELTA_THETA_FAIL or reconvergence)) or STATIQUE;
-    bool linOK        = longueur( minusFAST(&posERobot.vec,&ptrRobot->ghost.posED.vec) )<=RAYON_TERMINE or STATIQUE;
-    bool angOK        = (normalize(ptrRobot->ghost.posED.theta-posERobot.theta)<=DELTA_THETA_TERMINE) or STATIQUE;
+    bool linOK        = errorL*errorL<=RAYON_TERMINE or STATIQUE;
+    bool angOK        = (abs(normalize(ptrRobot->ghost.posE.theta-posERobot.theta))<=DELTA_THETA_TERMINE) or STATIQUE;
     bool vitesseOK    = (abs(vRobot)<0.005 and abs(wRobot)<MAX_W) or STATIQUE or (ptrRobot->ordresFifo.ptrFst()->type == OrderE::GOTO_E and ptrRobot->ordresFifo.ptrFst()->goTo.arret==false);
-    bool ghostArrive  = ptrRobot->ghost.t_e>0.95;
+    bool ghostArrive  = ptrRobot->ghost.t_e>0.999;
     bool ghostFree    = not ptrRobot->ghost.locked;
     //bool orderNext    = ptrRobot->ordresFifo.inBuffer>=2;
 
     bool timeout      = (micros()-ptrRobot->ghost.microsStart)/1000000.0  >   ptrRobot->ordresFifo.ptrFst()->timeoutDs/10.0;
-    bool messageITSTBY  = ptrRobot->ordresFifo.ptrFst()->type == OrderE::STBY_E and ptrRobot->comm.lastMessage==ptrRobot->ordresFifo.ptrFst()->stby.unlockMessage;
+    bool messageITSTBY  = (ptrRobot->ordresFifo.ptrFst()->type == OrderE::STBY_E and ptrRobot->comm.lastMessage==ptrRobot->ordresFifo.ptrFst()->stby.unlockMessage) || (ptrRobot->ordresFifo.ptrFst()->type == OrderE::GO_UNTIL_E and ptrRobot->comm.lastMessage==ptrRobot->ordresFifo.ptrFst()->go_until.unlockMessage);
     bool completeEMStop = ptrRobot->ordresFifo.ptrFst()->type == OrderE::EMSTOP_E and abs(vRobot)<0.005 and abs(wRobot)<0.005;
 
     if(timeout)

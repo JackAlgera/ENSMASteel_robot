@@ -39,14 +39,12 @@ struct SPINGOTO_S
     bool avoidance;
 };
 
-struct FWD_S
+struct GO_UNTIL_S
 {
-    float acc, v;          //Acceleration, vitesse max, temps maximum passé sur cette instruction
-};
-
-struct BWD_S
-{
-    float acc, v;
+    bool arriere;
+    uint8_t nerv;
+    float distanceMax;
+    MessageE unlockMessage;
 };
 
 struct STBY_S
@@ -77,8 +75,7 @@ public:
         SPIN_S spin;
         SPINGOTO_S spinGoTo;
         SPINTO_S spinTo;
-        FWD_S fwd;
-        BWD_S bwd;
+        GO_UNTIL_S go_until;
         STBY_S stby;
         SEND_S send;
     };
@@ -110,24 +107,16 @@ public:
 	SPINGOTO(uint8_t nerv, float xAim, float yAim, uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail,bool avoidance);
 };
 
-class FWD : public Order
+class GO_UNTIL : public Order
 {
 public:
-	FWD(float acc, float v, uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
+    GO_UNTIL(bool arriere,uint8_t nerv,float distanceMax,MessageE unlockMessage, uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
-class BWD : public Order
-{
-public:
-	BWD(float acc, float v, uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
-};
 
 class STBY : public Order
 {
 public:
-    uint8_t nerv;
-    MessageE unlockMessage;
-
 	STBY(uint8_t nerv, MessageE unlockMessage, uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 

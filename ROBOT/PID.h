@@ -16,8 +16,8 @@ Les Spin marchent niquel
 En mode STD: (STANDARD)
 Ca marche bien, les legeres courbes sont autorisées.
 
-En mode ACRT: (ACCURATE)
-Toute les courbes sont possibles. Vitesse lente. Le I est assez elevé ce qui permet de passer les obstacles
+En mode RECALLE: (ACCURATE)
+Faible asservissement angulaire. Correct lineraire
 
 En mode DYDM: (DON'T YOU DARE MOVE)
 Beaucoup de I. C'est le mode statique, verrouillé sur place

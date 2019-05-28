@@ -29,6 +29,7 @@ public:
     PID pid;
     Comm comm;
     Cerveau* master;
+    AnticolE evitting;
 
     void actuateODO(float dt);
     void set(float x0,float y0, float theta0);    //Remplie les champs de l'objet Robot

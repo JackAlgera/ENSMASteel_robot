@@ -271,10 +271,17 @@ void Cerveau::actuate()
         break;
         case (MessageE::Evitemment):
             //ptrRobot->master->computeEvitemment(ptrRobot->comm.collisionX,ptrRobot->comm.collisionY);
-            ptrRobot->ordresFifo.addHead(STBY(RUSH,Impossible,50000,nullptr,simpleTimeout,1));
+            if (ptrRobot->pid.jeVeuxAvancer)
+                ptrRobot->evitting=AnticolE::Front;
+            else
+                ptrRobot->evitting=AnticolE::Back;
+            ptrRobot->ordresFifo.addHead(STBY(DYDM,Evitemment_Clear,50000,nullptr,simpleTimeout,1));
             ptrRobot->pid.reload();
             ptrRobot->comm.taken();
-        break;
+            break;
+        case (MessageE::Evitemment_Clear):
+            ptrRobot->evitting=AnticolE::No;
+            break;
     }
 }
 
@@ -312,8 +319,9 @@ void Cerveau::recallageBordure(bool recalleX, bool recalleY, Action * ptrPere)
     {
         if(ptrRobot->posE.vec.x<1.5)
         {
-            //ptrRobot->ordresFifo.add(BWD());  TODO implementer BWD. Ca recule jusqu'a ce que le bool pointé soit acitvé
+
             ptrRobot->ordresFifo.add(SPIN(STD,0.0,50,ptrPere,simpleTimeout,1));
+            //ptrRobot->ordresFifo.add(BWD());  TODO implementer BWD. Ca recule jusqu'a ce que le bool pointé soit acitvé
         }
     }//TODO CONTINUER
 }

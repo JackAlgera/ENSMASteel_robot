@@ -40,17 +40,12 @@ void Action::addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint16_t timeoutDs,
     nbrOrders++;
 }
 
-void Action::addFWD(float acc, float v, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
+void Action::addGO_UNTIL(bool arriere,uint8_t nerv,float distanceMax,MessageE unlockMessage, uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail)
 {
-    ordersList[nbrOrders] = FWD(acc, v, timeoutDs,this, contreMesure, nbMaxFail);
+    ordersList[nbrOrders] = GO_UNTIL(arriere,nerv,distanceMax,unlockMessage,timeoutDs,ptrActionPere,contreMesure,nbMaxFail);
     nbrOrders++;
 }
 
-void Action::addBWD(float acc, float v, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
-{
-    ordersList[nbrOrders] = BWD(acc, v, timeoutDs,this, contreMesure, nbMaxFail);
-    nbrOrders++;
-}
 
 void Action::addSTBY(uint8_t nerv, MessageE unlockMessage, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail)
 {

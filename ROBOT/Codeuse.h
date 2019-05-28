@@ -10,11 +10,13 @@ class Codeuse
 public:
     int32_t ticks,oldTicks;     //Nombre de ticks compté, nombre de ticks compté au dernier appel
     float v,deltaAvance;        //Vitesse et avance du robot AU NIVEAU DE LA ROUE CODEUSE
+    float debug;
+    float diametreRoue;
 
 
     void actuate(float dt);     //Actualise (transforme les ticks en vitesse puis en avance)
     Codeuse();
-    Codeuse(uint8_t pinA,uint8_t pinB);
+    Codeuse(uint8_t pinA,uint8_t pinB,float diametreRoue);
     Encoder *enc;
 };
 #endif

@@ -74,10 +74,10 @@ SPINGOTO::SPINGOTO(uint8_t nerv, float xAim, float yAim, uint16_t timeoutDs, Act
 
 }
 
-FWD::FWD(float acc, float v, uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
+GO_UNTIL::GO_UNTIL(bool arriere,uint8_t nerv,float distanceMax,MessageE unlockMessage, uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail)
 {
     {
-        this->type = OrderE::FWD_E;
+        this->type = OrderE::GO_UNTIL_E;
         this->errorIntegralLin=0;
         this->errorIntegralAng=0;
         this->timeoutDs = timeoutDs;
@@ -87,26 +87,10 @@ FWD::FWD(float acc, float v, uint16_t timeoutDs, Action * ptrActionPere, ptrFonc
 
         this->nbFail=0;
 
-        this->fwd = { acc, v };
+        this->go_until = { arriere,nerv,distanceMax,unlockMessage };
     }
 }
 
-BWD::BWD(float acc, float v, uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
-{
-    {
-        this->type = OrderE::BWD_E;
-        this->errorIntegralLin=0;
-        this->errorIntegralAng=0;
-        this->timeoutDs = timeoutDs;
-        this->ptrActionPere = ptrActionPere;
-        this->contreMesure=contreMesure;
-        this->nbMaxFail=nbMaxFail;
-
-        this->nbFail=0;
-
-        this->bwd = { acc, v };
-    }
-}
 
 STBY::STBY(uint8_t nerv, MessageE unlockMessage, uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
 {

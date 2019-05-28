@@ -22,8 +22,7 @@ public:
     void addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance);
     void addSPIN(uint8_t nerv, float thetaAim, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
     void addSPINTO(uint8_t nerv,float xAim,float yAim,uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
-    void addFWD(float acc, float v, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
-    void addBWD(float acc, float v, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
+    void addGO_UNTIL(bool arriere,uint8_t nerv,float distanceMax,MessageE unlockMessage, uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
     void addSTBY(uint8_t nerv, MessageE unlockMessage, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
     void addSEND(MessageE message, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
     void addEMSTOP(uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);

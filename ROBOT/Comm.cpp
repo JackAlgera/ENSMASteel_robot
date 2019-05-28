@@ -59,28 +59,7 @@
 //
 //}
 //
-//void Comm::taken()
-//{
-//    lastMessage=MessageE::Default;
-//}
-//
-//void Comm::send(MessageE message)
-//{
-//    Serial1.write((uint8_t)message);
-//}
-//
-//void Comm::send(uint8_t value)
-//{
-//    Serial1.write(value);
-//}
-//
-//Comm::Comm()
-//{
-//  while(Serial.available()>0){Serial.read();}
-//  state=StatesE::Standard;
-//  millisLastSendPos=millis();
-//  millisLastEvitemment=0;
-//}
+
 
 
 #include "Comm.h"

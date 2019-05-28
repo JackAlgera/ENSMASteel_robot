@@ -4,15 +4,15 @@
 
 class Contacteur
 {
-    uint8_t pin;
-    bool pressed;
+  uint8_t pin;
+  bool wasPressed;
 
-
-public:
-    void actuate();
-    Contacteur(uint8_t pin);
-    Contacteur();
-    bool isPressed();
+  public:
+	  Contacteur(uint8_t pin);
+	  Contacteur();
+	  bool isPressed();
+   bool isJustPressed();
+   
 };
 
 

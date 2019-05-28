@@ -17,6 +17,8 @@
 
 void Robot::actuate(float dt)
 {
+    if(contacteurDroite.isPressed() && contacteurGauche.isPressed())
+        comm.lastMessage=MessageE::Calle;
     codeuseGauche.actuate(dt);
     codeuseDroite.actuate(dt);
     actuateODO(dt);
@@ -24,15 +26,17 @@ void Robot::actuate(float dt)
     pid.actuate(dt,posE,vF.out(),wF.out());
     if (ordresFifo.ptrFst()->type==GOTO_E && ordresFifo.ptrFst()->goTo.avoidance)
     {
-        comm.actuate(posE,(pid.jeVeuxAvancer)?AnticolE::Front:AnticolE::Back  );
+        comm.actuate(posE,(pid.jeVeuxAvancer)?(AnticolE::Front):(AnticolE::Back)  );
+    }
+    else if(evitting!=AnticolE::No)
+    {
+        comm.actuate(posE,evitting);
     }
     else
     {
         comm.actuate(posE,AnticolE::No);
     }
     master->actuate();
-    contacteurDroite.actuate();
-    contacteurGauche.actuate();
 }
 
 void Robot::actuateODO(float dt)
@@ -43,16 +47,18 @@ void Robot::actuateODO(float dt)
     float avance = (codeuseDroite.deltaAvance+codeuseGauche.deltaAvance)/2;
     posE.vec.x += avance*cos(posE.theta);
     posE.vec.y += avance*sin(posE.theta);
+    Serial.println(posE.theta);
 }
 
 
 void Robot::set(float x0,float y0, float theta0)
 {
     delay(1000);
+    evitting=AnticolE::No;
     moteurDroite  = init_motor(PIN_MOTEUR_DROITE_PWR,PIN_MOTEUR_DROITE_SENS,PIN_MOTEUR_DROITE_BRAKE,1.0);
     moteurGauche  = init_motor(PIN_MOTEUR_GAUCHE_PWR,PIN_MOTEUR_GAUCHE_SENS,PIN_MOTEUR_GAUCHE_BRAKE,1.0);
-    codeuseGauche = Codeuse(PIN_CODEUSE_GAUCHE_A,PIN_CODEUSE_GAUCHE_B);
-    codeuseDroite = Codeuse(PIN_CODEUSE_DROITE_A,PIN_CODEUSE_DROITE_B);
+    codeuseGauche = Codeuse(PIN_CODEUSE_GAUCHE_A,PIN_CODEUSE_GAUCHE_B,DIAMETRE_ROUE_CODEUSE_GAUCHE);
+    codeuseDroite = Codeuse(PIN_CODEUSE_DROITE_A,PIN_CODEUSE_DROITE_B,DIAMETRE_ROUE_CODEUSE_DROITE);
     contacteurDroite = Contacteur(PIN_CONTACTEUR_DROITE);
     contacteurGauche = Contacteur(PIN_CONTACTEUR_GAUCHE);
     VectorE initVect = init_vectorE(x0,y0,theta0);
@@ -64,13 +70,20 @@ void Robot::set(float x0,float y0, float theta0)
     wF=newFiltre(0.0,100.0,2);
 
 
-//    ordresFifo.add(STBY(DYDM,MessageE::Tirette,60000,nullptr,simpleTimeout,1));
-//    ordresFifo.add(SEND(MessageE::Pince_Half_Extended,10, nullptr,simpleTimeout,1));
-//    ordresFifo.add(GOTO(RUSH,0.48,1.0671936758893281,0.97,-0.7621465405869852,true,100,nullptr,simpleTimeout,1,true));
-//    ordresFifo.add(SEND(MessageE::Pince_Half_Retracted,10, nullptr,simpleTimeout,1));
-//    ordresFifo.add(STBY(DYDM,MessageE::Impossible,5,nullptr,normalTimeout,1));
-//    ordresFifo.add(GOTO(STD,0.48,0.22,1.4,0.0,true,150,nullptr,simpleTimeout,1,true));
-//    ordresFifo.add(SEND(MessageE::Pince_Extended,10, nullptr,simpleTimeout,1));
+    ordresFifo.add(STBY(DYDM,MessageE::Tirette,60000,nullptr,simpleTimeout,1));
+    ordresFifo.add(GO_UNTIL(true,RECALLE,0.2,MessageE::Calle,200,nullptr,simpleTimeout,1));
+    ordresFifo.add(SETX(10,nullptr,simpleTimeout,1));
+    ordresFifo.add(GOTO(RUSH,0.1,0.1,0.0,0.0,true,50,nullptr,simpleTimeout,1,false,true));
+    ordresFifo.add(STBY(DYDM,Impossible,65000,nullptr,simpleTimeout,1));
+
+//    ordresFifo.add(SEND(MessageE::Pince_Half_Extended,1,nullptr,normalTimeout,1));
+//    ordresFifo.add(STBY(RUSH,Impossible,2,nullptr,normalTimeout,1));
+//
+//    //ordresFifo.add(GOTO(STD,0.48,1.0671936758893281,0.97,-0.7621465405869852,true,100,nullptr,simpleTimeout,1,true));
+//    ordresFifo.add(GOTO(RUSH,0.48,1.2,1.4,0,true,100,nullptr,simpleTimeout,1,true));
+//
+//    ordresFifo.add(GOTO(STD,0.2,0.2,1.4,0.0,true,100,nullptr,simpleTimeout,1,true));
+//
 //    ordresFifo.add(STBY(DYDM,Impossible,65000,nullptr,simpleTimeout,1));
 
 
@@ -78,17 +91,6 @@ void Robot::set(float x0,float y0, float theta0)
     master=new Cerveau(this);
     pid = PID(this);
     comm=*(new Comm());
-    for (int i=0;i<=0;i++)
-    {
-        autoTune(RUSH,KD,20,LIN);
-        autoTune(RUSH,KP,200,LIN);
-    }
-    autoTune(RUSH,KD,5,LIN);
-    while (true)
-    {
-        pid.printK(RUSH,LIN);
-        delay(1000);
-    }
 }
 
 void waitGoto(Robot* robot)
@@ -98,13 +100,13 @@ void waitGoto(Robot* robot)
     m=micros();
     microsStart=(uint32_t)((float)m-(1.0/FREQUENCY)*1000000.0);
     while (robot->ordresFifo.ptrFst()->type!=OrderE::GOTO_E)       //On l'execute
-        {
-            m=micros();
-            dtLoop=(m-microsStart)/1000000.0;
-            microsStart=m;
-            robot->actuate(dtLoop);
-            while((micros()-microsStart)/1000000.0<1.0/FREQUENCY) {;}
-        }
+    {
+        m=micros();
+        dtLoop=(m-microsStart)/1000000.0;
+        microsStart=m;
+        robot->actuate(dtLoop);
+        while((micros()-microsStart)/1000000.0<1.0/FREQUENCY) {;}
+    }
 }
 
 void doGoto(Robot* robot)
@@ -115,13 +117,13 @@ void doGoto(Robot* robot)
     microsStart=(uint32_t)((float)m-(1.0/FREQUENCY)*1000000.0);
     robot->ghost.locked=true;
     while (robot->ordresFifo.ptrFst()->type==OrderE::GOTO_E)       //On l'execute
-        {
-            m=micros();
-            dtLoop=(m-microsStart)/1000000.0;
-            microsStart=m;
-            robot->actuate(dtLoop);
-            while((micros()-microsStart)/1000000.0<1.0/FREQUENCY) {;}
-        }
+    {
+        m=micros();
+        dtLoop=(m-microsStart)/1000000.0;
+        microsStart=m;
+        robot->actuate(dtLoop);
+        while((micros()-microsStart)/1000000.0<1.0/FREQUENCY) {;}
+    }
 }
 
 void waitSpin(Robot* robot)
@@ -131,13 +133,13 @@ void waitSpin(Robot* robot)
     m=micros();
     microsStart=(uint32_t)((float)m-(1.0/FREQUENCY)*1000000.0);
     while (robot->ordresFifo.ptrFst()->type!=OrderE::SPIN_E)       //On l'execute
-        {
-            m=micros();
-            dtLoop=(m-microsStart)/1000000.0;
-            microsStart=m;
-            robot->actuate(dtLoop);
-            while((micros()-microsStart)/1000000.0<1.0/FREQUENCY) {;}
-        }
+    {
+        m=micros();
+        dtLoop=(m-microsStart)/1000000.0;
+        microsStart=m;
+        robot->actuate(dtLoop);
+        while((micros()-microsStart)/1000000.0<1.0/FREQUENCY) {;}
+    }
 }
 
 void doSpin(Robot* robot)
@@ -148,13 +150,13 @@ void doSpin(Robot* robot)
     microsStart=(uint32_t)((float)m-(1.0/FREQUENCY)*1000000.0);
     robot->ghost.locked=true;
     while (robot->ordresFifo.ptrFst()->type==OrderE::SPIN_E)       //On l'execute
-        {
-            m=micros();
-            dtLoop=(m-microsStart)/1000000.0;
-            microsStart=m;
-            robot->actuate(dtLoop);
-            while((micros()-microsStart)/1000000.0<1.0/FREQUENCY) {;}
-        }
+    {
+        m=micros();
+        dtLoop=(m-microsStart)/1000000.0;
+        microsStart=m;
+        robot->actuate(dtLoop);
+        while((micros()-microsStart)/1000000.0<1.0/FREQUENCY) {;}
+    }
 }
 
 
@@ -163,88 +165,133 @@ void Robot::autoTune(uint8_t nerv,uint8_t coeff,float delta,uint8_t type)
 {
     delay(2000);
     bool Continue=true;
-    uint32_t m,microsStart;
+    uint32_t m;
     m=micros();
-    float dtLoop,lastLoss,newLoss;
+    float lastLoss,newLoss;
     ordresFifo.clean();
     ordresFifo.add(SEND(MessageE::Pince_Retracted,20,nullptr,simpleTimeout,1));
     delay(1000);
     if (type==LIN)
     {
-        ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
-        ordresFifo.add(GOTO(nerv,0.3,2.2,1.4,0.0,true,80,nullptr,simpleTimeout,1,false));
-        waitGoto(this);
-        doGoto(this);
-        lastLoss=pid.lastLossLin/2.0;
-        ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
-        ordresFifo.add(GOTO(nerv,0.3,0.2,1.4,0.0,true,80,nullptr,simpleTimeout,1,false));
-        waitGoto(this);
-        doGoto(this);
-        lastLoss+=pid.lastLossLin/2.0;
-        while (Continue)
+        if(nerv!=DYDM)
         {
-            pid.increment(nerv,coeff,type,delta);   //On change les coeff
-
-            //Aller
             ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
             ordresFifo.add(GOTO(nerv,0.3,2.2,1.4,0.0,true,80,nullptr,simpleTimeout,1,false));
             waitGoto(this);
             doGoto(this);
-            newLoss=pid.lastLossLin/2.0;
-
-            //Retour
+            lastLoss=pid.lastLossLin/2.0;
             ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
             ordresFifo.add(GOTO(nerv,0.3,0.2,1.4,0.0,true,80,nullptr,simpleTimeout,1,false));
             waitGoto(this);
             doGoto(this);
-            newLoss+=pid.lastLossLin/2.0;
-            if (newLoss>lastLoss)
+            lastLoss+=pid.lastLossLin/2.0;
+            while (Continue)
             {
-                pid.decrement(nerv,coeff,type,delta);
-                Continue=false;
+                pid.increment(nerv,coeff,type,delta);   //On change les coeff
+
+                //Aller
+                ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
+                ordresFifo.add(GOTO(nerv,0.3,2.2,1.4,0.0,true,80,nullptr,simpleTimeout,1,false));
+                waitGoto(this);
+                doGoto(this);
+                newLoss=pid.lastLossLin/2.0;
+
+                //Retour
+                ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
+                ordresFifo.add(GOTO(nerv,0.3,0.2,1.4,0.0,true,80,nullptr,simpleTimeout,1,false));
+                waitGoto(this);
+                doGoto(this);
+                newLoss+=pid.lastLossLin/2.0;
+                if (newLoss>lastLoss)
+                {
+                    pid.decrement(nerv,coeff,type,delta);
+                    Continue=false;
+                }
+                else
+                    lastLoss=newLoss;
             }
-            else
-                lastLoss=newLoss;
         }
+        else
+        {}
+
     }
-    else
+    else    //ANG
     {
-        ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
-        ordresFifo.add(SPIN(nerv,PI*99.0/100.0,50,nullptr,simpleTimeout,1,true));
-        waitSpin(this);
-        doSpin(this);
-        lastLoss=pid.lastLossAng/2.0;
-        ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
-        ordresFifo.add(SPIN(nerv,-PI*99.0/100.0,50,nullptr,simpleTimeout,1,true));
-        waitSpin(this);
-        doSpin(this);
-        lastLoss+=pid.lastLossAng/2.0;
-        while (Continue)
+        if (nerv!=DYDM)
         {
-            pid.increment(nerv,coeff,type,delta);   //On change les coeff
-
-            //Aller
             ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
-            ordresFifo.add(SPIN(nerv,PI*99.0/100.0,50,nullptr,simpleTimeout,1,true));  //On refait le goto
+            ordresFifo.add(SPIN(nerv,PI*99.0/100.0,50,nullptr,simpleTimeout,1,true));
             waitSpin(this);
             doSpin(this);
-            newLoss=pid.lastLossAng/2.0;
-
-            //Retour
+            lastLoss=pid.lastLossAng/2.0;
             ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
-            ordresFifo.add(SPIN(nerv,-PI*99.0/100.0,50,nullptr,simpleTimeout,1,true));  //On refait le goto
+            ordresFifo.add(SPIN(nerv,-PI*99.0/100.0,50,nullptr,simpleTimeout,1,true));
             waitSpin(this);
             doSpin(this);
-            newLoss+=pid.lastLossAng/2.0;
-            if (newLoss>lastLoss)
+            lastLoss+=pid.lastLossAng/2.0;
+            while (Continue)
             {
-                pid.decrement(nerv,coeff,type,delta);
-                Continue=false;
-            }
-            else
-                lastLoss=newLoss;
+                pid.increment(nerv,coeff,type,delta);   //On change les coeff
 
+                //Aller
+                ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
+                ordresFifo.add(SPIN(nerv,PI*99.0/100.0,50,nullptr,simpleTimeout,1,true));  //On refait le goto
+                waitSpin(this);
+                doSpin(this);
+                newLoss=pid.lastLossAng/2.0;
+
+                //Retour
+                ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
+                ordresFifo.add(SPIN(nerv,-PI*99.0/100.0,50,nullptr,simpleTimeout,1,true));  //On refait le goto
+                waitSpin(this);
+                doSpin(this);
+                newLoss+=pid.lastLossAng/2.0;
+                if (newLoss>lastLoss)
+                {
+                    pid.decrement(nerv,coeff,type,delta);
+                    Continue=false;
+                }
+                else
+                    lastLoss=newLoss;
+            }
+        }
+        else
+        {
+            ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
+            ordresFifo.add(GOTO(RUSH,0.3,2.2,1.4,0.0,true,80,nullptr,simpleTimeout,1,false));
+            waitGoto(this);
+            doGoto(this);
+            lastLoss=pid.lastLossAng/2.0;
+            ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
+            ordresFifo.add(GOTO(RUSH,0.3,0.2,1.4,0.0,true,80,nullptr,simpleTimeout,1,false));
+            waitGoto(this);
+            doGoto(this);
+            lastLoss+=pid.lastLossAng/2.0;
+            while (Continue)
+            {
+                pid.increment(nerv,coeff,type,delta);   //On change les coeff
+
+                //Aller
+                ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
+                ordresFifo.add(GOTO(RUSH,0.3,2.2,1.4,0.0,true,80,nullptr,simpleTimeout,1,false));
+                waitGoto(this);
+                doGoto(this);
+                newLoss=pid.lastLossAng/2.0;
+
+                //Retour
+                ordresFifo.add(STBY(OFF,Impossible,5,nullptr,normalTimeout,1));
+                ordresFifo.add(GOTO(RUSH,0.3,0.2,1.4,0.0,true,80,nullptr,simpleTimeout,1,false));
+                waitGoto(this);
+                doGoto(this);
+                newLoss+=pid.lastLossAng/2.0;
+                if (newLoss>lastLoss)
+                {
+                    pid.decrement(nerv,coeff,type,delta);
+                    Continue=false;
+                }
+                else
+                    lastLoss=newLoss;
+            }
         }
     }
-
 }

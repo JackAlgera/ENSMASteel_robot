@@ -3,20 +3,27 @@
 Contacteur::Contacteur(uint8_t pin)
 {
   this->pin=pin;
+  this->wasPressed=false;
   pinMode(pin,INPUT_PULLDOWN);
-  pressed=false;
 }
 
 Contacteur::Contacteur()
 {
-  
 }
 
-
-
-void Contacteur::actuate()
+bool Contacteur::isPressed()
 {
-    pressed=(digitalRead(pin)==HIGH);
+	bool value=digitalRead(pin);
+  wasPressed=value;
+	return value;
+
 }
 
-bool Contacteur::isPressed(){return pressed;}
+bool Contacteur::isJustPressed()
+{
+  bool value=digitalRead(pin);
+  bool out=value && !wasPressed;
+  wasPressed=value;
+  return out;
+
+}

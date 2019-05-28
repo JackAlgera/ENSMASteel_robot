@@ -19,6 +19,7 @@ public:
     VectorE posE,posED;                                     // Postion du fantome
     Filtre fDelayX,fDelayY,fDelayTheta,wF;
     float v,w;                                              // Vitesse et vitesse angulaire du fantome
+    Vector aim;
 
     Ghost();
     Ghost(VectorE posEini);

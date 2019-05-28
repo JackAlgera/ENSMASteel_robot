@@ -4,7 +4,7 @@
 
 //-------------------------MODE DE FONCTIONNEMENT-------------------------
 //#define RECORD  //Permet d'activer ou non le feedback
-//#define STATE
+#define STATE
 //#define RC
 //#define FILTRE_SETUP_ANG
 //#define FILTRE_SETUP_LIN
@@ -36,8 +36,10 @@
 
 
 //-------------------------PHYSIQUE-------------------------
-#define ELOIGNEMENT_CODEUSES 0.296255
-#define DIAMETRE_ROUE_CODEUSE 0.053860024
+//#define ELOIGNEMENT_CODEUSES 0.296255
+#define ELOIGNEMENT_CODEUSES 0.29430415
+#define DIAMETRE_ROUE_CODEUSE_DROITE 0.05325315
+#define DIAMETRE_ROUE_CODEUSE_GAUCHE 0.053570956
 #define TICKS_PER_ROUND 16384
 #define MAXPWM 4090
 #define RROBOT 0.20
@@ -50,7 +52,7 @@
 #define NERV RUSH
 #define TMOUT 100
 
-#define ACRT 0    //accurate
+#define RECALLE 0    //recalle
 #define STD 1     //standard
 #define RUSH 2    //You know what I mean
 #define DYDM 3    //Don't you dare move
@@ -65,13 +67,13 @@
 
 enum OrderE
 {
-    GOTO_E, SPIN_E, SPINGOTO_E, SPINTO_E, FWD_E, BWD_E, STBY_E, SEND_E, EMSTOP_E, SETX_E,SETY_E
+    GOTO_E, SPIN_E, SPINGOTO_E, SPINTO_E, GO_UNTIL_E, STBY_E, SEND_E, EMSTOP_E, SETX_E,SETY_E
 };
 
-#define NB_MESSAGES 13
+#define NB_MESSAGES 15
 enum MessageE
 {
-    Default,Impossible, Tirette, Pince_Retracted,Pince_Half_Retracted,Pince_Half_Extended,Pince_Extended, Evitemment, Ok, Done, New_Action, Sync, Evitemment_Clear
+    Default,Impossible, Tirette, Pince_Retracted,Pince_Half_Retracted,Pince_Half_Extended,Pince_Extended, Evitemment, Ok, Done, New_Action, Sync, Evitemment_Clear, MontePalet,Calle
 };
 
 enum AnticolE{Front,Back,No};
@@ -90,12 +92,13 @@ enum ErreurE
 //-------------------------DEPLACEMENTS-------------------------
 
 #define RAYON_RECONVERGENCE 10.5          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
-#define RAYON_TERMINE 0.05                //Distance en dessous duquel on considère que le robot est arrivé
-#define DELTA_THETA_TERMINE 0.0000001          //Delta theta en dessous duquel on considère le spin terminé
+#define RAYON_TERMINE 0.002                //Distance en dessous duquel on considère que le robot est arrivé
+#define DELTA_THETA_TERMINE 0.012
+//#define DELTA_THETA_TERMINE 0.017          //Delta theta en dessous duquel on considère le spin terminé
 
 #define RAYON_FAIL 0.10
 #define DELTA_THETA_FAIL 0.5
-#define MAX_W 0.000001
+#define MAX_W 0.012
 #define FAIL_TIME 0.5
 
 #define FREQUENCY 200.0
