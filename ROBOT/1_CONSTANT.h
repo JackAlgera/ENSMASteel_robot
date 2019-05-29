@@ -4,7 +4,7 @@
 
 //-------------------------MODE DE FONCTIONNEMENT-------------------------
 //#define RECORD  //Permet d'activer ou non le feedback
-#define STATE
+//#define STATE
 //#define RC
 //#define FILTRE_SETUP_ANG
 //#define FILTRE_SETUP_LIN
@@ -70,18 +70,18 @@ enum OrderE
     GOTO_E, SPIN_E, SPINGOTO_E, SPINTO_E, GO_UNTIL_E, STBY_E, SEND_E, EMSTOP_E, SETX_E,SETY_E
 };
 
-#define NB_MESSAGES 15
+#define NB_MESSAGES 17
 enum MessageE
 {
-    Default,Impossible, Tirette, Pince_Retracted,Pince_Half_Retracted,Pince_Half_Extended,Pince_Extended, Evitemment, Ok, Done, New_Action, Sync, Evitemment_Clear, MontePalet,Calle
+    Default,Impossible, Tirette, Pince_Retracted,Pince_Half_Retracted,Pince_Half_Extended,Pince_Extended, Evitemment, Ok, Done, New_Action, Sync, Evitemment_Clear, Calle,Violet,Jaune,Start_Chaos
 };
 
 enum AnticolE{Front,Back,No};
 
-#define NB_ACTIONS 16
+#define NB_ACTIONS 14
 enum ActionE
 {
-    Chaos, Distribx6_1, Distribx6_2, Distribx6_3, CoupDeCul, Distribx3_1, Distribx3_2, MonteRampe, PoseRampe, DescendRampe, RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol, CasseCouilles
+    Start, Chaos, Distribx6_1, Distribx6_2, Distribx6_3, CoupDeCul, Distribx3_1, Distribx3_2, RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol, CasseCouilles
 };
 
 enum ErreurE

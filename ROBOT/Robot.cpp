@@ -17,13 +17,17 @@
 
 void Robot::actuate(float dt)
 {
-    if(contacteurDroite.isPressed() && contacteurGauche.isPressed())
+    if(contacteurDroite.isPressedForMoreThan(1.0) && contacteurGauche.isPressedForMoreThan(1.0))
+    {
         comm.lastMessage=MessageE::Calle;
+    }
     codeuseGauche.actuate(dt);
     codeuseDroite.actuate(dt);
     actuateODO(dt);
     ghost.actuate(dt);
     pid.actuate(dt,posE,vF.out(),wF.out());
+    contacteurDroite.actuate();
+    contacteurGauche.actuate();
     if (ordresFifo.ptrFst()->type==GOTO_E && ordresFifo.ptrFst()->goTo.avoidance)
     {
         comm.actuate(posE,(pid.jeVeuxAvancer)?(AnticolE::Front):(AnticolE::Back)  );
@@ -60,36 +64,15 @@ void Robot::set(float x0,float y0, float theta0)
     codeuseDroite = Codeuse(PIN_CODEUSE_DROITE_A,PIN_CODEUSE_DROITE_B,DIAMETRE_ROUE_CODEUSE_DROITE);
     contacteurDroite = Contacteur(PIN_CONTACTEUR_DROITE);
     contacteurGauche = Contacteur(PIN_CONTACTEUR_GAUCHE);
-    VectorE initVect = init_vectorE(x0,y0,theta0);
+    master=new Cerveau(this);
+    VectorE initVect = init_vectorE(posE.vec.x,posE.vec.y,posE.theta);
     ghost = *(new Ghost(initVect));
-    posE.vec.x = x0;
-    posE.vec.y=y0;
-    posE.theta=theta0;
     vF = newFiltre(0.0,100.0,2);
     wF=newFiltre(0.0,100.0,2);
 
-
-    ordresFifo.add(STBY(DYDM,MessageE::Tirette,60000,nullptr,simpleTimeout,1));
-    ordresFifo.add(GO_UNTIL(true,RECALLE,0.2,MessageE::Calle,200,nullptr,simpleTimeout,1));
-    ordresFifo.add(SETX(10,nullptr,simpleTimeout,1));
-    ordresFifo.add(GOTO(RUSH,0.1,0.1,0.0,0.0,true,50,nullptr,simpleTimeout,1,false,true));
-    ordresFifo.add(STBY(DYDM,Impossible,65000,nullptr,simpleTimeout,1));
-
-//    ordresFifo.add(SEND(MessageE::Pince_Half_Extended,1,nullptr,normalTimeout,1));
-//    ordresFifo.add(STBY(RUSH,Impossible,2,nullptr,normalTimeout,1));
-//
-//    //ordresFifo.add(GOTO(STD,0.48,1.0671936758893281,0.97,-0.7621465405869852,true,100,nullptr,simpleTimeout,1,true));
-//    ordresFifo.add(GOTO(RUSH,0.48,1.2,1.4,0,true,100,nullptr,simpleTimeout,1,true));
-//
-//    ordresFifo.add(GOTO(STD,0.2,0.2,1.4,0.0,true,100,nullptr,simpleTimeout,1,true));
-//
-//    ordresFifo.add(STBY(DYDM,Impossible,65000,nullptr,simpleTimeout,1));
-
-
-
-    master=new Cerveau(this);
     pid = PID(this);
     comm=*(new Comm());
+
 }
 
 void waitGoto(Robot* robot)

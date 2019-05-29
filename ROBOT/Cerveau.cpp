@@ -69,136 +69,121 @@ void Cerveau::computeEvitemment(float xObscl,float yObstcl)
 
 }       //TODO QUE FAIRE SI LE MESSAGE D EVITEMMENT PERSISTE
 
-void Cerveau::abandonneCurrentAction()
-{
-#ifdef STATE
-    Serial.println("ABANDON ACTION");
-#endif
-
-    DONE[currentActionIndex] = false;
-
-    switch (currentActionIndex)
-    {
-    case Chaos:
-        break;
-    case Distribx6_1:
-        break;
-    case Distribx6_2:
-        break;
-    case Distribx6_3:
-        break;
-    case CoupDeCul:
-        break;
-    case Distribx3_1:
-        break;
-    case Distribx3_2:
-        break;
-    case MonteRampe:
-        DONE[ActionE::PoseRampe] = true;
-        DONE[ActionE::DescendRampe] = true;
-        break;
-    case PoseRampe:
-        break;
-    case DescendRampe:
-        // On a raté l'actoin DescendRampe
-        // actionList[ActionE::DescendRampe].ordersList[1].goto.posAim = point A'
-        // buffer.clean
-        // DONE[ACtionE::DescendRampe] = false;
-        // LoadAction(DescendRampe)
-        break;
-    case RecupBlueAcc:
-        break;
-    case PoseAcc:
-        break;
-    case RecupGoldAcc:
-        break;
-    case Balance:
-        break;
-    case PoseSol:
-        break;
-    case CasseCouilles:
-        break;
-    default:
-        break;
-    }
-
-    currentActionIndex = nextBestAction();
-    ptrRobot->ordresFifo.clean();
-    addActionOrders();
-}
 
 void Cerveau::loadAction(ActionE actionType)
 {
     switch (actionType)
     {
+    case Start:
+        while (true)
+        {
+            if(ptrRobot->contacteurGauche.isJustPressed())
+            {
+                coteViolet=true;
+                ptrRobot->comm.send(MessageE::Violet);
+                ptrRobot->posE.vec.x=2.7;
+                ptrRobot->posE.vec.y=1.4;
+                ptrRobot->posE.theta=PI;
+                #ifdef STATE
+                Serial.print("Cote Violet");
+                #endif // STATE
+                break;
+            }
+            if(ptrRobot->contacteurDroite.isJustPressed())
+            {
+                coteViolet=false;
+                ptrRobot->comm.send(MessageE::Jaune);
+                ptrRobot->posE.vec.x=0.3;
+                ptrRobot->posE.vec.y=1.4;
+                ptrRobot->posE.theta=0.0;
+                #ifdef STATE
+                Serial.print("Cote Jaune");
+                #endif // STATE
+                break;
+            }
+            delay(1);
+        }
+        actionList[ActionE::Start] = Action(actionType);
+        actionList[ActionE::Start].addSTBY(RUSH,MessageE::Impossible,10,simpleTimeout,1);
+        actionList[ActionE::Start].addGO_UNTIL(true,RECALLE,0.3,MessageE::Calle,100,simpleTimeout,1);
+        //actionList[ActionE::Start].addSETX((coteViolet)?(3.0-HROBOT):(HROBOT),(coteViolet)?(PI):(0.0),10,simpleTimeout,1);
+        actionList[ActionE::Start].addGOTO(STD,0.1,0.10,0.0,0.0,true,30,simpleTimeout,1,false,true);
+
+        actionList[ActionE::Start].addSPIN(STD,-PI/2.0,50,simpleTimeout,1,false);
+        actionList[ActionE::Start].addGO_UNTIL(true,RECALLE,1.0,MessageE::Calle,200,simpleTimeout,1);
+        //actionList[ActionE::Start].addSETY(2.0-HROBOT,-PI/2.0,10,simpleTimeout,1);
+        actionList[ActionE::Start].addGOTO(STD,0.1,0.03,0.0,0.0,true,30,simpleTimeout,1,false,true);
+        ptrRobot->comm.taken(); //On clean les messages
+
+        actionList[ActionE::Start].addSTBY(OFF,MessageE::Tirette,60000,simpleTimeout,1);
+        break;
     case Chaos:
-        actionList[ActionE::Chaos] = Action(actionType, 4);
-        actionList[ActionE::Chaos].addSEND(MessageE::New_Action,10,simpleTimeout,2);
-        actionList[ActionE::Chaos].addGOTO(NERV, 0.4, 2.0, 1, 0, true, TMOUT,wiggle,2);
-        actionList[ActionE::Chaos].addSPIN(STD, 1, 20,simpleTimeout,2);
+        VectorE chaosVecE;
+        chaosVecE=init_vectorE(1.1330698287220027,0.8326745718050066,-0.6805212246672157);
+        if (coteViolet)
+            chaosVecE=mirror(chaosVecE);
+        actionList[ActionE::Chaos] = Action(actionType);
+        actionList[ActionE::Chaos].addSEND(MessageE::Pince_Half_Extended,10,simpleTimeout,1);
+
+        actionList[ActionE::Chaos].addGOTO(RUSH, 0.25,chaosVecE, true,50,simpleTimeout,1,true,false);
+        actionList[ActionE::Chaos].addSEND(MessageE::Pince_Half_Retracted,10,simpleTimeout,1);
+        actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,5,normalTimeout,1);
+
+        actionList[ActionE::Chaos].addGOTO(RUSH, 0.1,-0.2,0.0,0.0,true,30,simpleTimeout,1,true,true);
+        actionList[ActionE::Chaos].addSPIN(RUSH,0.6,50,simpleTimeout,1,true);
+        actionList[ActionE::Chaos].addGOTO(RUSH, 0.1,0.2,0.0,0.0,true,30,simpleTimeout,1,true,true);
+        actionList[ActionE::Chaos].addGOTO(RUSH, 0.1,-0.2,0.0,0.0,true,30,simpleTimeout,1,true,true);
+        actionList[ActionE::Chaos].addSPIN(RUSH,-0.6,50,simpleTimeout,1,true);
+        actionList[ActionE::Chaos].addGOTO(RUSH, 0.1,0.2,0.0,0.0,true,30,simpleTimeout,1,true,true);
+        actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,50000,simpleTimeout,1);
         break;
     case Distribx6_1:
-        actionList[actionType] = Action(actionType, 2);
+        actionList[actionType] = Action(actionType);
+
         actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
         break;
     case Distribx6_2:
-        actionList[actionType] = Action(actionType, 2);
+        actionList[actionType] = Action(actionType);
         actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
         break;
     case Distribx6_3:
-        actionList[actionType] = Action(actionType, 2);
+        actionList[actionType] = Action(actionType);
         actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
         break;
     case CoupDeCul:
-        actionList[actionType] = Action(actionType, 0);
+        actionList[actionType] = Action(actionType);
         actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
         break;
     case Distribx3_1:
-        actionList[actionType] = Action(actionType, 2);
+        actionList[actionType] = Action(actionType);
         actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
         break;
     case Distribx3_2:
-        actionList[actionType] = Action(actionType, 1);
+        actionList[actionType] = Action(actionType);
         actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
-        break;
-    case MonteRampe:
-        actionList[actionType] = Action(actionType, 0);
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
-        break;
-    case PoseRampe:
-        actionList[actionType] = Action(actionType, -3);
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
-        break;
-    case DescendRampe:
-        actionList[actionType] = Action(actionType, 0);
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
-        // Exemple :
-        //actionList[actionType].addGOTO(Point A);
-        //actionList[actionType].addGOTO(Point B);
-        //actionList[actionType].addGOTO(Point C);
         break;
     case RecupBlueAcc:
-        actionList[actionType] = Action(actionType, 1);
+        actionList[actionType] = Action(actionType);
         actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
         break;
     case PoseAcc:
-        actionList[actionType] = Action(actionType, -9);
+        actionList[actionType] = Action(actionType);
         actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
         break;
     case RecupGoldAcc:
-        actionList[actionType] = Action(actionType, 1);
+        actionList[actionType] = Action(actionType);
         actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
         break;
     case Balance:
-        actionList[actionType] = Action(actionType, -2);
+        actionList[actionType] = Action(actionType);
         actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
         break;
     case PoseSol:
-        actionList[actionType] = Action(actionType, 0);
+        actionList[actionType] = Action(actionType);
         actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
         break;
     case CasseCouilles:
-        actionList[actionType] = Action(actionType, 0);
+        actionList[actionType] = Action(actionType);
         actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
         break;
     default:
@@ -208,52 +193,34 @@ void Cerveau::loadAction(ActionE actionType)
 
 ActionE Cerveau::nextBestAction()
 {
-    // On load l'action suivante
-    int i = (int) currentActionIndex;
-    while (i < NB_ACTIONS-1)			// On prend l'action suivante non encore fini en partant de l'action actuelle dans la liste. -1 car il ne faut pas prendre CASSE COUILLES
+    if (currentActionIndex==ActionE::PoseSol)
     {
-        if (!DONE[i])
-            return (ActionE)i;
-        i++;
-    }
-    //On refait un tour si on a rien trouve
-    i = 0;
-    while (i <  NB_ACTIONS-1)
-    {
-        if (!DONE[i])
-            return (ActionE)i;
-        i++;
-    }
-
-    // On regarde si on a pas rate des palets
-    i = 0;
-    bool toutEstRamasse = true;
-    for (int i = 0; i < NB_ACTIONS-1; i++)
-    {
-        if (!actionList[i].gotAllPalets())
+        for (int i=1;i<NB_ACTIONS;i++)
         {
-            DONE[i] = false;
-            toutEstRamasse = false;
+            if (!(DONE[i]))
+            {
+                return(ActionE)i;
+            }
         }
+        return ActionE::PoseSol;
+    }
+    else
+    {
+        return (ActionE)((int)currentActionIndex+1);
     }
 
-    if (toutEstRamasse)  // si on a ramasse tout les palets
-    {
-        return ActionE::CasseCouilles; //On a fini, on va alors accidentelement faire chier l'adversaire
-    }
-    else                 // Sinon on recup les palets manquant
-    {
-        DONE[ActionE::PoseSol] = false; // On refait l'action PoseSol pour poser les palets qu'on vient de recuperer et on choisit une autre action
-        i = 0;
-        while (i < NB_ACTIONS - 1)
-        {
-            if (!DONE[i])
-                return (ActionE)i;
-            i++;
-        }
-    }
+}
 
-    return ActionE::CasseCouilles; // Pas besoin mais au cas o� en cas de bug
+void Cerveau::abandonneCurrentAction()
+{
+#ifdef STATE
+    Serial.println("ABANDON ACTION");
+#endif
+
+    DONE[currentActionIndex] = false;
+    currentActionIndex = nextBestAction();
+    ptrRobot->ordresFifo.clean();
+    addActionOrders();
 }
 
 void Cerveau::actuate()
@@ -263,6 +230,7 @@ void Cerveau::actuate()
         DONE[currentActionIndex] = true;
 
         currentActionIndex = nextBestAction(); // Choisir une nouvelle action
+        loadAction(currentActionIndex);
         addActionOrders();	// Ajoute ses ordres au buffer
 
     }
@@ -304,10 +272,10 @@ Cerveau::Cerveau(Robot * ptrRobot)
     for (int i = 0; i < NB_ACTIONS; i++)
     {
         DONE[i] = false;
-        loadAction((ActionE)i);
     }
 
-    currentActionIndex = ActionE::Chaos;		// On commence avec le Chaos et on ajoute les ordres au buffer
+    currentActionIndex = ActionE::Start;		// On commence avec le Chaos et on ajoute les ordres au buffer
+    loadAction(ActionE::Start);
     addActionOrders();
 }
 

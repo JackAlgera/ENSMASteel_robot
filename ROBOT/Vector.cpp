@@ -137,3 +137,12 @@ Vector intersection(float x1,float y1,float theta1,float x2,float y2,float theta
     float t1=-(applique(inverse(A),minus(M1,M2)).y);
     return add(M1,mult(t1,directeur(theta1)));
 }
+
+VectorE mirror(VectorE v)
+{
+    VectorE out;
+    out.vec.y=v.vec.y;
+    out.vec.x=3.0-v.vec.x;
+    out.theta=normalize(PI-v.theta);
+    return out;
+}

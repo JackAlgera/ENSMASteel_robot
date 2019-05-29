@@ -53,6 +53,16 @@ struct STBY_S
     MessageE unlockMessage;
 };
 
+struct SETX_S
+{
+    float xValue,theta;
+};
+
+struct SETY_S
+{
+    float yValue,theta;
+};
+
 struct SEND_S
 {
     MessageE message;
@@ -78,6 +88,8 @@ public:
         GO_UNTIL_S go_until;
         STBY_S stby;
         SEND_S send;
+        SETX_S setx;
+        SETY_S sety;
     };
 
     Order();
@@ -135,13 +147,13 @@ public:
 class SETX : public Order
 {
 public:
-    SETX(uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
+    SETX(float xValue,float theta,uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
 class SETY : public Order
 {
 public:
-    SETY(uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
+    SETY(float yValue,float theta,uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail);
 };
 
 #endif

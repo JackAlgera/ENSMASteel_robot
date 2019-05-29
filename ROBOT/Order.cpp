@@ -142,7 +142,7 @@ EMSTOP::EMSTOP(uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMes
     }
 }
 
-SETX::SETX(uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
+SETX::SETX(float xValue,float theta,uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
     {
         this->type = OrderE::SETX_E;
@@ -154,10 +154,12 @@ SETX::SETX(uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure,
         this->nbMaxFail=nbMaxFail;
 
         this->nbFail=0;
+        setx.xValue=xValue;
+        setx.theta=theta;
     }
 }
 
-SETY::SETY(uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
+SETY::SETY(float yValue,float theta,uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
     {
         this->type = OrderE::SETY_E;
@@ -169,5 +171,7 @@ SETY::SETY(uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure,
         this->nbMaxFail=nbMaxFail;
 
         this->nbFail=0;
+        this->sety.yValue=yValue;
+        this->sety.theta=theta;
     }
 }

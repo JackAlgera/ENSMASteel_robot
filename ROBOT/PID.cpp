@@ -97,8 +97,9 @@ void PID::reload()
         }
         else
         {
-            posAim=add(ptrRobot->posE.vec,g.posAim);
-            thetaAim=ptrRobot->posE.theta+g.thetaAim;
+            posAim=add(ptrRobot->posE.vec,  mult(g.posAim.x,directeur(ptrRobot->posE.theta))   );
+            posAim=add(posAim, mult(g.posAim.y,rotate(directeur(ptrRobot->posE.theta)))  );
+            thetaAim=normalize(ptrRobot->posE.theta+g.thetaAim);
         }
         ptrRobot->ghost.aim=posAim;
 
@@ -226,6 +227,7 @@ void PID::reload()
     break;
     case OrderE::GO_UNTIL_E:
     {
+        ptrRobot->comm.taken(); //On clean les messages
         Serial.println("Je prepare un GO_UNTIL");
         GO_UNTIL_S gou=ptrRobot->ordresFifo.ptrFst()->go_until;
         PIDnervLIN=gou.nerv;
@@ -330,62 +332,17 @@ void PID::reload()
     }
     break;
     case OrderE::SETX_E:
-    {
-        if (ptrRobot->posE.vec.x<HROBOT+0.2 && ptrRobot->posE.vec.x>HROBOT-0.2)//On vient de toucher le bord gauche
-        {
-            #ifdef STATE
-            Serial.print("recallage x=0");
-            #endif // STATE
-            ptrRobot->posE.vec.x=HROBOT;
-            ptrRobot->posE.theta=0.0;
-            ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
-        }
-        else if (ptrRobot->posE.vec.x<3.0-HROBOT+0.2 && ptrRobot->posE.vec.x>3.0-HROBOT-0.2)    //ON vient e toucher le bord droite
-        {
-            #ifdef STATE
-            Serial.print("recallage x=3.0");
-            #endif // STATE
-            ptrRobot->posE.vec.x=3.0-HROBOT;
-            ptrRobot->posE.theta=PI;
-            ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
-        }
-        else
-        {
-            #ifdef STATE
-            Serial.print("mur inconnu");
-            #endif // STATE
-        }
-    loadNext();
-    }
-    break;
+    ptrRobot->posE.vec.x=ptrRobot->ordresFifo.ptrFst()->setx.xValue;
+        ptrRobot->posE.theta=ptrRobot->ordresFifo.ptrFst()->setx.theta;
+        ptrRobot->ghost.recalle(ptrRobot->posE,0);
+        loadNext();
+        break;
     case OrderE::SETY_E:
-    {
-        if (ptrRobot->posE.vec.y<HROBOT+0.2 && ptrRobot->posE.vec.y>HROBOT-0.2)//On vient de toucher le bord inferieur
-        {
-            ptrRobot->posE.vec.y=HROBOT;
-            ptrRobot->posE.theta=PI/2.0;
-            ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
-        }
-        else if (ptrRobot->posE.vec.y<0.457+HROBOT+0.2 && ptrRobot->posE.vec.y>0.457+HROBOT-0.2)//ON vient de toucher le distribx6
-        {
-            ptrRobot->posE.vec.y=0.457+HROBOT;
-            ptrRobot->posE.theta=PI/2.0;
-            ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
-        }
-        else if (ptrRobot->posE.vec.y<1.965-HROBOT+0.2 && ptrRobot->posE.vec.y>1.965-HROBOT-0.2)//ON vient de toucher le couvre accelero
-        {
-            ptrRobot->posE.vec.y=1.965-HROBOT;
-            ptrRobot->posE.theta=-1*PI/2.0;
-            ptrRobot->ghost.recalle(ptrRobot->posE,0.0);
-        }
-        else
-        {
-            #ifdef STATE
-            Serial.print("mur inconnu");
-            #endif // STATE
-        }
-    }
-    break;
+        ptrRobot->posE.vec.y=ptrRobot->ordresFifo.ptrFst()->sety.yValue;
+        ptrRobot->posE.theta=ptrRobot->ordresFifo.ptrFst()->sety.theta;
+        ptrRobot->ghost.recalle(ptrRobot->posE,0);
+        loadNext();
+        break;
     }
     ptrRobot->ghost.microsStart=micros();
     ptrRobot->ghost.t=0;
@@ -482,6 +439,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
     if(timeout)
     {
         failureDetected(ErreurE::TIMEOUT);
+        Serial.print("Je sors par un timeout");Serial.println(millis());
     }
     if(nearEnough)
     {
@@ -504,7 +462,10 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
     {
         //On vide la boite au lettre si on est sorti du stby grace a un message
         if (messageITSTBY)
+        {
+            Serial.print("JE sors grace a un message");Serial.println(millis());
             ptrRobot->comm.taken();
+        }
 
         loadNext();
     }
