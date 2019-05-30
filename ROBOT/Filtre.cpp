@@ -64,4 +64,7 @@ Filtre newFiltre(float initValue,float frequency,uint8_t order)
 void Filtre::reset(float value)
 {
     lastValue=value;
+    lastLastValue=value;
+    raw=value;
+    lastRaw=value;
 }

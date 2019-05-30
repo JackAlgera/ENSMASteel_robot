@@ -228,7 +228,9 @@ void PID::reload()
     case OrderE::GO_UNTIL_E:
     {
         ptrRobot->comm.taken(); //On clean les messages
+        #ifdef STATE
         Serial.println("Je prepare un GO_UNTIL");
+        #endif
         GO_UNTIL_S gou=ptrRobot->ordresFifo.ptrFst()->go_until;
         PIDnervLIN=gou.nerv;
         PIDnervANG=gou.nerv;
@@ -332,14 +334,24 @@ void PID::reload()
     }
     break;
     case OrderE::SETX_E:
-    ptrRobot->posE.vec.x=ptrRobot->ordresFifo.ptrFst()->setx.xValue;
+        ptrRobot->posE.vec.x=ptrRobot->ordresFifo.ptrFst()->setx.xValue;
         ptrRobot->posE.theta=ptrRobot->ordresFifo.ptrFst()->setx.theta;
+        ptrRobot->vF.reset(0.0);
+        ptrRobot->wF.reset(0.0);
+        ptrRobot->pid.IA=0;
+        ptrRobot->pid.IL=0;
+        ptrRobot->pid.lastPosERobot=ptrRobot->posE;
         ptrRobot->ghost.recalle(ptrRobot->posE,0);
         loadNext();
         break;
     case OrderE::SETY_E:
         ptrRobot->posE.vec.y=ptrRobot->ordresFifo.ptrFst()->sety.yValue;
         ptrRobot->posE.theta=ptrRobot->ordresFifo.ptrFst()->sety.theta;
+        ptrRobot->vF.reset(0.0);
+        ptrRobot->wF.reset(0.0);
+        ptrRobot->pid.IA=0;
+        ptrRobot->pid.IL=0;
+        ptrRobot->pid.lastPosERobot=ptrRobot->posE;
         ptrRobot->ghost.recalle(ptrRobot->posE,0);
         loadNext();
         break;
@@ -428,18 +440,22 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
     bool linOK        = errorL*errorL<=RAYON_TERMINE or STATIQUE;
     bool angOK        = (abs(normalize(ptrRobot->ghost.posE.theta-posERobot.theta))<=DELTA_THETA_TERMINE) or STATIQUE;
     bool vitesseOK    = (abs(vRobot)<0.005 and abs(wRobot)<MAX_W) or STATIQUE or (ptrRobot->ordresFifo.ptrFst()->type == OrderE::GOTO_E and ptrRobot->ordresFifo.ptrFst()->goTo.arret==false);
-    bool ghostArrive  = ptrRobot->ghost.t_e>0.999;
+    bool ghostArrive  = ptrRobot->ghost.t_e>0.95;
     bool ghostFree    = not ptrRobot->ghost.locked;
-    //bool orderNext    = ptrRobot->ordresFifo.inBuffer>=2;
 
     bool timeout      = (micros()-ptrRobot->ghost.microsStart)/1000000.0  >   ptrRobot->ordresFifo.ptrFst()->timeoutDs/10.0;
     bool messageITSTBY  = (ptrRobot->ordresFifo.ptrFst()->type == OrderE::STBY_E and ptrRobot->comm.lastMessage==ptrRobot->ordresFifo.ptrFst()->stby.unlockMessage) || (ptrRobot->ordresFifo.ptrFst()->type == OrderE::GO_UNTIL_E and ptrRobot->comm.lastMessage==ptrRobot->ordresFifo.ptrFst()->go_until.unlockMessage);
     bool completeEMStop = ptrRobot->ordresFifo.ptrFst()->type == OrderE::EMSTOP_E and abs(vRobot)<0.005 and abs(wRobot)<0.005;
 
+
+    Serial.print("lin Ok ");Serial.print(linOK);
+    Serial.print("\tang Ok ");Serial.print(angOK);
+    Serial.print("\tvitesse Ok ");Serial.print(vitesseOK);
+    Serial.print("\tGhost arrive ");Serial.print(ghostArrive);
+    Serial.print("\tGhost free");Serial.println(ghostFree);
     if(timeout)
     {
         failureDetected(ErreurE::TIMEOUT);
-        Serial.print("Je sors par un timeout");Serial.println(millis());
     }
     if(nearEnough)
     {
@@ -455,15 +471,13 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
 
     //On regarde si l'action est terminée
     if  (
-        (linOK and angOK and vitesseOK and ghostArrive and ghostFree)// and orderNext)   //cas standard
-        or (messageITSTBY) //and orderNext)                                              //cas message
-        or (completeEMStop) //and orderNext)                                             //cas EMSTOP
-    )
+        (linOK and angOK and vitesseOK and ghostArrive and ghostFree)   //cas standard
+        or (messageITSTBY)                                              //cas message
+        or (completeEMStop))                                             //cas EMSTOP
     {
         //On vide la boite au lettre si on est sorti du stby grace a un message
         if (messageITSTBY)
         {
-            Serial.print("JE sors grace a un message");Serial.println(millis());
             ptrRobot->comm.taken();
         }
 

@@ -43,7 +43,7 @@
 #define TICKS_PER_ROUND 16384
 #define MAXPWM 4090
 #define RROBOT 0.20
-#define HROBOT 0.15
+#define HROBOT 0.1365
 
 //-------------------------VOCABULAIRE-------------------------
 #define GAUCHE 0

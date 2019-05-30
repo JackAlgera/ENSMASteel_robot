@@ -72,6 +72,7 @@ void Cerveau::computeEvitemment(float xObscl,float yObstcl)
 
 void Cerveau::loadAction(ActionE actionType)
 {
+    VectorE startPoint,chaosPoint;
     switch (actionType)
     {
     case Start:
@@ -103,29 +104,43 @@ void Cerveau::loadAction(ActionE actionType)
             }
             delay(1);
         }
+
         actionList[ActionE::Start] = Action(actionType);
-        actionList[ActionE::Start].addSTBY(RUSH,MessageE::Impossible,10,simpleTimeout,1);
+        actionList[ActionE::Start].addSTBY(DYDM,Impossible,1,normalTimeout,1);
+        actionList[ActionE::Start].addSEND(MessageE::Pince_Retracted,10,simpleTimeout,1);
+        //Calage X
         actionList[ActionE::Start].addGO_UNTIL(true,RECALLE,0.3,MessageE::Calle,100,simpleTimeout,1);
-        //actionList[ActionE::Start].addSETX((coteViolet)?(3.0-HROBOT):(HROBOT),(coteViolet)?(PI):(0.0),10,simpleTimeout,1);
+        actionList[ActionE::Start].addSETX((coteViolet)?(3.0-HROBOT):(HROBOT),(coteViolet)?(PI):(0.0),10,simpleTimeout,1);
+        actionList[ActionE::Start].addSTBY(OFF,Impossible,3,normalTimeout,1);
         actionList[ActionE::Start].addGOTO(STD,0.1,0.10,0.0,0.0,true,30,simpleTimeout,1,false,true);
 
+        //Calage Y
         actionList[ActionE::Start].addSPIN(STD,-PI/2.0,50,simpleTimeout,1,false);
         actionList[ActionE::Start].addGO_UNTIL(true,RECALLE,1.0,MessageE::Calle,200,simpleTimeout,1);
-        //actionList[ActionE::Start].addSETY(2.0-HROBOT,-PI/2.0,10,simpleTimeout,1);
-        actionList[ActionE::Start].addGOTO(STD,0.1,0.03,0.0,0.0,true,30,simpleTimeout,1,false,true);
-        ptrRobot->comm.taken(); //On clean les messages
+        actionList[ActionE::Start].addSETY(2.0-HROBOT,-PI/2.0,10,simpleTimeout,1);
+        actionList[ActionE::Start].addSTBY(OFF,Impossible,3,normalTimeout,1);
+        actionList[ActionE::Start].addGOTO(STD,0.1,0.1,0.0,0.0,true,30,simpleTimeout,1,false,true);
 
-        actionList[ActionE::Start].addSTBY(OFF,MessageE::Tirette,60000,simpleTimeout,1);
+        //Placement
+        startPoint=init_vectorE(HROBOT+0.06,1.46,-0.1);
+        if (coteViolet)
+            startPoint=mirror(startPoint);
+
+        actionList[ActionE::Start].addSPINGOTO(STD,startPoint.vec.x,startPoint.vec.y,100,simpleTimeout,1,false);
+        actionList[ActionE::Start].addSPIN(STD,startPoint.theta,100,simpleTimeout,1,false);
+        actionList[ActionE::Start].addSEND(MessageE::Pince_Extended,10,simpleTimeout,1);
+        actionList[ActionE::Start].addSTBY(DYDM,Impossible,5,simpleTimeout,1);
+        actionList[ActionE::Chaos].addSEND(MessageE::Start_Chaos,10,simpleTimeout,1);
+        actionList[ActionE::Start].addSTBY(DYDM,MessageE::Tirette,60000,simpleTimeout,1);
         break;
     case Chaos:
-        VectorE chaosVecE;
-        chaosVecE=init_vectorE(1.1330698287220027,0.8326745718050066,-0.6805212246672157);
+        chaosPoint=init_vectorE(1.1330698287220027,0.8326745718050066,-0.6805212246672157);
         if (coteViolet)
-            chaosVecE=mirror(chaosVecE);
+            chaosPoint=mirror(chaosPoint);
         actionList[ActionE::Chaos] = Action(actionType);
         actionList[ActionE::Chaos].addSEND(MessageE::Pince_Half_Extended,10,simpleTimeout,1);
 
-        actionList[ActionE::Chaos].addGOTO(RUSH, 0.25,chaosVecE, true,50,simpleTimeout,1,true,false);
+        actionList[ActionE::Chaos].addGOTO(RUSH, 0.25,chaosPoint, true,50,simpleTimeout,1,true,false);
         actionList[ActionE::Chaos].addSEND(MessageE::Pince_Half_Retracted,10,simpleTimeout,1);
         actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,5,normalTimeout,1);
 
