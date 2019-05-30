@@ -12,9 +12,9 @@
 //float nervTPP[3]= { 0.5, 5.0, 15.0  };
 //float nervTP[3]=  { 0.5, 1.5, 999.9  };
 
-float nervA[3]=   { 0.05, 0.5, 1.5   };
+float nervA[3]=   { 0.05, 0.3, 1.5   };
 float nervV[3]=   { 0.05, 0.5, 1.2   };
-float nervTPP[3]= { 0.5, 10, 20.0  };
+float nervTPP[3]= { 0.5, 6, 20.0  };
 float nervTP[3]=  { 0.5, 1.5, 999.9  };
 
 uint16_t K[5][2][3]=

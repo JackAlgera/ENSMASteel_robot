@@ -72,7 +72,7 @@ void Cerveau::computeEvitemment(float xObscl,float yObstcl)
 
 void Cerveau::loadAction(ActionE actionType)
 {
-    VectorE startPoint,chaosPoint1,chaosPoint2;
+    VectorE startPoint1,startPoint2,chaosPoint1,chaosPoint2,releasePoint;
     switch (actionType)
     {
     case Start:
@@ -122,20 +122,25 @@ void Cerveau::loadAction(ActionE actionType)
         actionList[ActionE::Start].addGOTO(STD,0.1,0.1,0.0,0.0,true,30,simpleTimeout,1,false,true);
 
         //Placement
-        startPoint=init_vectorE(0.166,1.47,-0.23);
+        startPoint1=init_vectorE(0.37,1.47,-0.23);
+        startPoint2=init_vectorE(0.17,1.47,-0.23);
         if (coteViolet)
-            startPoint=mirror(startPoint);
-
-        actionList[ActionE::Start].addSPINGOTO(STD,startPoint.vec.x,startPoint.vec.y,100,simpleTimeout,1,false);
-        actionList[ActionE::Start].addSPIN(STD,startPoint.theta,100,simpleTimeout,1,false);
+        {
+            startPoint1=mirror(startPoint1);
+            startPoint2=mirror(startPoint2);
+        }
+        actionList[ActionE::Start].addSPINGOTO(STD,startPoint1.vec.x,startPoint1.vec.y,100,simpleTimeout,1,false);
+        actionList[ActionE::Start].addSPIN(STD,startPoint1.theta,100,simpleTimeout,1,false);
+        actionList[ActionE::Start].addGOTO(STD,0.1,startPoint2,true,50,simpleTimeout,1,false,false);
         actionList[ActionE::Start].addSEND(MessageE::Pince_Extended,10,simpleTimeout,1);
         actionList[ActionE::Start].addSTBY(DYDM,Impossible,5,simpleTimeout,1);
         actionList[ActionE::Start].addSEND(MessageE::Start_Chaos,10,simpleTimeout,1);
         actionList[ActionE::Start].addSTBY(DYDM,MessageE::Tirette,60000,simpleTimeout,1);
         break;
     case Chaos:
-        chaosPoint1=init_vectorE(0.769433465085639,1.2068511198945981,-0.8170331756255607);
-        chaosPoint2=init_vectorE(1.2621870882740447,0.6561264822134387,-0.7853981633974466);
+        chaosPoint1=init_vectorE(0.8010540184453228,1.1963109354413701,-0.8998384686675115);
+        chaosPoint2=init_vectorE(1.1251646903820818,0.7878787878787878,-0.7794810726914212);
+        releasePoint=init_vectorE(0.3346508563899868,1.391304347826087,3.141592653589793);
         if (coteViolet)
         {
             chaosPoint1=mirror(chaosPoint1);
@@ -145,17 +150,19 @@ void Cerveau::loadAction(ActionE actionType)
         actionList[ActionE::Chaos].addSEND(MessageE::Pince_Half_Extended,10,simpleTimeout,1);
         actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,5,normalTimeout,1);
 
-        actionList[ActionE::Chaos].addGOTO(STD, 0.4,chaosPoint1, true,50,simpleTimeout,1,true,false);
-        actionList[ActionE::Chaos].addGOTO(STD, 0.1,chaosPoint2, true,50,simpleTimeout,1,true,false);
+        actionList[ActionE::Chaos].addGOTO(RUSH, 0.4,chaosPoint1, true,50,simpleTimeout,1,true,false);
+        actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,30,normalTimeout,1);
+        actionList[ActionE::Chaos].addSEND(MessageE::Idle,10,simpleTimeout,1);
+        actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,2,normalTimeout,1);
+        actionList[ActionE::Chaos].addGOTO(RUSH, 0.1,chaosPoint2, true,20,simpleTimeout,1,true,false);
         actionList[ActionE::Chaos].addSEND(MessageE::Pince_Half_Retracted,10,simpleTimeout,1);
         actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,5,normalTimeout,1);
 
-        actionList[ActionE::Chaos].addGOTO(STD, 0.1,-0.2,0.0,0.0,true,30,simpleTimeout,1,true,true);
-        actionList[ActionE::Chaos].addSPIN(STD,0.2,50,simpleTimeout,1,true);
-        actionList[ActionE::Chaos].addGOTO(STD, 0.1,0.2,0.0,0.0,true,30,simpleTimeout,1,true,true);
-        actionList[ActionE::Chaos].addGOTO(STD, 0.1,-0.2,0.0,0.0,true,30,simpleTimeout,1,true,true);
-        actionList[ActionE::Chaos].addSPIN(STD,-0.2,50,simpleTimeout,1,true);
-        actionList[ActionE::Chaos].addGOTO(STD, 0.1,0.2,0.0,0.0,true,30,simpleTimeout,1,true,true);
+        actionList[ActionE::Chaos].addSPINGOTO(STD,releasePoint.vec.x,releasePoint.vec.y,100,simpleTimeout,1,false);
+        actionList[ActionE::Chaos].addSEND(MessageE::Pince_Extended,10,simpleTimeout,1);
+        actionList[ActionE::Chaos].addGOTO(STD,0.1,-0.4,0.0,0.0,true,50,simpleTimeout,1,true,true);
+
+
         actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,50000,simpleTimeout,1);
         break;
     case Distribx6_1:
