@@ -3,8 +3,8 @@
 
 
 //-------------------------MODE DE FONCTIONNEMENT-------------------------
-//#define RECORD  //Permet d'activer ou non le feedback
-#define STATE
+#define RECORD  //Permet d'activer ou non le feedback
+//#define STATE
 //#define RC
 //#define FILTRE_SETUP_ANG
 //#define FILTRE_SETUP_LIN

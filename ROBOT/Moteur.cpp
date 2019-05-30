@@ -5,7 +5,8 @@ void Motor::actuate()
 {
 //    bypass=true;
 //    masterOrder=MAXPWM/2.0;
-    
+//    Serial.print(order);
+
     if (bypass)
     {
         order=masterOrder;
