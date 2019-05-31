@@ -1,5 +1,5 @@
 #include "Action.h"
-
+#include "ContreMesure.h"
 
 Action::Action(ActionE type)
 {
@@ -101,6 +101,7 @@ void Action::nextStep()
 
 void Action::addOrdersToBuffer(Fifo * ordresFifo)
 {
+    ordresFifo->add(STBY(DYDM,Impossible,1,nullptr,normalTimeout,1));
     for(int i=0;i<nbrOrders;i++)					// On ajoute l'ensemble des ordres au buffer
     {
         ordresFifo->add(ordersList[i]);

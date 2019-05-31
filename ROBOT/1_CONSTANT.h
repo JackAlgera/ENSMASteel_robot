@@ -16,6 +16,8 @@
 #define AVOIDANCE true
 #define STATIQUE false            //Permet de faire des essais sans robot
 
+//1m614
+//1m81
 
 //-------------------------PINS-------------------------
 #define PIN_CODEUSE_GAUCHE_A 29
@@ -70,10 +72,11 @@ enum OrderE
     GOTO_E, SPIN_E, SPINGOTO_E, SPINTO_E, GO_UNTIL_E, STBY_E, SEND_E, EMSTOP_E, SETX_E,SETY_E
 };
 
-#define NB_MESSAGES 18
+#define NB_MESSAGES 22
 enum MessageE
 {
-    Default,Impossible, Tirette, Pince_Retracted,Pince_Half_Retracted,Pince_Half_Extended,Pince_Extended, Evitemment, Ok, Done, New_Action, Sync, Evitemment_Clear, Calle,Violet,Jaune,Start_Chaos,Idle
+   Default,Impossible, Tirette, Pince_Retracted,Pince_Half_Retracted,Pince_Half_Extended,Pince_Extended, Evitemment, Ok, Done,
+    New_Action, Sync, Evitemment_Clear,Calle,Violet,Jaune,Start_Chaos,Start_Goldonium,Depose_Goldonium,PoussePaletBleuAccel,DeposePaletsSol,IdleM,Em_stop
 };
 
 enum AnticolE{Front,Back,No};
@@ -81,7 +84,7 @@ enum AnticolE{Front,Back,No};
 #define NB_ACTIONS 14
 enum ActionE
 {
-    Start, Chaos, Distribx6_1, Distribx6_2, Distribx6_3, CoupDeCul, Distribx3_1, Distribx3_2, RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol, CasseCouilles
+    Start, Chaos, Distribx6_1, Distribx6_2, Distribx6_3, Distribx3_1, Distribx3_2, RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol, CasseCouilles
 };
 
 enum ErreurE

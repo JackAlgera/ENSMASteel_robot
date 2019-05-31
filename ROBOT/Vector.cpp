@@ -9,12 +9,14 @@ Vector init_vector(float x,float y)
     return out;
 }
 
-VectorE init_vectorE(float x,float y,float theta)
+VectorE init_vectorE(float x,float y,float theta,bool mirrored)
 {
     VectorE out;
     out.vec.x=x;
     out.vec.y=y;
     out.theta=theta;
+    if (mirrored)
+        out=mirror(out);
     return out;
 }
 
@@ -94,6 +96,14 @@ Vector rotate(Vector v)
     out.y=v.x;
     return out;
 }
+
+VectorE decalleBas(VectorE v,float value)
+{
+    VectorE out;
+    out=init_vectorE(v.vec.x,v.vec.y-value,v.theta,false);
+    return out;
+}
+
 
 Matrix init_matrix(float a,float b,float c,float d)
 {

@@ -61,6 +61,7 @@ void PID::reload()
     float vRobot=lastVRobot;
     //On libere dans le cas d'un timeout
     ptrRobot->ghost.locked=false;
+    ptrRobot->ghost.reversed=false;
     //On suppose dans un premier temps qu'on est nearEnough
     timeLastNearEnough=millis()/1000.0;
 
@@ -183,7 +184,6 @@ void PID::reload()
         ptrRobot->ghost.X_P.set(ptrRobot->ghost.posE.vec.x,0.0,0.0,0.0,0.0,0.0,0.0);
         ptrRobot->ghost.Y_P.set(ptrRobot->ghost.posE.vec.y,0.0,0.0,0.0,0.0,0.0,0.0);
         ptrRobot->ghost.spinning=true;
-        ptrRobot->ghost.reversed=false;
         float thetaAimPropre=ptrRobot->ghost.posE.theta+normalize(thetaAim - ptrRobot->ghost.posE.theta);
         ptrRobot->ghost.theta_S.set(ptrRobot->ghost.posE.theta,thetaAimPropre,0.0,nervTP[s.nerv],0.0,nervTPP[s.nerv],-nervTPP[s.nerv]);
         ptrRobot->ghost.t_e=0;
@@ -221,7 +221,7 @@ void PID::reload()
         ptrFonction contreMesure=ptrRobot->ordresFifo.ptrFst()->contreMesure;
         float timeout=ptrRobot->ordresFifo.ptrFst()->timeoutDs;
         uint8_t nbMaxFail=ptrRobot->ordresFifo.ptrFst()->nbMaxFail;
-        ptrRobot->ordresFifo.replaceHead(SPIN(nerv,angle(delta),timeout,papa,contreMesure,nbMaxFail));
+        ptrRobot->ordresFifo.replaceHead(SPIN(nerv,normalize(angle(delta)),timeout,papa,contreMesure,nbMaxFail,false));
         reload();
     }
     break;
@@ -308,7 +308,7 @@ void PID::reload()
         ptrRobot->ghost.X_P.set(ptrRobot->ghost.posE.vec.x,0.0,0.0,0.0,0.0,0.0,0.0);
         ptrRobot->ghost.Y_P.set(ptrRobot->ghost.posE.vec.y,0.0,0.0,0.0,0.0,0.0,0.0);
         ptrRobot->ghost.spinning=true;
-        ptrRobot->ghost.reversed=false,ptrRobot->ghost.locked=true;
+        ptrRobot->ghost.locked=true;
         ptrRobot->ghost.theta_S.set(ptrRobot->ghost.posE.theta,ptrRobot->ghost.posE.theta,0.0,1.0,0.0,1.0,1.0);
         ptrRobot->ghost.t_e=0;
     }

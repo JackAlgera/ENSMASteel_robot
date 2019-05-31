@@ -24,10 +24,11 @@ struct VectorE                      //E pour étendu, contient un angle
 };
 
 
+VectorE decalleBas(VectorE v,float value);
 VectorE mirror(VectorE v);
 Vector const vecNull= {0.0,0.0};    //Vecteur nul
 Vector init_vector(float x,float y);     //Nouveau vecteur
-VectorE init_vectorE(float x,float y,float theta);
+VectorE init_vectorE(float x,float y,float theta,bool mirrored);
 Matrix init_matrix(float a,float b,float c,float d);     //Nouveau vecteur
 float determinant(Matrix M);
 Matrix inverse(Matrix M);

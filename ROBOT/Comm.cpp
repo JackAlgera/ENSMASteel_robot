@@ -77,6 +77,8 @@ void Comm::actuate(VectorE posERobot,AnticolE anticol)
                     lastMessage=MessageE::Default;
                     Serial.print("On a recu de le merde"); //On a recu de la merde
                 }
+                if(lastMessage==MessageE::Tirette)
+                    tStartMatch=millis()/1000.0;
 
 
         #ifdef STATE
@@ -92,6 +94,8 @@ void Comm::actuate(VectorE posERobot,AnticolE anticol)
       send((uint8_t)((posERobot.theta+PI)*255/(2*PI)));
       send((uint8_t)(anticol));
     }
+    if (millis()/1000.0-(tStartMatch+100)>0.0)
+        lastMessage=MessageE::Em_stop;
 
 }
 

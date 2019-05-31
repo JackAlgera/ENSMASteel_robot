@@ -65,7 +65,7 @@ void Robot::set(float x0,float y0, float theta0)
     contacteurDroite = Contacteur(PIN_CONTACTEUR_DROITE);
     contacteurGauche = Contacteur(PIN_CONTACTEUR_GAUCHE);
     master=new Cerveau(this);
-    VectorE initVect = init_vectorE(posE.vec.x,posE.vec.y,posE.theta);
+    VectorE initVect = init_vectorE(posE.vec.x,posE.vec.y,posE.theta,false);
     ghost = *(new Ghost(initVect));
     vF = newFiltre(0.0,100.0,2);
     wF=newFiltre(0.0,100.0,2);

@@ -72,7 +72,50 @@ void Cerveau::computeEvitemment(float xObscl,float yObstcl)
 
 void Cerveau::loadAction(ActionE actionType)
 {
-    VectorE startPoint1,startPoint2,chaosPoint1,chaosPoint2,releasePoint;
+    VectorE startPoint1,startPoint2,
+            chaosPoint1,chaosPoint2,
+            greenPoint,releasePoint,
+            D6_1Point,D6_1PointPrime,
+            D6_2Point,D6_2PointPrime,
+            D6_3Point,D6_3PointPrime,
+            clearPoint,
+            D3_1Point,D3_1PointPrime,
+            D3_2Point,D3_2PointPrime;
+
+
+
+
+
+    startPoint1=init_vectorE(0.37,1.47,-0.28,coteViolet);
+    startPoint2=init_vectorE(0.17,1.47,-0.28,coteViolet);
+
+    chaosPoint1=init_vectorE(0.8010540184453228,1.1963109354413701,-0.8998384686675115,coteViolet);
+    chaosPoint2=init_vectorE(1.1251646903820818,0.7878787878787878,-0.7794810726914212,coteViolet);
+
+    greenPoint=init_vectorE(0.79,0.938,PI,coteViolet);
+    releasePoint=init_vectorE(0.349,1.4,1.7,coteViolet);
+
+    D6_1Point=init_vectorE(0.944,0.82,-PI/2.0,coteViolet);
+    D6_1PointPrime=decalleBas(D6_1Point,0.08);
+
+    D6_2Point=init_vectorE(0.737,0.82,-PI/2.0,coteViolet);
+    D6_2PointPrime=decalleBas(D6_2Point,0.08);
+
+    D6_3Point=init_vectorE(0.545,0.82,-PI/2.0,coteViolet);
+    D6_3PointPrime=decalleBas(D6_3Point,0.08);
+
+    clearPoint=init_vectorE(0.223,0.75,-PI/2.0,coteViolet);
+
+    D3_1Point=init_vectorE(0.195,0.3,-PI/2.0,coteViolet);
+    D3_1PointPrime=decalleBas(D3_1Point,0.08);
+
+    D3_2Point=init_vectorE(0.299,0.3,-PI/2.0,coteViolet);
+    D3_2PointPrime=decalleBas(D3_2Point,0.08);
+
+
+
+
+
     switch (actionType)
     {
     case Start:
@@ -104,83 +147,104 @@ void Cerveau::loadAction(ActionE actionType)
             }
             delay(1);
         }
+        startPoint1=init_vectorE(0.37,1.47,-0.28,coteViolet);
+        startPoint2=init_vectorE(0.17,1.47,-0.28,coteViolet);
 
-        actionList[ActionE::Start] = Action(actionType);
-        actionList[ActionE::Start].addSTBY(DYDM,Impossible,1,normalTimeout,1);
-        actionList[ActionE::Start].addSEND(MessageE::Pince_Retracted,10,simpleTimeout,1);
+        actionList[actionType] = Action(actionType);
+        actionList[actionType].addSTBY(DYDM,Impossible,1,normalTimeout,1);
+        actionList[actionType].addSEND(MessageE::Pince_Retracted,10,simpleTimeout,1);
         //Calage X
-        actionList[ActionE::Start].addGO_UNTIL(true,RECALLE,0.3,MessageE::Calle,100,simpleTimeout,1);
-        actionList[ActionE::Start].addSETX((coteViolet)?(3.0-HROBOT):(HROBOT),(coteViolet)?(PI):(0.0),10,simpleTimeout,1);
-        actionList[ActionE::Start].addSTBY(OFF,Impossible,3,normalTimeout,1);
-        actionList[ActionE::Start].addGOTO(STD,0.1,0.10,0.0,0.0,true,30,simpleTimeout,1,false,true);
+        actionList[actionType].addGO_UNTIL(true,RECALLE,0.3,MessageE::Calle,100,simpleTimeout,1);
+        actionList[actionType].addSETX((coteViolet)?(3.0-HROBOT):(HROBOT),(coteViolet)?(PI):(0.0),10,simpleTimeout,1);
+        actionList[actionType].addSTBY(OFF,Impossible,3,normalTimeout,1);
+        actionList[actionType].addGOTO(STD,0.1,0.10,0.0,0.0,true,30,simpleTimeout,1,false,true);
 
         //Calage Y
-        actionList[ActionE::Start].addSPIN(STD,-PI/2.0,50,simpleTimeout,1,false);
-        actionList[ActionE::Start].addGO_UNTIL(true,RECALLE,1.0,MessageE::Calle,200,simpleTimeout,1);
-        actionList[ActionE::Start].addSETY(2.0-HROBOT,-PI/2.0,10,simpleTimeout,1);
-        actionList[ActionE::Start].addSTBY(OFF,Impossible,3,normalTimeout,1);
-        actionList[ActionE::Start].addGOTO(STD,0.1,0.1,0.0,0.0,true,30,simpleTimeout,1,false,true);
+        actionList[actionType].addSPIN(STD,-PI/2.0,50,simpleTimeout,1,false);
+        actionList[actionType].addGO_UNTIL(true,RECALLE,1.0,MessageE::Calle,200,simpleTimeout,1);
+        actionList[actionType].addSETY(2.0-HROBOT,-PI/2.0,10,simpleTimeout,1);
+        actionList[actionType].addSTBY(OFF,Impossible,3,normalTimeout,1);
+        actionList[actionType].addGOTO(STD,0.1,0.1,0.0,0.0,true,30,simpleTimeout,1,false,true);
 
         //Placement
-        startPoint1=init_vectorE(0.37,1.47,-0.23);
-        startPoint2=init_vectorE(0.17,1.47,-0.23);
-        if (coteViolet)
-        {
-            startPoint1=mirror(startPoint1);
-            startPoint2=mirror(startPoint2);
-        }
-        actionList[ActionE::Start].addSPINGOTO(STD,startPoint1.vec.x,startPoint1.vec.y,100,simpleTimeout,1,false);
-        actionList[ActionE::Start].addSPIN(STD,startPoint1.theta,100,simpleTimeout,1,false);
-        actionList[ActionE::Start].addGOTO(STD,0.1,startPoint2,true,50,simpleTimeout,1,false,false);
-        actionList[ActionE::Start].addSEND(MessageE::Pince_Extended,10,simpleTimeout,1);
-        actionList[ActionE::Start].addSTBY(DYDM,Impossible,5,simpleTimeout,1);
-        actionList[ActionE::Start].addSEND(MessageE::Start_Chaos,10,simpleTimeout,1);
-        actionList[ActionE::Start].addSTBY(DYDM,MessageE::Tirette,60000,simpleTimeout,1);
+
+        actionList[actionType].addSPINGOTO(STD,startPoint1.vec.x,startPoint1.vec.y,100,simpleTimeout,1,false);
+        actionList[actionType].addSPIN(STD,startPoint1.theta,100,simpleTimeout,1,false);
+        actionList[actionType].addGOTO(STD,0.1,startPoint2,true,50,simpleTimeout,1,false,false);
+        actionList[actionType].addSEND(MessageE::Pince_Extended,10,simpleTimeout,1);
+        actionList[actionType].addSTBY(DYDM,Impossible,5,simpleTimeout,1);
+        actionList[actionType].addSEND(MessageE::Start_Chaos,10,simpleTimeout,1);
+        actionList[actionType].addSTBY(DYDM,MessageE::Tirette,60000,simpleTimeout,1);
         break;
     case Chaos:
-        chaosPoint1=init_vectorE(0.8010540184453228,1.1963109354413701,-0.8998384686675115);
-        chaosPoint2=init_vectorE(1.1251646903820818,0.7878787878787878,-0.7794810726914212);
-        releasePoint=init_vectorE(0.3346508563899868,1.391304347826087,3.141592653589793);
-        if (coteViolet)
-        {
-            chaosPoint1=mirror(chaosPoint1);
-            chaosPoint2=mirror(chaosPoint2);
-        }
-        actionList[ActionE::Chaos] = Action(actionType);
-        actionList[ActionE::Chaos].addSEND(MessageE::Pince_Half_Extended,10,simpleTimeout,1);
-        actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,5,normalTimeout,1);
 
-        actionList[ActionE::Chaos].addGOTO(RUSH, 0.4,chaosPoint1, true,50,simpleTimeout,1,true,false);
-        actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,30,normalTimeout,1);
-        actionList[ActionE::Chaos].addSEND(MessageE::Idle,10,simpleTimeout,1);
-        actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,2,normalTimeout,1);
-        actionList[ActionE::Chaos].addGOTO(RUSH, 0.1,chaosPoint2, true,20,simpleTimeout,1,true,false);
-        actionList[ActionE::Chaos].addSEND(MessageE::Pince_Half_Retracted,10,simpleTimeout,1);
-        actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,5,normalTimeout,1);
+        actionList[actionType] = Action(actionType);
+        //Pinces ento
+        actionList[actionType].addSEND(MessageE::Pince_Half_Extended,10,simpleTimeout,1);
+        actionList[actionType].addSTBY(DYDM,Impossible,5,normalTimeout,1);
 
-        actionList[ActionE::Chaos].addSPINGOTO(STD,releasePoint.vec.x,releasePoint.vec.y,100,simpleTimeout,1,false);
-        actionList[ActionE::Chaos].addSEND(MessageE::Pince_Extended,10,simpleTimeout,1);
-        actionList[ActionE::Chaos].addGOTO(STD,0.1,-0.4,0.0,0.0,true,50,simpleTimeout,1,true,true);
+        //Rejoins
+        actionList[actionType].addGOTO(STD, 0.4,chaosPoint1, true,50,simpleTimeout,1,true,false);
+        actionList[actionType].addSTBY(DYDM,Impossible,30,normalTimeout,1);
+
+        //Enquille
+        actionList[actionType].addGOTO(RUSH, 0.1,chaosPoint2, true,20,simpleTimeout,1,true,false);
+        actionList[actionType].addSEND(MessageE::Pince_Half_Retracted,10,simpleTimeout,1);
+        actionList[actionType].addSTBY(DYDM,Impossible,5,normalTimeout,1);
+        //actionList[ActionE::Chaos].addSPINTO(STD,restant.vec.x,restant.vec.y,100,simpleTimeout,1);
 
 
-        actionList[ActionE::Chaos].addSTBY(DYDM,Impossible,50000,simpleTimeout,1);
+        //Secoue tes fesses
+        actionList[actionType].addGOTO(STD, 0.1,-0.5,0.0,0.0, true,30,simpleTimeout,1,true,true);
+        actionList[actionType].addSPIN(STD,0.3,30,simpleTimeout,1,true);
+        actionList[actionType].addGOTO(RUSH, 0.1,0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
+        actionList[actionType].addGOTO(STD, 0.1,-0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
+        actionList[actionType].addSPIN(STD,-0.3,30,simpleTimeout,1,true);
+        actionList[actionType].addGOTO(RUSH, 0.1,0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
+        //actionList[actionType].addGOTO(STD, 0.1,-0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
+        //actionList[actionType].addSPIN(STD,0.3,30,simpleTimeout,1,true);
+        //actionList[actionType].addGOTO(RUSH, 0.1,0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
+        //actionList[actionType].addGOTO(STD, 0.1,-0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
+
+        //Go vert
+        actionList[actionType].addSPINTO(STD,greenPoint.vec.x,greenPoint.vec.y,100,simpleTimeout,1);
+        actionList[actionType].addSEND(MessageE::Pince_Half_Extended,10,simpleTimeout,1);
+        actionList[actionType].addGOTO(STD,0.4,greenPoint,true,60,simpleTimeout,1,true,false);
+        actionList[actionType].addGOTO(STD,0.4,releasePoint,true,60,simpleTimeout,1,true,false);
+        actionList[actionType].addGOTO(STD, 0.1,-0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
+        actionList[actionType].addSEND(Pince_Retracted,10,simpleTimeout,1);
+
+
+
+
         break;
     case Distribx6_1:
         actionList[actionType] = Action(actionType);
-
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
+        actionList[actionType].addSPINGOTO(STD,D6_1Point.vec.x,D6_1Point.vec.y,100,simpleTimeout,1,true);
+        actionList[actionType].addSPIN(STD,D6_1Point.theta,100,simpleTimeout,1,false);
+        actionList[actionType].addGOTO(STD,0.4,D6_1PointPrime,true,50,simpleTimeout,1,false,false);
+        //actionList[actionType].addGO_UNTIL(false,RECALLE,0.01,MessageE::Ok,30,simpleTimeout,1);
+        actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,simpleTimeout,1,true,true);
+        actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,2);
         break;
     case Distribx6_2:
         actionList[actionType] = Action(actionType);
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
+        actionList[actionType].addSPINGOTO(STD,D6_2Point.vec.x,D6_2Point.vec.y,100,simpleTimeout,1,true);
+        actionList[actionType].addSPIN(STD,D6_2Point.theta,100,simpleTimeout,1,false);
+        actionList[actionType].addGOTO(STD,0.4,D6_2PointPrime,true,50,simpleTimeout,1,false,false);
+        //actionList[actionType].addGO_UNTIL(false,RECALLE,0.01,MessageE::Ok,30,simpleTimeout,1);
+        actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,simpleTimeout,1,true,true);
+        actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,2);
         break;
     case Distribx6_3:
         actionList[actionType] = Action(actionType);
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
-        break;
-    case CoupDeCul:
-        actionList[actionType] = Action(actionType);
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
+        actionList[actionType].addSPINGOTO(STD,D6_3Point.vec.x,D6_3Point.vec.y,100,simpleTimeout,1,true);
+        actionList[actionType].addSPIN(STD,D6_3Point.theta,100,simpleTimeout,1,false);
+        actionList[actionType].addGOTO(STD,0.4,D6_3PointPrime,true,50,simpleTimeout,1,false,false);
+        //actionList[actionType].addGO_UNTIL(false,RECALLE,0.01,MessageE::Ok,30,simpleTimeout,1);
+        actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,simpleTimeout,1,true,true);
+        actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,2);
+        actionList[actionType].addSTBY(DYDM,Impossible,50000,simpleTimeout,1);
         break;
     case Distribx3_1:
         actionList[actionType] = Action(actionType);
@@ -221,21 +285,21 @@ void Cerveau::loadAction(ActionE actionType)
 
 ActionE Cerveau::nextBestAction()
 {
-    if (currentActionIndex==ActionE::PoseSol)
-    {
-        for (int i=1;i<NB_ACTIONS;i++)
-        {
-            if (!(DONE[i]))
-            {
-                return(ActionE)i;
-            }
-        }
-        return ActionE::PoseSol;
-    }
-    else
-    {
+//    if (currentActionIndex==ActionE::PoseSol)
+//    {
+//        for (int i=1;i<NB_ACTIONS;i++)
+//        {
+//            if (!(DONE[i]))
+//            {
+//                return(ActionE)i;
+//            }
+//        }
+//        return ActionE::PoseSol;
+//    }
+//    else
+//    {
         return (ActionE)((int)currentActionIndex+1);
-    }
+//    }
 
 }
 
@@ -280,7 +344,14 @@ void Cerveau::actuate()
         break;
     case (MessageE::Evitemment_Clear):
         ptrRobot->evitting=AnticolE::No;
+        //Il ne faut pas le take
         break;
+    case (MessageE::Em_stop):
+        ptrRobot->ordresFifo.replaceHead(STBY(DYDM,Impossible,50000,nullptr,simpleTimeout,1));
+        ptrRobot->pid.reload();
+        ptrRobot->comm.taken();
+        break;
+
     }
 }
 

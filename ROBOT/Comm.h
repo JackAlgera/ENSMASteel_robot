@@ -8,6 +8,7 @@ class Comm
 public:
 
     MessageE lastMessage=MessageE::Default;
+    float tStartMatch=90000;
     float collisionX,collisionY;
     void actuate(VectorE posERobot,AnticolE anticol);
     void taken();
