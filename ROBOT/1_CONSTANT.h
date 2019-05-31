@@ -72,7 +72,7 @@ enum OrderE
     GOTO_E, SPIN_E, SPINGOTO_E, SPINTO_E, GO_UNTIL_E, STBY_E, SEND_E, EMSTOP_E, SETX_E,SETY_E
 };
 
-#define NB_MESSAGES 22
+#define NB_MESSAGES 23
 enum MessageE
 {
    Default,Impossible, Tirette, Pince_Retracted,Pince_Half_Retracted,Pince_Half_Extended,Pince_Extended, Evitemment, Ok, Done,
@@ -81,7 +81,7 @@ enum MessageE
 
 enum AnticolE{Front,Back,No};
 
-#define NB_ACTIONS 14
+#define NB_ACTIONS 13
 enum ActionE
 {
     Start, Chaos, Distribx6_1, Distribx6_2, Distribx6_3, Distribx3_1, Distribx3_2, RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol, CasseCouilles

@@ -42,7 +42,7 @@ GOTO::GOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, b
 
 SPINTO::SPINTO(uint8_t nerv, float xAim, float yAim, uint16_t timeoutDs, Action* ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail)
 {
-    this->type = OrderE::SPIN_E;
+    this->type = OrderE::SPINTO_E;
     this->errorIntegralLin=0;
     this->errorIntegralAng=0;
     this->timeoutDs = timeoutDs;

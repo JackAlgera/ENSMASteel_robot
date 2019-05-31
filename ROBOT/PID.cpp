@@ -12,7 +12,7 @@
 //float nervTPP[3]= { 0.5, 5.0, 15.0  };
 //float nervTP[3]=  { 0.5, 1.5, 999.9  };
 
-float nervA[3]=   { 0.05, 0.3, 1.5   };
+float nervA[3]=   { 0.05, 0.3, 1.2   };
 float nervV[3]=   { 0.05, 0.5, 1.2   };
 float nervTPP[3]= { 0.5, 6, 20.0  };
 float nervTP[3]=  { 0.5, 1.5, 999.9  };
@@ -150,7 +150,7 @@ void PID::reload()
         ptrRobot->ghost.spinning=false;
         float D=0.0,t_e_integral=0.0,v=0.0;
         float lastV=sqrt(ptrRobot->ghost.v_e_P2.f(t_e_integral));
-        float pas=0.01;
+        float pas=0.005;
         t_e_integral=t_e_integral+pas;
         while (t_e_integral<=1.0)
         {
@@ -213,6 +213,7 @@ void PID::reload()
 #ifdef STATE
         Serial.println("Je prepare un SPINTO");
 #endif
+        ptrRobot->ghost.reversed=false;
         SPINTO_S sto=ptrRobot->ordresFifo.ptrFst()->spinTo;
         Vector aim=init_vector(sto.xAim,sto.yAim);
         Vector delta=minus(aim,posERobot.vec);
@@ -281,7 +282,7 @@ void PID::reload()
         ptrRobot->ghost.spinning=false;
         float D=0.0,t_e_integral=0.0,v=0.0;
         float lastV=sqrt(ptrRobot->ghost.v_e_P2.f(t_e_integral));
-        float pas=0.01;
+        float pas=0.005;
         t_e_integral=t_e_integral+pas;
         while (t_e_integral<=1.0)
         {

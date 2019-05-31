@@ -17,7 +17,7 @@
 
 void Robot::actuate(float dt)
 {
-    if(contacteurDroite.isPressedForMoreThan(1.0) && contacteurGauche.isPressedForMoreThan(1.0))
+    if(contacteurDroite.isPressedForMoreThan(0.5) && contacteurGauche.isPressedForMoreThan(0.5))
     {
         comm.lastMessage=MessageE::Calle;
     }

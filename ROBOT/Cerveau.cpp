@@ -93,7 +93,7 @@ void Cerveau::loadAction(ActionE actionType)
     chaosPoint2=init_vectorE(1.1251646903820818,0.7878787878787878,-0.7794810726914212,coteViolet);
 
     greenPoint=init_vectorE(0.79,0.938,PI,coteViolet);
-    releasePoint=init_vectorE(0.349,1.4,1.7,coteViolet);
+    releasePoint=init_vectorE(0.33,1.3,1.7,coteViolet);
 
     D6_1Point=init_vectorE(0.944,0.82,-PI/2.0,coteViolet);
     D6_1PointPrime=decalleBas(D6_1Point,0.08);
@@ -181,7 +181,7 @@ void Cerveau::loadAction(ActionE actionType)
         actionList[actionType] = Action(actionType);
         //Pinces ento
         actionList[actionType].addSEND(MessageE::Pince_Half_Extended,10,simpleTimeout,1);
-        actionList[actionType].addSTBY(DYDM,Impossible,5,normalTimeout,1);
+        actionList[actionType].addSTBY(DYDM,Impossible,3,normalTimeout,1);
 
         //Rejoins
         actionList[actionType].addGOTO(STD, 0.4,chaosPoint1, true,50,simpleTimeout,1,true,false);
@@ -210,9 +210,13 @@ void Cerveau::loadAction(ActionE actionType)
         actionList[actionType].addSPINTO(STD,greenPoint.vec.x,greenPoint.vec.y,100,simpleTimeout,1);
         actionList[actionType].addSEND(MessageE::Pince_Half_Extended,10,simpleTimeout,1);
         actionList[actionType].addGOTO(STD,0.4,greenPoint,true,60,simpleTimeout,1,true,false);
+
         actionList[actionType].addGOTO(STD,0.4,releasePoint,true,60,simpleTimeout,1,true,false);
+        actionList[actionType].addSTBY(DYDM,Impossible,10,normalTimeout,1);
+        actionList[actionType].addSEND(MessageE::IdleM,10,simpleTimeout,1);
         actionList[actionType].addGOTO(STD, 0.1,-0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
-        actionList[actionType].addSEND(Pince_Retracted,10,simpleTimeout,1);
+        //actionList[actionType].addSEND(Pince_Retracted,10,simpleTimeout,1);
+        //actionList[actionType].addSEND(MessageE::DeposePaletsSol,10,simpleTimeout,1);
 
 
 
@@ -223,6 +227,7 @@ void Cerveau::loadAction(ActionE actionType)
         actionList[actionType].addSPINGOTO(STD,D6_1Point.vec.x,D6_1Point.vec.y,100,simpleTimeout,1,true);
         actionList[actionType].addSPIN(STD,D6_1Point.theta,100,simpleTimeout,1,false);
         actionList[actionType].addGOTO(STD,0.4,D6_1PointPrime,true,50,simpleTimeout,1,false,false);
+        actionList[actionType].addSTBY(DYDM,Impossible,10,normalTimeout,1);
         //actionList[actionType].addGO_UNTIL(false,RECALLE,0.01,MessageE::Ok,30,simpleTimeout,1);
         actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,simpleTimeout,1,true,true);
         actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,2);
@@ -232,6 +237,7 @@ void Cerveau::loadAction(ActionE actionType)
         actionList[actionType].addSPINGOTO(STD,D6_2Point.vec.x,D6_2Point.vec.y,100,simpleTimeout,1,true);
         actionList[actionType].addSPIN(STD,D6_2Point.theta,100,simpleTimeout,1,false);
         actionList[actionType].addGOTO(STD,0.4,D6_2PointPrime,true,50,simpleTimeout,1,false,false);
+        actionList[actionType].addSTBY(DYDM,Impossible,10,normalTimeout,1);
         //actionList[actionType].addGO_UNTIL(false,RECALLE,0.01,MessageE::Ok,30,simpleTimeout,1);
         actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,simpleTimeout,1,true,true);
         actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,2);
@@ -241,6 +247,7 @@ void Cerveau::loadAction(ActionE actionType)
         actionList[actionType].addSPINGOTO(STD,D6_3Point.vec.x,D6_3Point.vec.y,100,simpleTimeout,1,true);
         actionList[actionType].addSPIN(STD,D6_3Point.theta,100,simpleTimeout,1,false);
         actionList[actionType].addGOTO(STD,0.4,D6_3PointPrime,true,50,simpleTimeout,1,false,false);
+        actionList[actionType].addSTBY(DYDM,Impossible,10,normalTimeout,1);
         //actionList[actionType].addGO_UNTIL(false,RECALLE,0.01,MessageE::Ok,30,simpleTimeout,1);
         actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,simpleTimeout,1,true,true);
         actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,2);
