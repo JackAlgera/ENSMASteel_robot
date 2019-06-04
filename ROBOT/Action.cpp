@@ -37,9 +37,9 @@ void Action::addSPINTO(uint8_t nerv, float xAim, float yAim, uint16_t timeoutDs,
 }
 
 
-void Action::addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance)
+void Action::addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance,bool bwd)
 {
-    ordersList[nbrOrders] = SPINGOTO(nerv,xAim,yAim,timeoutDs,this, contreMesure, nbMaxFail,avoidance);
+    ordersList[nbrOrders] = SPINGOTO(nerv,xAim,yAim,timeoutDs,this, contreMesure, nbMaxFail,avoidance,bwd);
     nbrOrders++;
 }
 

@@ -1,17 +1,17 @@
 #include "Moteur.h"
 #include "Arduino.h"
 
-void Motor::actuate()
+void Motor::actuate(float dt)
 {
 //    bypass=true;
 //    masterOrder=MAXPWM/2.0;
 //    Serial.print(order);
-
     if (bypass)
     {
         order=masterOrder;
     }
     int orderComp=constrain((int)(order/health),-MAXPWM,MAXPWM);
+
     if (orderComp>0)
     {
         digitalWrite(pinSens,HIGH);

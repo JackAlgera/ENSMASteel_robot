@@ -75,33 +75,37 @@ void Cerveau::loadAction(ActionE actionType)
     VectorE startPoint1,startPoint2,
             chaosPoint1,chaosPoint2,
             greenPoint,releasePoint,
+            recalleTasseau,
             D6_1Point,D6_1PointPrime,
             D6_2Point,D6_2PointPrime,
             D6_3Point,D6_3PointPrime,
             clearPoint,
             D3_1Point,D3_1PointPrime,
-            D3_2Point,D3_2PointPrime;
+            D3_2Point,D3_2PointPrime,
+            deposeAcceleroPoint,goldPoint,deposeBalancePoint;
 
 
 
 
 
-    startPoint1=init_vectorE(0.37,1.47,-0.28,coteViolet);
-    startPoint2=init_vectorE(0.17,1.47,-0.28,coteViolet);
+    startPoint1=init_vectorE(0.2,1.54,0.0,coteViolet);
+    startPoint2=init_vectorE(0.1533,1.54,0.0,coteViolet);
 
-    chaosPoint1=init_vectorE(0.8010540184453228,1.1963109354413701,-0.8998384686675115,coteViolet);
-    chaosPoint2=init_vectorE(1.1251646903820818,0.7878787878787878,-0.7794810726914212,coteViolet);
+    chaosPoint1=init_vectorE(0.7406,1.1806,-0.7358,coteViolet);
+    chaosPoint2=init_vectorE(1.0282,0.9122,-0.7239,coteViolet);
 
     greenPoint=init_vectorE(0.79,0.938,PI,coteViolet);
     releasePoint=init_vectorE(0.33,1.3,1.7,coteViolet);
 
-    D6_1Point=init_vectorE(0.944,0.82,-PI/2.0,coteViolet);
+    recalleTasseau=init_vectorE(1.359683794466403,0.5032938076416338,PI,coteViolet);
+
+    D6_1Point=init_vectorE(0.939,0.82,-PI/2.0,coteViolet);
     D6_1PointPrime=decalleBas(D6_1Point,0.08);
 
-    D6_2Point=init_vectorE(0.737,0.82,-PI/2.0,coteViolet);
+    D6_2Point=init_vectorE(0.752,0.82,-PI/2.0,coteViolet);
     D6_2PointPrime=decalleBas(D6_2Point,0.08);
 
-    D6_3Point=init_vectorE(0.545,0.82,-PI/2.0,coteViolet);
+    D6_3Point=init_vectorE(0.56,0.82,-PI/2.0,coteViolet);
     D6_3PointPrime=decalleBas(D6_3Point,0.08);
 
     clearPoint=init_vectorE(0.223,0.75,-PI/2.0,coteViolet);
@@ -111,6 +115,10 @@ void Cerveau::loadAction(ActionE actionType)
 
     D3_2Point=init_vectorE(0.299,0.3,-PI/2.0,coteViolet);
     D3_2PointPrime=decalleBas(D3_2Point,0.08);
+
+    deposeAcceleroPoint=init_vectorE(1.91,1.70,PI/2.0,coteViolet);
+    goldPoint=init_vectorE(3.0-0.5-0.235-0.08/2.0+0.050+0.015,1.70,PI/2.0,coteViolet);
+    deposeBalancePoint=init_vectorE(1.5-0.15-0.05,0.55,-PI/2,coteViolet);
 
 
 
@@ -147,8 +155,8 @@ void Cerveau::loadAction(ActionE actionType)
             }
             delay(1);
         }
-        startPoint1=init_vectorE(0.37,1.47,-0.28,coteViolet);
-        startPoint2=init_vectorE(0.17,1.47,-0.28,coteViolet);
+        startPoint1=init_vectorE(0.2,1.54,0.0,coteViolet);
+        startPoint2=init_vectorE(0.1533,1.54,0.0,coteViolet);
 
         actionList[actionType] = Action(actionType);
         actionList[actionType].addSTBY(DYDM,Impossible,1,normalTimeout,1);
@@ -168,10 +176,9 @@ void Cerveau::loadAction(ActionE actionType)
 
         //Placement
 
-        actionList[actionType].addSPINGOTO(STD,startPoint1.vec.x,startPoint1.vec.y,100,simpleTimeout,1,false);
-        actionList[actionType].addSPIN(STD,startPoint1.theta,100,simpleTimeout,1,false);
+        actionList[actionType].addSPINGOTO(STD,startPoint1.vec.x,startPoint1.vec.y,100,simpleTimeout,1,false,false);
+        actionList[actionType].addSPIN(STD,startPoint2.theta,100,simpleTimeout,1,false);
         actionList[actionType].addGOTO(STD,0.1,startPoint2,true,50,simpleTimeout,1,false,false);
-        actionList[actionType].addSEND(MessageE::Pince_Extended,10,simpleTimeout,1);
         actionList[actionType].addSTBY(DYDM,Impossible,5,simpleTimeout,1);
         actionList[actionType].addSEND(MessageE::Start_Chaos,10,simpleTimeout,1);
         actionList[actionType].addSTBY(DYDM,MessageE::Tirette,60000,simpleTimeout,1);
@@ -184,98 +191,141 @@ void Cerveau::loadAction(ActionE actionType)
         actionList[actionType].addSTBY(DYDM,Impossible,3,normalTimeout,1);
 
         //Rejoins
-        actionList[actionType].addGOTO(STD, 0.4,chaosPoint1, true,50,simpleTimeout,1,true,false);
-        actionList[actionType].addSTBY(DYDM,Impossible,30,normalTimeout,1);
+        actionList[actionType].addGOTO(STD,0.1,0.05,0.0,0.0,true,50,resetGoto,1,false,true);
+        actionList[actionType].addSPINTO(STD,chaosPoint1.vec.x,chaosPoint1.vec.y,50,resetGoto,1);
+        actionList[actionType].addGOTO(STD,0.2,chaosPoint1, true,50,resetGoto,1,true,false);
+        actionList[actionType].addSTBY(DYDM,Impossible,15,normalTimeout,1);
 
         //Enquille
-        actionList[actionType].addGOTO(RUSH, 0.1,chaosPoint2, true,20,simpleTimeout,1,true,false);
+        actionList[actionType].addGOTO(STD, 0.1,chaosPoint2, true,20,resetGoto,1,true,false);
         actionList[actionType].addSEND(MessageE::Pince_Half_Retracted,10,simpleTimeout,1);
         actionList[actionType].addSTBY(DYDM,Impossible,5,normalTimeout,1);
-        //actionList[ActionE::Chaos].addSPINTO(STD,restant.vec.x,restant.vec.y,100,simpleTimeout,1);
 
 
         //Secoue tes fesses
-        actionList[actionType].addGOTO(STD, 0.1,-0.5,0.0,0.0, true,30,simpleTimeout,1,true,true);
-        actionList[actionType].addSPIN(STD,0.3,30,simpleTimeout,1,true);
-        actionList[actionType].addGOTO(RUSH, 0.1,0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
-        actionList[actionType].addGOTO(STD, 0.1,-0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
-        actionList[actionType].addSPIN(STD,-0.3,30,simpleTimeout,1,true);
-        actionList[actionType].addGOTO(RUSH, 0.1,0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
-        //actionList[actionType].addGOTO(STD, 0.1,-0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
-        //actionList[actionType].addSPIN(STD,0.3,30,simpleTimeout,1,true);
-        //actionList[actionType].addGOTO(RUSH, 0.1,0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
-        //actionList[actionType].addGOTO(STD, 0.1,-0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
+        actionList[actionType].addGOTO(STD, 0.1,-0.5,0.0,0.0, true,30,resetGoto,1,true,true);
+        actionList[actionType].addSPIN(STD,0.3,30,resetGoto,1,true);
+        actionList[actionType].addSEND(MessageE::Pince_Half_Extended,10,simpleTimeout,1);
+        actionList[actionType].addGOTO(STD, 0.1,0.4,0.0,0.0, true,30,resetGoto,1,true,true);
+        actionList[actionType].addSEND(MessageE::Pince_Half_Retracted,10,simpleTimeout,1);
+        actionList[actionType].addGOTO(STD, 0.1,-0.4,0.0,0.0, true,30,resetGoto,1,true,true);
+        actionList[actionType].addSPIN(STD,-0.3,30,resetGoto,1,true);
+        actionList[actionType].addSEND(MessageE::Pince_Half_Extended,10,simpleTimeout,1);
+        actionList[actionType].addGOTO(STD, 0.1,0.4,0.0,0.0, true,30,resetGoto,1,true,true);
+        actionList[actionType].addSEND(MessageE::Pince_Half_Retracted,10,simpleTimeout,1);
 
         //Go vert
-        actionList[actionType].addSPINTO(STD,greenPoint.vec.x,greenPoint.vec.y,100,simpleTimeout,1);
+        actionList[actionType].addSPINTO(STD,greenPoint.vec.x,greenPoint.vec.y,100,resetGoto,1);
         actionList[actionType].addSEND(MessageE::Pince_Half_Extended,10,simpleTimeout,1);
-        actionList[actionType].addGOTO(STD,0.4,greenPoint,true,60,simpleTimeout,1,true,false);
+        actionList[actionType].addGOTO(STD,0.4,greenPoint,true,60,resetGoto,1,true,false);
 
-        actionList[actionType].addGOTO(STD,0.4,releasePoint,true,60,simpleTimeout,1,true,false);
+        actionList[actionType].addGOTO(STD,0.4,releasePoint,true,60,resetGoto,1,true,false);
         actionList[actionType].addSTBY(DYDM,Impossible,10,normalTimeout,1);
         actionList[actionType].addSEND(MessageE::IdleM,10,simpleTimeout,1);
-        actionList[actionType].addGOTO(STD, 0.1,-0.4,0.0,0.0, true,30,simpleTimeout,1,true,true);
-        //actionList[actionType].addSEND(Pince_Retracted,10,simpleTimeout,1);
-        //actionList[actionType].addSEND(MessageE::DeposePaletsSol,10,simpleTimeout,1);
-
-
-
+        actionList[actionType].addGOTO(STD, 0.1,-0.4,0.0,0.0, true,30,resetGoto,1,true,true);
+        actionList[actionType].addSEND(MessageE::Pince_Retracted,10,simpleTimeout,1);
 
         break;
     case Distribx6_1:
         actionList[actionType] = Action(actionType);
-        actionList[actionType].addSPINGOTO(STD,D6_1Point.vec.x,D6_1Point.vec.y,100,simpleTimeout,1,true);
-        actionList[actionType].addSPIN(STD,D6_1Point.theta,100,simpleTimeout,1,false);
-        actionList[actionType].addGOTO(STD,0.4,D6_1PointPrime,true,50,simpleTimeout,1,false,false);
-        actionList[actionType].addSTBY(DYDM,Impossible,10,normalTimeout,1);
-        //actionList[actionType].addGO_UNTIL(false,RECALLE,0.01,MessageE::Ok,30,simpleTimeout,1);
-        actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,simpleTimeout,1,true,true);
-        actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,2);
+        actionList[actionType].addSPINGOTO(STD,startPoint1.vec.x,startPoint1.vec.y,50,resetGoto,1,true,true);
+        if (coteViolet)
+            actionList[actionType].addSPIN(STD,PI,50,resetGoto,1,false);
+        else
+            actionList[actionType].addSPIN(STD,0.0,50,resetGoto,1,false);
+
+        actionList[actionType].addGO_UNTIL(true,RECALLE,0.50,MessageE::Calle,40,simpleTimeout,1);
+        actionList[actionType].addSTBY(OFF,Impossible,2,normalTimeout,1);
+        if(coteViolet)
+            actionList[actionType].addSETX(3-HROBOT,PI,10,simpleTimeout,1);
+        else
+            actionList[actionType].addSETX(HROBOT,0.0,10,simpleTimeout,1);
+        actionList[actionType].addGOTO(STD,0.1,0.1,0.0,0.0,true,40,resetGoto,1,true,true);
+        actionList[actionType].addSEND(MessageE::VideDistributeurM,10,simpleTimeout,1);
+        actionList[actionType].addSPINGOTO(STD,D6_1Point.vec.x,D6_1Point.vec.y,100,resetGoto,1,true,false);
+        actionList[actionType].addSPIN(STD,D6_1Point.theta,100,resetGoto,1,false);
+        //actionList[actionType].addGOTO(STD,0.4,D6_1Point,true,50,resetGoto,1,false,false);
+        actionList[actionType].addGOTO(STD,0.4,D6_1PointPrime,true,50,resetGoto,1,false,false);
+        actionList[actionType].addGO_UNTIL(false,RECALLE,0.1,MessageE::Calle,30,simpleTimeout,1);
+        actionList[actionType].addSTBY(OFF,Impossible,5,normalTimeout,1);
+        actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,resetGoto,1,true,true);
+        actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,1);
+
         break;
     case Distribx6_2:
         actionList[actionType] = Action(actionType);
-        actionList[actionType].addSPINGOTO(STD,D6_2Point.vec.x,D6_2Point.vec.y,100,simpleTimeout,1,true);
-        actionList[actionType].addSPIN(STD,D6_2Point.theta,100,simpleTimeout,1,false);
-        actionList[actionType].addGOTO(STD,0.4,D6_2PointPrime,true,50,simpleTimeout,1,false,false);
-        actionList[actionType].addSTBY(DYDM,Impossible,10,normalTimeout,1);
-        //actionList[actionType].addGO_UNTIL(false,RECALLE,0.01,MessageE::Ok,30,simpleTimeout,1);
-        actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,simpleTimeout,1,true,true);
-        actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,2);
+        actionList[actionType].addSPINGOTO(STD,D6_2Point.vec.x,D6_2Point.vec.y,100,resetGoto,1,true,false);
+        actionList[actionType].addSPIN(STD,D6_2Point.theta,100,resetGoto,1,false);
+        //actionList[actionType].addGOTO(STD,0.4,D6_2Point,true,50,resetGoto,1,false,false);
+        actionList[actionType].addGOTO(STD,0.4,D6_2PointPrime,true,50,resetGoto,1,false,false);
+        actionList[actionType].addGOTO(RECALLE,0.1,0.10,0.0,0.0,true,40,simpleTimeout,1,false,true);
+        actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,resetGoto,1,true,true);
+        actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,1);
         break;
     case Distribx6_3:
         actionList[actionType] = Action(actionType);
-        actionList[actionType].addSPINGOTO(STD,D6_3Point.vec.x,D6_3Point.vec.y,100,simpleTimeout,1,true);
-        actionList[actionType].addSPIN(STD,D6_3Point.theta,100,simpleTimeout,1,false);
-        actionList[actionType].addGOTO(STD,0.4,D6_3PointPrime,true,50,simpleTimeout,1,false,false);
-        actionList[actionType].addSTBY(DYDM,Impossible,10,normalTimeout,1);
-        //actionList[actionType].addGO_UNTIL(false,RECALLE,0.01,MessageE::Ok,30,simpleTimeout,1);
-        actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,simpleTimeout,1,true,true);
-        actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,2);
-        actionList[actionType].addSTBY(DYDM,Impossible,50000,simpleTimeout,1);
+        actionList[actionType].addSPINGOTO(STD,D6_3Point.vec.x,D6_3Point.vec.y,100,resetGoto,1,true,false);
+        actionList[actionType].addSPIN(STD,D6_3Point.theta,100,resetGoto,1,false);
+        //actionList[actionType].addGOTO(STD,0.4,D6_3Point,true,50,resetGoto,1,false,false);
+        actionList[actionType].addGOTO(STD,0.4,D6_3PointPrime,true,50,resetGoto,1,false,false);
+        actionList[actionType].addGOTO(RECALLE,0.1,0.10,0.0,0.0,true,40,simpleTimeout,1,false,true);
+        actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,resetGoto,1,true,true);
+        actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,1);
         break;
     case Distribx3_1:
         actionList[actionType] = Action(actionType);
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
+        actionList[actionType].addSPINGOTO(STD,clearPoint.vec.x,clearPoint.vec.y,50,simpleTimeout,1,false,false);
+        actionList[actionType].addSPINTO(STD,D3_1Point.vec.x,D3_1Point.vec.y,50,simpleTimeout,1);
+        actionList[actionType].addGOTO(STD,0.3,D3_1Point,true,50,simpleTimeout,1,false,false);
+        //actionList[actionType].addGOTO(STD,0.3,D3_1PointPrime,true,50,simpleTimeout,1,false,false);
+        actionList[actionType].addGOTO(RECALLE,0.1,0.10,0.0,0.0,true,40,simpleTimeout,1,false,true);
+        actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,simpleTimeout,1,true,true);
+        actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,1);
         break;
     case Distribx3_2:
         actionList[actionType] = Action(actionType);
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
+        actionList[actionType].addSPINTO(STD,D3_2Point.vec.x,D3_1Point.vec.y,50,simpleTimeout,1);
+        actionList[actionType].addGOTO(STD,0.3,D3_2Point,true,50,simpleTimeout,1,false,false);
+        //actionList[actionType].addGOTO(STD,0.3,D3_2PointPrime,true,50,simpleTimeout,1,false,false);
+        actionList[actionType].addGOTO(RECALLE,0.1,0.10,0.0,0.0,true,40,simpleTimeout,1,false,true);
+        actionList[actionType].addGOTO(STD,0.3,-0.05,0.0,0.0,true,30,simpleTimeout,1,true,true);
+        actionList[actionType].addSEND(MessageE::Ok,10,simpleTimeout,1);
         break;
-    case RecupBlueAcc:
-        actionList[actionType] = Action(actionType);
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
-        break;
+//    case RecupBlueAcc:
+//        actionList[actionType] = Action(actionType);
+//        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
+//        break;
     case PoseAcc:
         actionList[actionType] = Action(actionType);
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
+        //actionList[actionType].addSPIN(STD,-PI/2.0,40,resetGoto,1,false);
+        //actionList[actionType].addGOTO(STD,0.4,deposeAcceleroPoint.vec.x,deposeAcceleroPoint.vec.y,deposeAcceleroPoint.theta,true,100,simpleTimeout,1,true,false);
+        actionList[actionType].addSPINGOTO(STD,deposeAcceleroPoint.vec.x,deposeAcceleroPoint.vec.y,100,resetGoto,1,true,true);
+        actionList[actionType].addSPIN(STD,PI/2.0,40,resetGoto,1,false);
+        actionList[actionType].addGO_UNTIL(false,RECALLE,0.5,Calle,40,simpleTimeout,1);
+        actionList[actionType].addSTBY(OFF,Impossible,5,normalTimeout,1);
+        actionList[actionType].addGOTO(STD,0.1,-0.037,0.0,0.0,true,30,resetGoto,1,true,true);
+        actionList[actionType].addSEND(MessageE::DeposeAccelerateurM,10,simpleTimeout,1);
+        actionList[actionType].addSTBY(DYDM,Impossible,200,normalTimeout,1);
+
         break;
     case RecupGoldAcc:
         actionList[actionType] = Action(actionType);
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
+
+        actionList[actionType].addSPINGOTO(STD,goldPoint.vec.x,goldPoint.vec.y,50,resetGoto,1,true,true);
+        actionList[actionType].addSEND(MessageE::Start_Goldonium,10,simpleTimeout,1);
+        actionList[actionType].addSPIN(STD,PI/2.0,40,simpleTimeout,1,false);
+        actionList[actionType].addGO_UNTIL(false,STD,0.4,Calle,40,simpleTimeout,1);
+        actionList[actionType].addGOTO(STD,0.1,-0.1,0.0,0.0,true,30,resetGoto,1,true,true);
         break;
     case Balance:
         actionList[actionType] = Action(actionType);
-        actionList[actionType].addSEND(MessageE::New_Action,10,simpleTimeout,2);
+        actionList[actionType].addSPINGOTO(STD,deposeBalancePoint.vec.x,deposeBalancePoint.vec.y+0.2,60,resetGoto,1,true,true);
+        actionList[actionType].addSPINGOTO(STD,deposeBalancePoint.vec.x,deposeBalancePoint.vec.y,60,resetGoto,1,false,false);
+        actionList[actionType].addGO_UNTIL(false,STD,0.4,Calle,40,simpleTimeout,1);
+        actionList[actionType].addSEND(MessageE::Depose_Goldonium,10,simpleTimeout,1);
+        actionList[actionType].addSTBY(OFF,Impossible,50000,normalTimeout,1);
+
+
         break;
     case PoseSol:
         actionList[actionType] = Action(actionType);

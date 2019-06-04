@@ -72,19 +72,20 @@ enum OrderE
     GOTO_E, SPIN_E, SPINGOTO_E, SPINTO_E, GO_UNTIL_E, STBY_E, SEND_E, EMSTOP_E, SETX_E,SETY_E
 };
 
-#define NB_MESSAGES 23
+#define NB_MESSAGES 27
 enum MessageE
 {
-   Default,Impossible, Tirette, Pince_Retracted,Pince_Half_Retracted,Pince_Half_Extended,Pince_Extended, Evitemment, Ok, Done,
-    New_Action, Sync, Evitemment_Clear,Calle,Violet,Jaune,Start_Chaos,Start_Goldonium,Depose_Goldonium,PoussePaletBleuAccel,DeposePaletsSol,IdleM,Em_stop
-};
+    Default,Impossible, Tirette, Pince_Retracted,Pince_Half_Retracted,Pince_Half_Extended,Pince_Extended, Evitemment, Ok, Done,
+    New_Action, Sync, Evitemment_Clear,Calle,Violet,Jaune,Start_Chaos,Start_Goldonium,Depose_Goldonium,PoussePaletBleuAccel,DeposePaletSolM
+    ,IdleM,VideDistributeurM,Em_stop,DeposeAccelerateurM,DeposePaletBleuBalance}
+;
 
 enum AnticolE{Front,Back,No};
 
 #define NB_ACTIONS 13
 enum ActionE
 {
-    Start, Chaos, Distribx6_1, Distribx6_2, Distribx6_3, Distribx3_1, Distribx3_2, RecupBlueAcc, PoseAcc, RecupGoldAcc, Balance, PoseSol, CasseCouilles
+    Start, Chaos,PoseAcc,RecupGoldAcc,Balance, Distribx6_1, Distribx6_2, Distribx6_3, Distribx3_1, Distribx3_2, RecupBlueAcc, PoseSol, CasseCouilles
 };
 
 enum ErreurE
@@ -96,12 +97,12 @@ enum ErreurE
 
 #define RAYON_RECONVERGENCE 10.5          //Si le robot s'est trop eloigné (plus que RAYON_RECONVERGENCE), il va se tourner de façon a rejoindre le ghost
 #define RAYON_TERMINE 0.002                //Distance en dessous duquel on considère que le robot est arrivé
-#define DELTA_THETA_TERMINE 0.012
+#define DELTA_THETA_TERMINE 0.02
 //#define DELTA_THETA_TERMINE 0.017          //Delta theta en dessous duquel on considère le spin terminé
 
-#define RAYON_FAIL 0.10
+#define RAYON_FAIL 0.01
 #define DELTA_THETA_FAIL 0.5
-#define MAX_W 0.012
+#define MAX_W 0.02
 #define FAIL_TIME 0.5
 
 #define FREQUENCY 200.0
@@ -111,7 +112,7 @@ enum ErreurE
 
 
 //-------------------------MISCENCELLOUS-------------------------
-#define TAILLEFIFO 40           //Taille du buffer circulaire
+#define TAILLEFIFO 50           //Taille du buffer circulaire
 #define DEGRE_MAX 6
 
 

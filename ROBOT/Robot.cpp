@@ -24,7 +24,7 @@ void Robot::actuate(float dt)
     codeuseGauche.actuate(dt);
     codeuseDroite.actuate(dt);
     actuateODO(dt);
-    ghost.actuate(dt);
+    ghost.actuate(min(dt,2.0/FREQUENCY));
     pid.actuate(dt,posE,vF.out(),wF.out());
     contacteurDroite.actuate();
     contacteurGauche.actuate();

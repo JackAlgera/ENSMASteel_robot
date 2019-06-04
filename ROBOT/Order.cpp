@@ -54,7 +54,7 @@ SPINTO::SPINTO(uint8_t nerv, float xAim, float yAim, uint16_t timeoutDs, Action*
 }
 
 
-SPINGOTO::SPINGOTO(uint8_t nerv, float xAim, float yAim, uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance)
+SPINGOTO::SPINGOTO(uint8_t nerv, float xAim, float yAim, uint16_t timeoutDs, Action * ptrActionPere, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance,bool bwd)
 {
     {
         this->type = OrderE::SPINGOTO_E;
@@ -70,6 +70,7 @@ SPINGOTO::SPINGOTO(uint8_t nerv, float xAim, float yAim, uint16_t timeoutDs, Act
         this->spinGoTo.nerv = nerv;
         this->spinGoTo.posAim = init_vector(xAim, yAim);
         this->spinGoTo.avoidance=avoidance;
+        this->spinGoTo.bwd=bwd;
     }
 
 }

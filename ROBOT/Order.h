@@ -36,7 +36,7 @@ struct SPINGOTO_S
 {
     uint8_t nerv;
     Vector posAim;
-    bool avoidance;
+    bool avoidance,bwd;
 };
 
 struct GO_UNTIL_S
@@ -116,7 +116,7 @@ public:
 class SPINGOTO : public Order
 {
 public:
-	SPINGOTO(uint8_t nerv, float xAim, float yAim, uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail,bool avoidance);
+	SPINGOTO(uint8_t nerv, float xAim, float yAim, uint16_t timeoutDs, Action * ptrActionPere,ptrFonction contreMesure,uint8_t nbMaxFail,bool avoidance,bool bwd);
 };
 
 class GO_UNTIL : public Order

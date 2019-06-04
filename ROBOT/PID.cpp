@@ -12,15 +12,15 @@
 //float nervTPP[3]= { 0.5, 5.0, 15.0  };
 //float nervTP[3]=  { 0.5, 1.5, 999.9  };
 
-float nervA[3]=   { 0.05, 0.3, 1.2   };
-float nervV[3]=   { 0.05, 0.5, 1.2   };
+float nervA[3]=   { 0.1, 0.3, 1.2   };
+float nervV[3]=   { 0.15, 0.5, 1.2   };
 float nervTPP[3]= { 0.5, 6, 20.0  };
 float nervTP[3]=  { 0.5, 1.5, 999.9  };
 
 uint16_t K[5][2][3]=
 {
     //LINEAIRE               //ANGULAIRE  (PID)
-    {{2000, 200, 1000}, {300, 0, 500}},           //RECALLE
+    {{2000, 0, 1000}, {300, 0, 500}},           //RECALLE
     {{3500, 300, 1000}, {3500, 300, 500}},           //STD
     {{1200, 100, 2500}, {1920, 300, 106}},             //RUSH
     {{1500, 0, 500}, {5000, 50, 400}},        //DYDM     //5000 400
@@ -150,7 +150,7 @@ void PID::reload()
         ptrRobot->ghost.spinning=false;
         float D=0.0,t_e_integral=0.0,v=0.0;
         float lastV=sqrt(ptrRobot->ghost.v_e_P2.f(t_e_integral));
-        float pas=0.005;
+        float pas=0.015;
         t_e_integral=t_e_integral+pas;
         while (t_e_integral<=1.0)
         {
@@ -203,8 +203,8 @@ void PID::reload()
         float timeout=ptrRobot->ordresFifo.ptrFst()->timeoutDs;
         uint8_t nbMaxFail=ptrRobot->ordresFifo.ptrFst()->nbMaxFail;
         bool avoidance=sg.avoidance;
-        ptrRobot->ordresFifo.replaceHead(GOTO(nerv,0.1,aim.x, aim.y, angle(delta), true, timeout,papa,contreMesure,nbMaxFail,avoidance));
-        ptrRobot->ordresFifo.addHead(SPIN(nerv,angle(delta),timeout,nullptr,contreMesure,nbMaxFail));
+        ptrRobot->ordresFifo.replaceHead(GOTO(nerv,0.1,aim.x, aim.y, angle(delta) + ((sg.bwd)?(PI):(0)), true, timeout,papa,contreMesure,nbMaxFail,avoidance));
+        ptrRobot->ordresFifo.addHead(SPIN(nerv,angle(delta)+ ((sg.bwd)?(PI):(0)),timeout,nullptr,contreMesure,nbMaxFail));
         reload();
     }
     break;
@@ -419,8 +419,8 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
         ptrRobot->moteurDroite.order= (int32_t)(ordreL + ordreA);
 
         //On actualise
-        ptrRobot->moteurGauche.actuate();
-        ptrRobot->moteurDroite.actuate();
+        ptrRobot->moteurGauche.actuate(dt);
+        ptrRobot->moteurDroite.actuate(dt);
 
 #ifdef PIDSETUP
         Serial.print(ordreA); //BLEU
@@ -465,6 +465,7 @@ void PID::actuate(float dt,VectorE posERobot,float vRobot,float wRobot)
     if(millis()/1000.0-timeLastNearEnough>FAIL_TIME)
     {
         failureDetected(ErreurE::PID_FAILURE);
+        ptrRobot->comm.lastMessage=MessageE::Calle;
         timeLastNearEnough=millis()/1000.0;   //Petit repis
     }
 

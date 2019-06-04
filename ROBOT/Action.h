@@ -18,7 +18,7 @@ public:
     Action();
     void addGOTO(uint8_t nerv, float fleche, float xAim, float yAim, float thetaAim, bool arret, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance,bool relativ);
     void addGOTO(uint8_t nerv, float fleche, VectorE aim, bool arret, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail, bool avoidance, bool relativ);
-    void addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance);
+    void addSPINGOTO(uint8_t nerv,float xAim, float yAim,uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail,bool avoidance,bool bwd);
     void addSPIN(uint8_t nerv, float thetaAim, uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail,bool relativ);
     void addSPINTO(uint8_t nerv,float xAim,float yAim,uint16_t timeoutDs, ptrFonction contreMesure, uint8_t nbMaxFail);
     void addGO_UNTIL(bool arriere,uint8_t nerv,float distanceMax,MessageE unlockMessage, uint16_t timeoutDs, ptrFonction contreMesure,uint8_t nbMaxFail);

@@ -1,6 +1,5 @@
 #ifndef MOTEUR_INCLUDED
 #define MOTEUR_INCLUDED
-
 #include "1_CONSTANT.h"
 #include "Arduino.h"
 
@@ -12,7 +11,7 @@ public:
     float health=1.0;
     bool bypass=false;
 
-    void actuate();                     //Actualisation de la puissance moteur
+    void actuate(float dt);                     //Actualisation de la puissance moteur
 };
 
 Motor init_motor(uint8_t in_pinPWR, uint8_t in_pinSens1, uint8_t in_pinSens2,float health);
